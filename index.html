@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1b2a3a">
+  <title>Super Cait's 40</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="stage">
+    <div id="game"></div>
+
+    <div id="overlay">
+      <!-- HUD -->
+      <div id="hud" class="hidden">
+        <div class="hud-left">
+          <span class="chip" title="Calcetines">🧦 <b id="hud-socks">0</b></span>
+          <span class="chip" title="Monedas de gachapón">🪙 <b id="hud-coins">0</b></span>
+          <span class="chip" title="Invitaciones entregadas">💌 <b id="hud-inv">0</b></span>
+        </div>
+        <div class="hud-right">
+          <button id="btn-mute" class="chip btn" aria-label="Sonido">🔊</button>
+          <button id="btn-menu" class="chip btn" aria-label="Menú">☰</button>
+        </div>
+      </div>
+
+      <div id="zone" class="hidden"></div>
+      <div id="toast" class="hidden"></div>
+
+      <!-- Barra de minijuego -->
+      <div id="minibar" class="hidden">
+        <span id="minibar-text"></span>
+        <span class="minibar-btns">
+          <button id="mb-win" class="btn hidden">⏭ Ganar</button>
+          <button id="mb-undo" class="btn">↩ Deshacer</button>
+          <button id="mb-reset" class="btn">⟲ Reiniciar</button>
+          <button id="mb-exit" class="btn">✕ Salir</button>
+        </span>
+      </div>
+
+      <!-- Diálogo -->
+      <div id="dialog" class="hidden">
+        <div id="dialog-name"></div>
+        <img id="dialog-img" class="hidden" alt="">
+        <div id="dialog-text"></div>
+        <div id="dialog-choices"></div>
+        <div id="dialog-next">▼</div>
+      </div>
+
+      <!-- Entrada de texto (reclamaciones) -->
+      <div id="prompt" class="panel hidden">
+        <div id="prompt-title"></div>
+        <textarea id="prompt-input" maxlength="300" rows="4"></textarea>
+        <div class="row">
+          <button id="prompt-cancel" class="btn">Cancelar</button>
+          <button id="prompt-ok" class="btn primary">Enviar</button>
+        </div>
+      </div>
+
+      <!-- Candado de cifras -->
+      <div id="code" class="panel hidden">
+        <div id="code-title"></div>
+        <div id="code-digits"></div>
+        <div class="row">
+          <button id="code-cancel" class="btn">Cancelar</button>
+          <button id="code-ok" class="btn primary">Abrir</button>
+        </div>
+      </div>
+
+      <!-- Menú -->
+      <div id="menu" class="panel hidden">
+        <div class="tabs">
+          <button class="tab btn active" data-tab="prep">Preparativos</button>
+          <button class="tab btn" data-tab="amigos">Amigos</button>
+          <button class="tab btn" data-tab="cosas">Cosas</button>
+          <button class="tab btn" data-tab="ajustes">Ajustes</button>
+          <button class="tab btn hidden" data-tab="debug" id="tab-debug">🛠</button>
+          <button id="menu-close" class="btn">✕</button>
+        </div>
+        <div id="menu-body"></div>
+      </div>
+
+      <!-- Libro de los Miausis -->
+      <div id="album" class="hidden">
+        <div class="album-title">📖 Libro de los Miausis <span id="album-page"></span></div>
+        <div class="album-row">
+          <button id="album-prev" class="btn">◀</button>
+          <div id="album-photo">
+            <img id="album-img" alt="">
+            <div class="album-cap"><b id="album-place"></b> · <span id="album-date"></span></div>
+            <div id="album-deco"></div>
+          </div>
+          <button id="album-next" class="btn">▶</button>
+        </div>
+        <button id="album-close" class="btn">✕ Cerrar</button>
+      </div>
+
+      <!-- Final -->
+      <div id="ending" class="hidden">
+        <div class="ending-box">
+          <div class="ending-big">¡Feliz cumpleaños, Cait!</div>
+          <div class="ending-msg">¡Muchas gracias por dejarnos formar parte de tu universo!</div>
+          <div id="ending-stats"></div>
+          <button id="ending-ok" class="btn primary">Seguir jugando</button>
+        </div>
+      </div>
+
+      <!-- Título -->
+      <div id="title" class="hidden">
+        <div class="title-box">
+          <div class="title-small">SUPER</div>
+          <div class="title-big">CAIT'S <span>40</span></div>
+          <div class="title-sub">Una fiesta sorpresa de peluche</div>
+          <div class="title-btns">
+            <button id="t-continue" class="btn primary hidden">Continuar</button>
+            <button id="t-new" class="btn">Nueva partida</button>
+          </div>
+          <div class="title-foot">Flechas / WASD: moverse · Espacio: hablar · Esc: menú</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controles táctiles -->
+  <div id="touch" class="hidden">
+    <div id="dpad">
+      <button data-dir="up" class="d up">▲</button>
+      <button data-dir="left" class="d left">◀</button>
+      <button data-dir="right" class="d right">▶</button>
+      <button data-dir="down" class="d down">▼</button>
+    </div>
+    <div id="abtns">
+      <button id="tb-b" class="ab b">B</button>
+      <button id="tb-a" class="ab a">A</button>
+    </div>
+  </div>
+
+  <script src="vendor/phaser.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
