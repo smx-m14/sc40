@@ -10,13 +10,14 @@ const GUESTS = {
   cuy: ['cuy', 'ratita_p', 'ratita_o', 'ratita_b'], kai: ['kai'], patito: ['patito'], capybaras: ['capybara', 'capybara'],
   owitos_teatro: ['owito_g', 'owito_k', 'owito_w', 'owito_v'], mantecas: ['mantecas', 'manteca2'], peludito: ['peludito'],
   owitos_navidad: ['owito_n', 'owito_r'], owinken: ['owinken'], heladoncio: ['heladoncio'],
+  gatos: ['gato', 'gatot'], siri: ['siri', 'awawa', 'awawa'], ovejoncio: ['ovejoncio'],
 };
 const LAYER = [0xf7a8c0, 0xfff3dc, 0x9fc86a, 0x4a2c1e];
 const BULBS = [0xffe066, 0xe2574c, 0x3f8fd8, 0x82cc6a, 0xf7a8c0];
 const LINES = {
   lolete: 'He inflado todos los globos. Bueno, los que no me he comido.', fuxia: '¡Dale a la gramola! Hoy pincho yo.', peludito: 'Declaro este cumpleaños fiesta nacional del Castillo de Mazapán.',
   heladoncio: 'La tarta ha llegado entera. Como yo de Edimburgo. Casi.', bart: 'Cuarenta años son solo cuarenta repeticiones. ¡Técnica estricta!', cuy: '¡Cui, cui! Cuca dice que felicidades. Bueno, lo dice en ruso.',
-  owinken: 'Oink. Prometo que soy el original.', tigrito: 'Y ahora, todos conmigo. Un, dos, tres…',
+  owinken: 'Oink. Prometo que soy el original.', siri: '¡Awawa! Los globos los hemos inflado nosotros. Con los dientecitos no, tranquilos.', ovejoncio: 'He traído el portátil por si hay que hackear algo. Es costumbre.', tigrito: 'Y ahora, todos conmigo. Un, dos, tres…',
 };
 
 export class FiestaScene extends Phaser.Scene {
@@ -43,6 +44,7 @@ export class FiestaScene extends Phaser.Scene {
       return { spr: this.add.image(x, y, s + '_down_0').setOrigin(0.5, 1).setDepth(y), tex: s, y, ph: i * 0.7 };
     });
     if (d.invited.includes('narwal')) this.add.image(160, 50, 'narwal').setOrigin(0.5, 1).setDepth(50);
+    if (State.flag('globos')) for (const [x, y] of [[24, 46], [296, 46], [70, 40], [250, 40], [120, 36], [200, 36]]) this.add.image(x, y, 'balloon').setDepth(55).setScale(0.8);
     if (State.flag('gramola')) this.add.image(116, 56, 'gramola').setOrigin(0.5, 1).setDepth(50);
     this.add.image(160, 108, 'table').setOrigin(0.5, 1).setScale(1.5).setDepth(100);
     this.col = this.add.image(160, 150, 'colgadin_up_0').setOrigin(0.5, 1).setDepth(150).setScale(2);

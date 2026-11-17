@@ -16,6 +16,8 @@ import { TediScene } from './scenes/tedi.js';
 import { TartaScene } from './scenes/tarta.js';
 import { FiestaScene } from './scenes/fiesta.js';
 import { AwawasScene } from './scenes/awawas.js';
+import { OtamaScene } from './scenes/otama.js';
+import { RitmoScene } from './scenes/ritmo.js';
 import './story.js';
 
 class BootScene extends Phaser.Scene {
@@ -80,7 +82,7 @@ const game = new Phaser.Game({
   audio: { noAudio: true },
   input: { keyboard: false },
   scale: { mode: Phaser.Scale.NONE },
-  scene: [BootScene, WorldScene, SokobanScene, CaliScene, MonosScene, PatoScene, SimonScene, HornoScene, LucesScene, TediScene, TartaScene, FiestaScene, AwawasScene],
+  scene: [BootScene, WorldScene, SokobanScene, CaliScene, MonosScene, PatoScene, SimonScene, HornoScene, LucesScene, TediScene, TartaScene, FiestaScene, AwawasScene, OtamaScene, RitmoScene],
 });
 
 game.events.once('ready', () => {

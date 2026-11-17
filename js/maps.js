@@ -33,8 +33,9 @@ function base(id, name, w, h, fill) {
 }
 
 // Calcetín desparejado (se recoge al pisarlo)
-function sock(m, id, tx, ty) {
-  m.ent({ id, kind: 'step', tex: 'sock_' + SOCK_DESIGN[id], tx, ty, script: 'sock', bob: true, when: () => !State.d.socks.includes(id) });
+// Escondido: en una casilla con un árbol o mueble justo delante, que lo tapa casi entero; ox lo deja asomar a un lado
+function sock(m, id, tx, ty, ox = 0) {
+  m.ent({ id, kind: 'step', tex: 'sock_' + SOCK_DESIGN[id], tx, ty, ox, script: 'sock', when: () => !State.d.socks.includes(id) });
 }
 
 // ---------------------------------------------------------------- Isla de Cait
@@ -106,7 +107,6 @@ function isla() {
   m.obj('lantern', 28, 14); m.obj('lantern', 34, 14);
   m.obj('paifang', 30, 15, 3, 1, { open: [[31, 15]] });
   m.obj('biang', 23, 15, 4, 2);
-  m.obj('gym', 35, 24, 4, 2);
   for (const [x, y] of [[43, 34], [48, 35], [52, 34], [55, 35], [44, 36], [50, 37], [54, 37]]) m.obj('chimney', x, y);
   for (const [x, y] of [[47, 33], [53, 33], [45, 37]]) m.objects.push({ tex: 'balloon', x: x * TILE + 8, y: y * TILE - 26 });
   for (const [x, y] of [[49, 34], [51, 36], [46, 36], [53, 35]]) m.objects.push({ tex: 'burrow', x: x * TILE + 8, y: y * TILE + 14, flat: true, top: true });
@@ -132,8 +132,6 @@ function isla() {
   m.ent({ id: 'cuy_templo', npc: 'cuy', tx: 33, ty: 12, solid: true, script: 'cuca', when: () => S.flag('cuyTemple') });
   m.ent({ id: 'biang', tx: 24, ty: 16, script: 'biang' });
   m.ent({ id: 'perrunfli', npc: 'perrunfli', tx: 24, ty: 25, solid: true, script: 'perrunfli' });
-  m.ent({ id: 'bart', npc: 'bart', tx: 39, ty: 25, solid: true, script: 'bart' });
-  m.ent({ id: 'gym_door', tx: 36, ty: 25, script: 'gymDoor' });
   m.ent({ id: 'door_a', tx: 15, ty: 10, script: 'houseA' });
   m.ent({ id: 'door_b', tx: 15, ty: 17, script: 'houseB' });
   m.ent({ id: 'door_law', tx: 21, ty: 29, script: 'houseLaw' });
@@ -160,8 +158,10 @@ function isla() {
   m.ent({ id: 'sign_dock', tex: 'sign', tx: 10, ty: 10, solid: true, script: 'signDock' });
   m.ent({ id: 'sign_castle', tex: 'sign', tx: 48, ty: 31, solid: true, script: 'signCastle' });
   m.ent({ id: 'sign_temple', tex: 'sign', tx: 33, ty: 18, solid: true, script: 'signTemple' });
-  sock(m, 's1', 1, 9); sock(m, 's2', 10, 29); sock(m, 's3', 35, 18); sock(m, 's4', 20, 35);
-  sock(m, 's20', 46, 11); // s11, s12 y s13 los tienen los awawas de Kapadokya
+  // Cada calcetín está justo detrás de un árbol, roca o chimenea (que lo tapa casi entero). Los árboles se reparten
+  // al azar según lo construido: si se cambia el mapa, comprobar que siguen teniendo algo delante.
+  sock(m, 's1', 9, 25, 6); sock(m, 's2', 40, 5, -6); sock(m, 's3', 55, 14, 6); sock(m, 's4', 39, 35, -6);
+  sock(m, 's11', 7, 12, 6); sock(m, 's12', 54, 36, -7); sock(m, 's13', 19, 7, 6); sock(m, 's20', 57, 30, -6);
 
   // Árboles: bosque denso al noreste y sueltos por el resto, sin tapar caminos ni entidades
   const keep = new Set();
@@ -169,7 +169,8 @@ function isla() {
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     if ('pbtahnq'.includes(m.tiles[y][x]) || m.block[y][x]) for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) k(x + i, y + j);
   }
-  for (const e of m.ents) for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) k(e.tx + i, e.ty + j);
+  // los calcetines no apartan árboles: así el reparto de árboles no depende de dónde se escondan
+  for (const e of m.ents) if (!/^s\d+$/.test(e.id)) for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) k(e.tx + i, e.ty + j);
   for (let y = 22; y <= 29; y++) for (let x = 42; x <= 57; x++) k(x, y);
   // Pasillo cerrado de árboles: a la cueva solo se llega por el camino del bosque
   for (let x = 41; x <= 45; x++) m.obj('tree', x, 11);
@@ -192,7 +193,6 @@ function isla() {
     { name: 'Templo de los Sabios', x0: 27, y0: 9, x1: 35, y1: 18, music: 'templo' },
     { name: 'Biang Biang Mian', x0: 23, y0: 14, x1: 26, y1: 18 },
     { name: 'Campo de nabos', x0: 18, y0: 23, x1: 25, y1: 27 },
-    { name: 'Fitness Fattory', x0: 34, y0: 23, x1: 39, y1: 27, music: 'gym' },
     { name: 'Combini', x0: 32, y0: 28, x1: 38, y1: 31, jingle: 'combini' },
     { name: 'Castillo de Mazapán', x0: 43, y0: 16, x1: 58, y1: 31 },
     { name: 'Kapadokya', x0: 42, y0: 33, x1: 58, y1: 39 },
@@ -218,7 +218,7 @@ function cait() {
   m.ent({ id: 'shelf', tx: 8, ty: 1, script: 'shelf' });
   m.ent({ id: 'exit', kind: 'step', tx: 6, ty: 8, script: 'exitCait' });
   m.ent({ id: 'party', tx: 4, ty: 2, script: 'fiestaTable' });
-  sock(m, 's10', 10, 6);
+  sock(m, 's10', 0, 6, 5);
   // Invitados que ya han cumplido y están preparando la fiesta
   const SPOTS = [[2, 5], [9, 4], [3, 6], [9, 6], [1, 4], [10, 5], [7, 3], [2, 7]];
   ['lolete', 'tigrito'].forEach((id, i) => {
@@ -249,7 +249,7 @@ function ratitas() {
   m.obj('grate', 5, 7, 1, 1, { flat: true });
   m.obj('plant', 28, 8); m.obj('plant', 1, 8); m.obj('rug', 8, 9, 3, 2, { flat: true });
   m.ent({ id: 'exit', kind: 'step', tx: 2, ty: 12, script: 'exitRatitas' });
-  sock(m, 's5', 25, 11); sock(m, 's14', 27, 5); sock(m, 's15', 6, 6);
+  sock(m, 's5', 10, 3, -5); sock(m, 's14', 19, 1, 6); sock(m, 's15', 13, 5, 5);
   m.ent({ id: 'sign', tex: 'sign', tx: 4, ty: 11, solid: true, script: 'signRatitas' });
   m.ent({ id: 'grate', tx: 5, ty: 7, script: 'grate' });
   const mirrorTex = (id) => () => ['stand', 'mirror_a', 'mirror_b'][S.d.flags[id] || 0];
@@ -320,24 +320,30 @@ function castillo() {
   m.obj('fountain', 19, 14, 2, 2);
   m.deco('banner_k', 13, 10); m.deco('banner_g', 26, 10); m.deco('banner_g', 13, 20); m.deco('banner_k', 26, 20);
   m.obj('lantern', 16, 11); m.obj('lantern', 23, 11);
-  m.ent({ id: 'peludito', npc: 'peludito', tx: 20, ty: 11, solid: true, script: 'peludito' });
+  // El Rey espera sentado en su trono (detrás de él, con alfombra roja hasta la fuente)
+  m.objects.push({ tex: 'throne', x: 20 * TILE + 8, y: 11 * TILE + 14 });
+  m.block[11][19] = m.block[11][21] = true;
+  m.obj('carpet', 20, 12, 1, 2, { flat: true });
+  m.ent({ id: 'peludito', npc: 'peludito', tx: 20, ty: 11, oy: -6, solid: true, script: 'peludito' });
   // Vida en la plaza: estatuas del Rey, mosaico, puestos, bancos, un pintor y vecinos
   m.obj('mosaic', 18, 17, 3, 2, { flat: true });
   [[14, 12, 2], [25, 12, 3], [14, 18, 1], [25, 18, 1]].forEach(([tx, ty, n], i) => m.ent({ id: 'statue' + i, tex: 'statue_' + n, n, tx, ty, solid: true, script: 'statue' }));
   m.obj('stall', 15, 15, 2, 1); m.obj('stall', 23, 15, 2, 1);
   m.obj('bench', 17, 19); m.obj('bench', 22, 19); m.obj('easel', 22, 12);
-  for (const x of [15, 18, 21, 24]) m.objects.push({ tex: 'flowerbed', x: x * TILE + 8, y: 10 * TILE + 10, flat: true, top: true });
+  for (const x of [15, 17, 22, 24]) m.objects.push({ tex: 'flowerbed', x: x * TILE + 8, y: 10 * TILE + 10, flat: true, top: true });
   for (const x of [15, 24]) m.objects.push({ tex: 'flowerbed', x: x * TILE + 8, y: 20 * TILE + 14, flat: true, top: true });
   m.ent({ id: 'vend1', npc: 'owito_k', tx: 15, ty: 16, solid: true, script: 'plazaVend1' });
   m.ent({ id: 'vend2', npc: 'owito_v', tx: 24, ty: 16, solid: true, script: 'plazaVend2' });
   m.ent({ id: 'pintor', npc: 'owito_g', tx: 21, ty: 12, solid: true, script: 'plazaPintor' });
   m.ent({ id: 'guardia', npc: 'owito_w', tx: 18, ty: 23, solid: true, script: 'plazaGuardia' });
+  m.ent({ id: 'gato1', npc: 'gato', tx: 17, ty: 24, solid: true, script: 'gatos' });
+  m.ent({ id: 'gato2', npc: 'gatot', tx: 22, ty: 24, solid: true, script: 'gatos' });
   m.ent({ id: 'gate_in', tex: 'scaffold', tx: 19, ty: 26, ox: 8, solid: true, script: 'gateIn', when: () => !S.flag('gateOpen') });
   m.ent({ id: 'gate_in2', tx: 20, ty: 26, solid: true, script: 'gateIn', when: () => !S.flag('gateOpen') });
   m.ent({ id: 'exit_l', kind: 'step', tx: 19, ty: 27, script: 'exitCastle' });
   m.ent({ id: 'exit_r', kind: 'step', tx: 20, ty: 27, script: 'exitCastle' });
   m.ent({ id: 'sewer', kind: 'step', tex: 'hatch_open', tx: 4, ty: 20, script: 'sewerDown' });
-  sock(m, 's6', 37, 24); sock(m, 's7', 2, 8); sock(m, 's16', 9, 12); sock(m, 's17', 37, 12);
+  sock(m, 's6', 36, 22, 6); sock(m, 's7', 16, 4, -6); sock(m, 's16', 2, 11, 6); sock(m, 's17', 38, 7, -5);
 
   // Teatro Real
   m.obj('teatro', 3, 5, 6, 3);
@@ -387,23 +393,28 @@ function helada() {
   m.obj('casa_navidad', 6, 9, 4, 2);
   m.obj('tedi', 28, 8, 5, 3);
   for (const [x, y] of [[4, 8], [11, 6], [14, 9], [24, 4], [26, 7], [34, 9], [35, 14], [5, 15], [10, 18], [15, 17], [24, 18], [30, 17], [13, 4], [3, 12]]) m.obj('pine_snow', x, y);
-  m.obj('snowman', 11, 11); m.obj('rock', 23, 16); m.obj('rock', 16, 11);
+  m.obj('snowman', 11, 11); m.obj('rock', 16, 11);
+  m.obj('gym', 22, 16, 4, 2);
+  m.ent({ id: 'gym_door', tx: 23, ty: 17, script: 'gymDoor' });
+  m.ent({ id: 'bart', npc: 'bart', tx: 26, ty: 17, solid: true, script: 'bart' });
+  m.ent({ id: 'ovejoncio', npc: 'ovejoncio', tx: 27, ty: 11, solid: true, script: 'ovejoncio' });
 
   m.ent({ id: 'narwal', tex: 'narwal', tx: 21, ty: 23, ox: 6, oy: 6, solid: true, script: 'narwalBack', bob: true });
   m.ent({ id: 'heladoncio', npc: 'heladoncio', tx: 22, ty: 8, solid: true, script: 'heladoncio' });
   m.ent({ id: 'sf_door', tx: 21, ty: 6, script: 'sfDoor' });
   m.ent({ id: 'tedi_door', tx: 30, ty: 10, script: 'tediDoor' });
   m.ent({ id: 'owinken', npc: 'owinken', tx: 31, ty: 11, solid: true, script: 'owinken', when: () => S.flag('tedi') });
-  [[25, 15], [14, 15], [29, 12]].forEach(([tx, ty], i) => m.ent({ id: 'clon' + i, npc: 'clon', tx, ty, solid: true, script: 'clon', when: () => !S.flag('tedi') }));
+  [[27, 13], [14, 15], [29, 12]].forEach(([tx, ty], i) => m.ent({ id: 'clon' + i, npc: 'clon', tx, ty, solid: true, script: 'clon', when: () => !S.flag('tedi') }));
   m.ent({ id: 'navidad_door', tx: 8, ty: 10, script: 'navidad' });
   m.ent({ id: 'owito_n', npc: 'owito_n', tx: 7, ty: 11, solid: true, script: 'navidad' });
   m.ent({ id: 'owito_r', npc: 'owito_r', tx: 9, ty: 11, solid: true, script: 'navidad' });
-  sock(m, 's8', 5, 13); sock(m, 's9', 33, 15); sock(m, 's18', 12, 7); sock(m, 's19', 26, 18);
+  sock(m, 's8', 3, 11, 6); sock(m, 's9', 34, 8, -6); sock(m, 's18', 26, 6, 6); sock(m, 's19', 10, 17, -6);
 
   m.regions = [
     { name: 'Sweet Famosa', x0: 15, y0: 3, x1: 24, y1: 9, music: 'sweetfamosa' },
     { name: 'Casa de la Navidad', x0: 4, y0: 8, x1: 12, y1: 13 },
     { name: 'TEDI', x0: 26, y0: 7, x1: 34, y1: 12, music: 'puzle' },
+    { name: 'Fitness Fattory', x0: 21, y0: 14, x1: 27, y1: 18, music: 'gym' },
     { name: 'Muelle helado', x0: 17, y0: 20, x1: 23, y1: 25 },
   ];
   return m;

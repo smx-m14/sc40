@@ -72,10 +72,11 @@ export class TartaScene extends Phaser.Scene {
     const cam = this.cameras.main, p = this.p;
     const mk = (fromLeft) => this.clones.push({
       x: fromLeft ? cam.scrollX - 14 : cam.scrollX + cam.width + 14, y: Y0 + Math.random() * (Y1 - Y0), dir: fromLeft ? 1 : -1,
-      v: [36, 44, 54][seg], st: 'walk', t: 0, spr: this.add.image(0, 0, 'clon_down_0').setOrigin(0.5, 1).setDepth(8),
+      v: [42, 52, 62][seg], st: 'walk', t: 0, spr: this.add.image(0, 0, 'clon_down_0').setOrigin(0.5, 1).setDepth(8),
     });
     if (p.x > GOAL - 150) return;
     mk(false);
+    if (seg >= 1 || Math.random() < 0.45) mk(false);
     if (seg === 2) mk(true);
   }
 
@@ -103,7 +104,7 @@ export class TartaScene extends Phaser.Scene {
       p.x = Phaser.Math.Clamp(p.x + p.vx * dt, 14, LEN - 40); p.y = Phaser.Math.Clamp(p.y + p.vy * dt, Y0, Y1);
       if (Math.abs(p.vx) > 4) { p.face = Math.sign(p.vx); p.anim += dt; }
 
-      if ((this.spawnT -= dt) <= 0) { this.spawnT = [2.3, 2.0, 2.5][seg]; this.spawn(seg); }
+      if ((this.spawnT -= dt) <= 0) { this.spawnT = [1.5, 1.3, 1.45][seg]; this.spawn(seg); }
       for (const c of this.clones) {
         const dist = Math.hypot(c.x - p.x, c.y - p.y);
         if (c.st === 'walk') {

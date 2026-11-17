@@ -1,6 +1,6 @@
 // Minijuego: los awawas de Kapadokya (tipo «whack-a-mole», pero con cosquillas).
-// Los awawas asoman de sus madrigueras. Algunos llevan un calcetín robado en la boca: a esos hay que hacerles
-// cosquillas (tres veces por calcetín) para que lo suelten. Si se las haces a uno que no lleva nada, protesta
+// Los awawas juegan a pasarse su calcetín favorito de madriguera en madriguera. Al que lo lleve en la boca hay que
+// hacerle cosquillas (tres veces por ronda) para quitárselo; tres rondas y prestan los globos para la fiesta. Si se las haces a uno que no lleva nada, protesta
 // («¡AWAWA!») y pierdes una de las cosquillas que llevabas. Con cada calcetín asoman menos tiempo y hay más despistes.
 import { Input } from '../input.js';
 import { UI } from '../ui.js';
@@ -14,8 +14,7 @@ const LEVELS = [
   { up: 1.1, every: 0.65, sock: 0.4 },
   { up: 0.8, every: 0.5, sock: 0.33 },
 ];
-export const STOLEN = ['s11', 's12', 's13'];
-const SOCK_TEX = ['sock_5', 'sock_6', 'sock_7'];
+const SOCK = 'sock_9'; // su calcetín de jugar (no es ninguno de los 20 de la isla)
 
 export class AwawasScene extends Phaser.Scene {
   constructor() { super('awawas'); }
@@ -36,7 +35,7 @@ export class AwawasScene extends Phaser.Scene {
       const x = HX[c], y = HY[r];
       this.add.image(x, y, 'burrow').setScale(2).setDepth(r * 10 + 1);
       const spr = this.add.image(x, y, 'awawa_down_0').setOrigin(0.5, 1).setScale(2).setDepth(r * 10 + 2).setVisible(false);
-      const sock = this.add.image(x + 12, y - 12, 'sock_5').setDepth(r * 10 + 3).setVisible(false);
+      const sock = this.add.image(x + 12, y - 12, SOCK).setDepth(r * 10 + 3).setVisible(false);
       this.add.image(x, y + 5, 'burrow_front').setScale(2).setDepth(r * 10 + 4);
       this.holes.push({ x, y, spr, sock, st: 'down', t: 0, has: false });
     }
@@ -46,13 +45,13 @@ export class AwawasScene extends Phaser.Scene {
     this.bar();
     Input.clear();
     UI.say('Siri', [
-      'Mis sobrinos asoman de las madrigueras. Los que llevan un calcetín en la boca son los que te interesan.',
-      'Muévete con las flechas y hazles cosquillas con el botón de acción. Con tres cosquillas sueltan el calcetín.',
-      'Pero si se las haces a uno que no lleva nada, se enfada y pierdes una de las que llevabas. Y cada calcetín es más difícil que el anterior.',
+      'Mis sobrinos se pasan el calcetín de madriguera en madriguera. Fíjate en cuál lo lleva en la boca.',
+      'Muévete con las flechas y hazle cosquillas con el botón de acción. Con tres cosquillas lo suelta.',
+      'Si se las haces a uno que no lo lleva, se enfada y pierdes una de las que llevabas. Son tres rondas, cada una más rápida.',
     ]).then(() => { this.lock = false; });
   }
 
-  bar() { UI.minibar(`Kapadokya · Calcetín ${Math.min(this.level + 1, 3)} de 3 · Cosquillas ${this.hits}/${NEED}`, { exit: () => this.exit() }); }
+  bar() { UI.minibar(`Kapadokya · Ronda ${Math.min(this.level + 1, 3)} de 3 · Cosquillas ${this.hits}/${NEED}`, { exit: () => this.exit() }); }
   exit() {
     if (this.lock || UI.busy) return;
     this.lock = true; UI.minibar(null);
@@ -76,7 +75,7 @@ export class AwawasScene extends Phaser.Scene {
     if (this.hits < NEED) return this.bar();
     // Calcetín recuperado
     Sound.sfx('get');
-    UI.toast(`{${SOCK_TEX[this.level]}} ¡Ha soltado el calcetín! (${this.level + 1} de 3)`);
+    UI.toast(`{${SOCK}} ¡Le quitas el calcetín! …y otro awawa te lo vuelve a quitar. (${this.level + 1} de 3)`);
     this.level++; this.hits = 0;
     for (const o of this.holes) if (o.st === 'up') { o.st = 'hit'; o.t = 0.3; }
     this.spawnT = 1.2;
@@ -104,7 +103,6 @@ export class AwawasScene extends Phaser.Scene {
           // siempre hay como mucho un calcetín a la vista, para que no se pueda acertar al tuntún
           h.has = !this.holes.some((o) => o.st === 'up' && o.has) && Math.random() < L.sock + 0.25;
           h.st = 'up'; h.t = L.up * (0.85 + Math.random() * 0.3); h.rise = 0;
-          h.sock.setTexture(SOCK_TEX[this.level]);
         }
       }
       if (Input.take('a')) this.tickle();

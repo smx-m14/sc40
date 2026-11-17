@@ -10,6 +10,8 @@ import { SCRIPTS } from '../story.js';
 export const PUZZLES = [
   { n: 5, path: [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2], [1, 2], [0, 2], [0, 3], [0, 4], [1, 4], [2, 4], [3, 4], [4, 4]], fixed: [[2, 1], [1, 4]] },
   { n: 6, path: [[0, 5], [0, 4], [1, 4], [2, 4], [2, 3], [2, 2], [1, 2], [0, 2], [0, 1], [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [4, 1], [4, 2], [5, 2], [5, 3], [5, 4], [5, 5]], fixed: [[2, 3], [3, 0], [5, 3]] },
+  // 7x7 y sin ninguna casilla de ayuda: solución única comprobada por ordenador
+  { n: 7, path: [[0, 2], [0, 1], [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [6, 1], [6, 2], [6, 3], [5, 3], [4, 3], [4, 2], [3, 2], [2, 2], [2, 3], [1, 3], [1, 4], [0, 4], [0, 5], [0, 6], [1, 6], [2, 6], [3, 6], [4, 6], [4, 5], [5, 5], [6, 5], [6, 6]], fixed: [] },
 ];
 const C = 20, COLORS = [0xffe066, 0xe2574c, 0x3f8fd8, 0x82cc6a, 0xf7a8c0];
 const key = (x, y) => x + ',' + y;
@@ -88,7 +90,7 @@ export class LucesScene extends Phaser.Scene {
     await new Promise((r) => this.time.delayedCall(1300, r));
     this.lit = false;
     if (++this.idx < PUZZLES.length) {
-      await UI.say('Owito de Navidad', '¡Se han encendido! Ahora la guirnalda grande, la del árbol.');
+      await UI.say('Owito de Navidad', ['¡Se han encendido! Ahora la guirnalda grande, la del árbol.', '¡Preciosa! Y ahora la de la fachada… esta es la más larga y no recuerdo ni un solo trozo. Suerte.'][this.idx - 1]);
       this.loadPuzzle();
       this.lock = false;
       return;

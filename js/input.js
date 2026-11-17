@@ -10,6 +10,7 @@ const KEYS = {
 
 export const Input = {
   held: {},
+  t: {},             // momento (performance.now) de la última pulsación de cada botón
   just: {},
   combo: null,       // (code) => atajos de debug
   interceptor: null, // (btn) => true si el interfaz consume la pulsación
@@ -18,6 +19,7 @@ export const Input = {
     // No se ignora una pulsación porque la tecla figure como «mantenida»: si el navegador se come un keyup
     // (cambio de foco, pantalla completa…) el botón dejaba de responder para siempre.
     this.held[btn] = true;
+    this.t[btn] = performance.now();
     if (this.interceptor && this.interceptor(btn)) return;
     this.just[btn] = true;
   },

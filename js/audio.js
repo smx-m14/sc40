@@ -1,13 +1,8 @@
-// Sonido. La música de las zonas son los mp3 de assets/audio; el resto (interiores, minijuegos
-// y efectos) se sintetiza con WebAudio. Pistas sintetizadas: "NOTA:pasos ..." (paso = corchea, "-" = silencio).
+// Sonido. Toda la música es chiptune sintetizado con WebAudio (las canciones de zona salen de js/songs-data.js);
+// solo los efectos grabados (monos, patito) y la prueba de Fuxia usan mp3. Pistas sintetizadas: "NOTA:pasos ..." (paso = corchea, "-" = silencio).
 import { State } from './state.js';
 import { GENERATED } from './songs-data.js';
 
-// id de canción → fichero en assets/audio
-const FILES = {
-  isla: 'isla', lolete: 'lolete', templo: 'templo', bosque: 'bosque', ratitas: 'ratitas',
-  capybaras: 'capybaras', pasteleria: 'pasteleria', teatro: 'teatro', navidad: 'navidad', sweetfamosa: 'sweetfamosa',
-};
 const MUSIC_VOL = 0.45;
 
 // Composiciones propias para lo que no tiene mp3 de referencia (y el Combini, cuyo mp3 está en silencio)
@@ -105,12 +100,7 @@ export const Sound = {
     this.curId = id;
     if (this.playing) { this.playing.pause(); this.playing = null; }
     this.cur = null;
-    const mp3 = FILES[id] && (State.settings.music === 'mp3' || !SONGS[id]);
-    if (mp3) {
-      const a = this.playing = this.el(FILES[id], true);
-      a.volume = MUSIC_VOL;
-      a.play().catch(() => {});
-    } else if (SONGS[id]) {
+    if (SONGS[id]) {
       this.cur = { ...compile(SONGS[id]), i: 0, next: this.ctx.currentTime + 0.08 };
     }
   },
@@ -143,7 +133,6 @@ export const Sound = {
     for (const e of evs) this.note(e.f * k, t0 + e.i * step, e.len * step * 0.95, mode === 'low' ? 'sawtooth' : 'square', 0.1);
     return (mode === 'short' ? 1.2 : N * step) + 0.2;
   },
-  setMode(mode) { State.settings.music = mode; State.saveSettings(); this.music(this.curId, true); },
   // Sintonía corta: suena UNA vez (no en bucle) y la música de fondo espera o baja mientras dura.
   // La usa el Combini al acercarse a la puerta, y la Música de Logro en versión chiptune.
   jingle(id, gain = 1.4) {
@@ -159,14 +148,7 @@ export const Sound = {
   },
   logro() {
     if (!this.ctx) return;
-    if (State.settings.music !== 'mp3' && SONGS.logro) return this.jingle('logro');
-    const a = this.el('logro', false), bg = this.playing;
-    a.currentTime = 0; a.volume = 0.7;
-    if (bg) bg.volume = 0.1;
-    if (this.master && !State.settings.mute) this.master.gain.value = 0.3;
-    const restore = () => { if (bg) bg.volume = MUSIC_VOL; if (this.master && !State.settings.mute) this.master.gain.value = 1; };
-    a.onended = restore;
-    a.play().catch(restore);
+    this.jingle('logro');
   },
   // Efectos grabados (monos, patito…): assets/audio/sfx_<nombre>.mp3
   clip(name, vol = 0.8) {

@@ -220,7 +220,8 @@ const CHARS = {
     const G = '#a8a8b2', W = '#fbf7f2', K = '#f7b8c0';
     p.px(G, [3, 6 + o], [4, 5 + o], [4, 6 + o], [5, 6 + o], [13, 6 + o], [14, 5 + o], [14, 6 + o], [15, 6 + o]).px(K, [4, 6 + o], [14, 6 + o]);
     p.ell(9, 11.5 + o, 6.8, 5.6, W);
-    for (let y = 0; y < 18; y++) for (let x = 0; x < 18; x++) if (p.get(x, y) === W) { if (y <= 8 + o) p.set(x, y, G); else if (y >= 14 + o) p.set(x, y, K); }
+    const R = p.raw || p, k = p.k || 1; // franjas gris/blanco/rosa sobre los píxeles reales (también a tamaño grande)
+    for (let y = 0; y < R.h; y++) for (let x = 0; x < R.w; x++) if (R.get(x, y) === W) { if (y <= (8.5 + o) * k) R.set(x, y, G); else if (y >= (14 + o) * k) R.set(x, y, K); }
     if (dir === 'side') p.px('#5a4636', [12, 10 + o], [13, 10 + o]).px('#f08aa0', [15, 11 + o], [11, 12 + o]);
     else if (dir !== 'up') p.px('#5a4636', [6, 10 + o], [7, 10 + o], [11, 10 + o], [12, 10 + o], [8, 12 + o], [10, 12 + o]).px('#f08aa0', [9, 11 + o], [4, 12 + o], [14, 12 + o]);
     p.rect(6, 16, 2, 1, '#e8e0d8').rect(10, 16, 2, 1, '#e8e0d8');
@@ -230,6 +231,18 @@ const CHARS = {
   // Owitos de Navidad
   owito_n(p, dir, o) { owito(p, o, '#f7b8c8', '#ffffff'); p.rect(7, 1 + o, 5, 4, '#3f9f4f').px('#fff', [7, 2 + o], [8, 3 + o], [11, 2 + o], [10, 3 + o]).rect(9, 1 + o, 1, 4, '#e2574c'); },
   owito_r(p, dir, o) { owito(p, o, '#c98f4e', '#8a5a2a'); p.rect(6, 3 + o, 7, 2, '#e2574c').rect(5, 5 + o, 9, 1, '#fff').px('#fff', [13, 2 + o]).px('#e2574c', [9, 12 + o]); },
+  // Ovejoncio: oveja enorme y redonda de lana blanca, con la cara beige
+  ovejoncio(p, dir, o) {
+    const W = '#f3ecdc', L = '#fbf7ee', F = '#e8dcc4', D = '#d6c8ac';
+    p.ell(2.4, 9.5 + o, 2.4, 1.5, F).ell(15.6, 9.5 + o, 2.4, 1.5, F).px('#f0c0c0', [2, 9 + o], [15, 9 + o]);
+    p.ell(9, 10.5 + o, 7.6, 6.6, W);
+    p.px(L, [4, 7 + o], [7, 5 + o], [11, 5 + o], [14, 7 + o], [3, 12 + o], [15, 12 + o], [6, 15 + o], [12, 15 + o]).px(D, [5, 6 + o], [13, 6 + o], [2, 11 + o], [16, 11 + o], [9, 4 + o]);
+    if (dir !== 'up') p.ell(9, 11.5 + o, 3.5, 3.1, F).px(BLACK, [7, 10 + o], [11, 10 + o]).px('#d98a8a', [9, 12 + o], [8, 13 + o], [10, 13 + o]);
+    p.rect(5, 17, 2, 1, F).rect(11, 17, 2, 1, F);
+  },
+  // Gatos reversibles (siameses de peluche): lado feliz y lado enfurruñado
+  gato(p, dir, o) { siamese(p, o, true); },
+  gatot(p, dir, o) { siamese(p, o, false); },
   // Awawas (damanes): redondos, marrones y con sus dos dientecitos. Siri lleva un pañuelo rosa
   awawa(p, dir, o) { hyrax(p, o, false); },
   siri(p, dir, o) { hyrax(p, o, true); },
@@ -270,8 +283,32 @@ function dog(p, dir, o, f, c) {
 }
 
 const SIZE = { perrunfli: [26, 22] };
+// Personajes un 50 % más grandes que Colgadín: se dibujan con las mismas coordenadas de 18x18 sobre un lienzo mayor
+const SCALE = { peludito: 1.5, heladoncio: 1.5, ovejoncio: 1.5 };
+function scaled(p, k) {
+  const r = (v) => Math.round(v * k), sz = Math.max(1, Math.round(k));
+  const q = {
+    raw: p, k,
+    ell(cx, cy, rx, ry, c) { p.ell(cx * k, cy * k, rx * k, ry * k, c); return q; },
+    rect(x, y, w, h, c) { p.rect(r(x), r(y), Math.max(1, r(x + w) - r(x)), Math.max(1, r(y + h) - r(y)), c); return q; },
+    px(c, ...pts) { for (const [x, y] of pts) p.rect(r(x), r(y), sz, sz, c); return q; },
+    line(x0, y0, x1, y1, c) { p.line(r(x0), r(y0), r(x1), r(y1), c); return q; },
+    get: (x, y) => p.get(r(x), r(y)),
+    set(x, y, c) { p.rect(r(x), r(y), sz, sz, c); return q; },
+  };
+  return q;
+}
 const HALO = ['scooby', 'cuca']; // aureola, como los difuntos de Dragon Ball
 
+function siamese(p, o, happy) {
+  const T = '#ebb96a', M = '#a0704a', D = '#4a2c1e';
+  p.px(D, [4, 3 + o], [4, 4 + o], [5, 4 + o], [4, 5 + o], [5, 5 + o], [6, 5 + o], [14, 3 + o], [14, 4 + o], [13, 4 + o], [14, 5 + o], [13, 5 + o], [12, 5 + o]);
+  p.ell(9, 11 + o, 7, 5.6, T).ell(9, 12 + o, 4.4, 3.4, M);
+  p.rect(3, 16, 3, 1, D).rect(12, 16, 3, 1, D).px(D, [16, 13 + o], [17, 12 + o], [17, 11 + o]);
+  if (happy) p.px(BLACK, [6, 10 + o], [7, 9 + o], [8, 10 + o], [10, 10 + o], [11, 9 + o], [12, 10 + o], [8, 13 + o], [9, 14 + o], [10, 13 + o]);
+  else p.px(BLACK, [6, 9 + o], [7, 10 + o], [12, 9 + o], [11, 10 + o], [7, 11 + o], [11, 11 + o], [8, 14 + o], [9, 13 + o], [10, 14 + o]).px('#fff', [6, 11 + o], [12, 11 + o]);
+  p.px(BLACK, [4, 12 + o], [3, 13 + o], [14, 12 + o], [15, 13 + o]);
+}
 function hyrax(p, o, scarf) {
   const B = '#8a5a2e', L = '#cfa468', D = '#5e3a1c';
   p.ell(4.5, 6 + o, 1.9, 1.9, D).ell(13.5, 6 + o, 1.9, 1.9, D);
@@ -311,9 +348,10 @@ function mouse(p, o, c, cl) {
 }
 
 function charFrame(name, dir, f) {
-  const [w, h] = SIZE[name] || [18, 18];
+  const k = SCALE[name] || 1;
+  const [w, h] = SIZE[name] || [Math.round(18 * k), Math.round(18 * k)];
   let p = new PX(w, h);
-  CHARS[name](p, dir, f ? -1 : 0, f);
+  CHARS[name](k === 1 ? p : scaled(p, k), dir, f ? -1 : 0, f);
   p.outline(INK);
   if (HALO.includes(name)) {
     p = new PX(w, h + 4).blit(p, 0, 4);
@@ -434,20 +472,27 @@ function statue(kind) {
   for (let i = 0; i < q.d.length; i++) {
     const c = q.d[i];
     if (!c) continue;
-    const n = parseInt(c.slice(1), 16), l = ((n >> 16) * 0.3 + ((n >> 8) & 255) * 0.6 + (n & 255) * 0.1) | 0, g = Math.min(215, 70 + l * 0.6) | 0;
+    const n = parseInt(c.slice(1), 16), l = ((n >> 16) * 0.3 + ((n >> 8) & 255) * 0.6 + (n & 255) * 0.1) | 0, g = l < 110 ? 58 : Math.min(215, 70 + l * 0.6) | 0; // ojos y nariz bien oscuros para que se lea la cara
     q.d[i] = '#' + ((g << 16) | (g << 8) | (g + 8)).toString(16).padStart(6, '0');
   }
   p.rect(2, 24, 16, 7, '#9c9c92').rect(1, 22, 18, 3, '#b9b9b0').rect(1, 30, 18, 2, '#8a8a80').rect(6, 26, 8, 2, '#e8b820');
+  // Coronación: la capa (una manta) va por detrás del cuerpo y asoma por los lados con su ribete; la cara queda despejada
+  if (kind === 3) p.rect(1, 12, 18, 10, '#8a8f9a').rect(0, 15, 1, 7, '#8a8f9a').rect(19, 15, 1, 7, '#8a8f9a').px('#d0d0c8', [1, 21], [3, 21], [16, 21], [18, 21], [0, 18], [19, 18]);
   p.blit(q, 1, 5);
   if (kind === 2) p.line(17, 14, 17, 2, '#c9ced8').rect(15, 13, 5, 1, '#8a8a80');
-  if (kind === 3) p.rect(2, 4, 1, 16, '#b0aa98').ell(2.5, 3, 1.6, 1.6, '#e8b820').rect(4, 17, 12, 5, '#8a8f9a');
+  if (kind === 3) p.rect(2, 6, 1, 16, '#b0aa98').ell(2.5, 4.5, 1.6, 1.6, '#e8b820');
   return p.outline(INK);
 }
-function shape(k, c) { // o naranja · f fresa · p pera
+// Plátano en forma de media luna, con el rabito marrón (ox, oy: desplazamiento)
+function banana(p, ox, oy, c) {
+  p.px('#6e4520', [ox + 2, oy + 2]).rect(ox + 2, oy + 3, 2, 2, c).rect(ox + 2, oy + 5, 3, 1, c).px(c, [ox + 8, oy + 5]).rect(ox + 3, oy + 6, 6, 1, c).rect(ox + 4, oy + 7, 4, 1, c);
+}
+function shape(k, c) { // o naranja · f fresa · p pera · b plátano
   const p = new PX(10, 10);
   if (k === 'o') p.ell(5, 6, 3.4, 3.2, c);
   if (k === 'f') { for (let i = 0; i < 6; i++) p.rect(2 + (i >> 1), 3 + i, 6 - 2 * (i >> 1), 1, c); }
   if (k === 'p') p.ell(5, 7, 3, 2.6, c).ell(5, 4, 1.8, 2, c);
+  if (k === 'b') { banana(p, 0, 0, c); p.px('#ffffff', [3, 4]); return p.outline(INK); }
   p.px('#ffffff', [4, 5]).px('#3f9f4f', [5, 1], [6, 1], [5, 2]);
   return p.outline(INK);
 }
@@ -457,6 +502,7 @@ function mold(c, k) {
   if (k === 'o') p.ell(8, 8, 3.6, 3.4, c);
   if (k === 'f') { for (let i = 0; i < 6; i++) p.rect(5 + (i >> 1), 5 + i, 6 - 2 * (i >> 1), 1, c); }
   if (k === 'p') p.ell(8, 9, 3, 2.6, c).ell(8, 6, 1.8, 2, c);
+  if (k === 'b') banana(p, 3, 2, c);
   return p.outline(INK);
 }
 function station(col, deco) {
@@ -681,6 +727,23 @@ const OBJ = {
     p.line(3, 23, 7, 4, '#8a5a2a').line(13, 23, 9, 4, '#8a5a2a').rect(2, 4, 12, 12, '#fff6dc').rect(3, 5, 10, 10, '#bfe3f7').ell(8, 11, 3.5, 3, '#d9c3a0').rect(6, 6, 5, 2, '#e8b820').px(BLACK, [7, 10], [9, 10]).rect(2, 16, 12, 1, '#8a5a2a');
     return p.outline(INK);
   },
+  throne() { // trono del Rey Peludito: respaldo de terciopelo rojo con marco dorado y remate de corona
+    const p = new PX(34, 44), G = '#e8b820', GD = '#c98f1e', GL = '#ffe27a', R = '#c8202c', RD = '#8f1520', RL = '#e2574c';
+    p.rect(6, 6, 22, 28, G).rect(8, 8, 18, 25, R).rect(10, 10, 14, 21, RD).rect(8, 8, 18, 1, RL);
+    p.px(GL, [12, 14], [21, 14], [17, 19], [12, 25], [21, 25]).px(G, [12, 13], [21, 13], [17, 18], [12, 24], [21, 24]);
+    // remate en forma de corona
+    p.rect(6, 4, 22, 2, G).px(G, [6, 3], [6, 2], [11, 3], [17, 3], [17, 2], [17, 1], [16, 2], [18, 2], [23, 3], [27, 3], [27, 2]).px(R, [17, 2]).px(GL, [6, 2], [27, 2], [17, 0]);
+    // reposabrazos, asiento y base
+    p.rect(1, 25, 7, 4, G).rect(26, 25, 7, 4, G).rect(1, 25, 7, 1, GL).rect(26, 25, 7, 1, GL).rect(2, 29, 3, 8, GD).rect(29, 29, 3, 8, GD);
+    p.rect(5, 31, 24, 5, R).rect(5, 31, 24, 1, RL).rect(5, 35, 24, 1, RD);
+    p.rect(3, 36, 28, 5, G).rect(3, 36, 28, 1, GL).rect(3, 40, 28, 2, GD).px(R, [10, 38], [17, 38], [24, 38]);
+    return p.outline(INK);
+  },
+  carpet() { // alfombra real desde el trono
+    const p = new PX(16, 32);
+    p.rect(1, 0, 14, 32, '#c8202c').rect(1, 0, 1, 32, '#e8b820').rect(14, 0, 1, 32, '#e8b820').px('#e2574c', [7, 6], [8, 6], [7, 18], [8, 18]).rect(1, 31, 14, 1, '#e8b820');
+    return p;
+  },
   mosaic() { // mosaico de la plaza: la corona real
     const p = new PX(48, 32);
     p.ell(24, 16, 23, 15, '#cfa76a').ell(24, 16, 21, 13, '#f3dfae').ell(24, 16, 17, 10, '#f7a8c0').ell(24, 16, 15, 8.5, '#fbd0de');
@@ -704,9 +767,9 @@ const OBJ = {
   mirror_fa: () => stand(1, true),
   mirror_fb: () => stand(2, true),
   // Pastelería Real: moldes y mazapanes con forma
-  st_mold_o: () => mold('#f08a24', 'o'), st_mold_f: () => mold('#e2574c', 'f'), st_mold_p: () => mold('#9fc86a', 'p'),
-  it_raw_o: () => shape('o', '#f3e3b6'), it_raw_f: () => shape('f', '#f3e3b6'), it_raw_p: () => shape('p', '#f3e3b6'),
-  it_maz_o: () => shape('o', '#f08a24'), it_maz_f: () => shape('f', '#e2574c'), it_maz_p: () => shape('p', '#9fc86a'),
+  st_mold_o: () => mold('#f08a24', 'o'), st_mold_f: () => mold('#e2574c', 'f'), st_mold_p: () => mold('#9fc86a', 'p'), st_mold_b: () => mold('#ffd23f', 'b'),
+  it_raw_o: () => shape('o', '#f3e3b6'), it_raw_f: () => shape('f', '#f3e3b6'), it_raw_p: () => shape('p', '#f3e3b6'), it_raw_b: () => shape('b', '#f3e3b6'),
+  it_maz_o: () => shape('o', '#f08a24'), it_maz_f: () => shape('f', '#e2574c'), it_maz_p: () => shape('p', '#9fc86a'), it_maz_b: () => shape('b', '#ffd23f'),
   teatro() {
     const p = new PX(96, 76), G = '#2f8f5a', GD = '#1f5a3a', K = '#f06aa8', Y = '#e8b820', W = '#f6ecf4';
     for (let y = 2; y < 22; y++) { const i = Math.round((21 - y) * 2.1); p.rect(4 + i, y, 88 - 2 * i, 1, y % 5 === 0 ? GD : G); }
@@ -758,12 +821,16 @@ const OBJ = {
   },
   banner_k: () => new PX(10, 22).rect(4, 0, 1, 22, '#6e4520').rect(5, 2, 5, 9, '#f06aa8').px(null, [9, 6]).outline(INK),
   banner_g: () => new PX(10, 22).rect(4, 0, 1, 22, '#6e4520').rect(5, 2, 5, 9, '#2f8f5a').px(null, [9, 6]).outline(INK),
-  narwal() {
-    const p = new PX(46, 32), W = '#c4ece4', T = '#7fd6cc';
-    p.ell(5, 14, 3.5, 5, T).ell(22, 19, 17, 10, W).ell(22, 25, 14, 4, '#eaf8f4').ell(14, 26, 4, 2, T).ell(30, 27, 4, 2, T);
-    p.line(31, 10, 39, 1, '#e8b820').line(32, 10, 40, 1, '#ffe066').line(32, 11, 40, 2, '#e8b820');
-    p.rect(24, 8, 6, 2, '#e8b820').px('#e8b820', [24, 7], [27, 6], [27, 7], [29, 7]);
-    p.rect(29, 17, 2, 2, BLACK).px('#f7a8c0', [33, 20], [34, 20]).px('#5a4636', [30, 22], [31, 23], [32, 22]);
+  narwal() { // peluche de dinosaurio menta con corona… que todo el mundo toma por un narval (sin cuerno)
+    const p = new PX(46, 32), W = '#bfeee0', B = '#e8faf4', T = '#7fd6c4', Y = '#ffd84a';
+    p.ell(6, 17, 4, 4.6, T);
+    p.ell(23, 18, 17, 10.5, W).ell(25, 24, 13, 4.5, B);
+    p.px(T, [10, 10], [11, 9], [11, 10], [12, 10], [14, 8], [15, 7], [15, 8], [16, 8], [18, 7], [19, 6], [19, 7], [20, 7]);
+    p.rect(24, 6, 8, 2, Y).px(Y, [24, 5], [24, 4], [27, 5], [27, 4], [27, 3], [31, 5], [31, 4]).px('#f08a24', [25, 7], [29, 7]);
+    p.rect(27, 15, 2, 2, BLACK).rect(35, 15, 2, 2, BLACK).px('#fff', [27, 15], [35, 15]);
+    p.rect(24, 19, 3, 2, '#f7a0b4').rect(37, 19, 3, 2, '#f7a0b4');
+    p.px('#5a4636', [30, 19], [31, 20], [32, 19], [33, 20], [34, 19]);
+    p.ell(17, 27, 4, 2, T).ell(32, 28, 4, 2, T);
     p.outline(INK);
     return p.rect(2, 30, 42, 2, '#bfe3f7').px('#bfe3f7', [0, 31], [45, 31]);
   },
@@ -1044,6 +1111,32 @@ const GACHA_ART = {
     p.rect(8, 11, 2, 3, BLACK).rect(14, 11, 2, 3, BLACK).px('#fff', [8, 11], [14, 11]).rect(11, 14, 2, 2, BLACK).px('#5a4636', [9, 17], [10, 18], [11, 17], [12, 17], [13, 18], [14, 17]);
     p.px(BLACK, [12, 2], [12, 3], [12, 4], [12, 5]).ell(12, 1.5, 2, 1.5, '#6b3fa0');
   },
+  crash(p) {
+    const O = '#f08a24', S = '#f3d0a0', J = '#3f6fd0';
+    p.ell(5, 6, 2.4, 1.5, O).ell(19, 6, 2.4, 1.5, O).ell(12, 8, 6, 5.5, O);
+    p.px('#a8401c', [10, 1], [11, 2], [12, 1], [13, 2], [14, 1], [12, 2], [11, 3], [13, 3]);
+    p.ell(12, 11, 4.8, 2.6, S).rect(11, 8, 3, 2, '#2b2320');
+    p.rect(8, 5, 3, 2, '#fff').rect(14, 5, 3, 2, '#fff').px('#3f9f4f', [9, 6], [15, 6]);
+    p.rect(9, 11, 7, 2, '#fff').rect(9, 13, 7, 1, '#c8402c');
+    p.rect(9, 14, 6, 4, O).rect(6, 14, 3, 2, O).rect(15, 14, 3, 2, O).px(S, [5, 14], [18, 14]);
+    p.rect(8, 18, 8, 3, J).rect(7, 21, 4, 2, '#e2574c').rect(13, 21, 4, 2, '#e2574c');
+  },
+  larva(p) {
+    const G = '#9ec4a8', GL = '#c4e0c8', GD = '#6f9a80';
+    p.ell(19, 20, 3.4, 2.6, G).ell(14, 19, 5, 3.6, G).ell(9, 16, 5, 4.6, G).ell(10, 9, 6.2, 6.2, G);
+    p.ell(7, 8, 2.6, 4, GL).ell(13.5, 8, 2.2, 2.7, '#1a1412').px('#fff', [12, 7], [13, 6]);
+    p.px(GD, [5, 13], [6, 14], [7, 15], [13, 17], [14, 18], [18, 19], [19, 20]);
+  },
+  spyro(p) {
+    const V = '#8a4fc8', VD = '#5e2f96', Y = '#ffcc33', O = '#f0a020';
+    p.ell(4, 11, 3.5, 5, O).ell(20, 11, 3.5, 5, O).px('#c87a10', [4, 9], [3, 12], [20, 9], [21, 12]);
+    p.ell(12, 16, 5, 5, V).ell(12, 17, 2.8, 3.4, Y);
+    p.ell(12, 9, 5.6, 4.6, V);
+    p.line(9, 6, 6, 1, Y).line(10, 5, 7, 1, Y).line(15, 6, 18, 1, Y).line(14, 5, 17, 1, Y);
+    p.rect(9, 8, 2, 2, '#fff').rect(14, 8, 2, 2, '#fff').px('#3f9f4f', [10, 9], [14, 9]).px(VD, [9, 7], [10, 7], [14, 7], [15, 7]);
+    p.ell(12, 12, 3, 1.6, '#a26ae0').px(VD, [11, 12], [13, 12], [11, 14], [12, 14], [13, 13]);
+    p.rect(8, 20, 3, 2, V).rect(13, 20, 3, 2, V).px(Y, [8, 21], [15, 21]);
+  },
   socrates(p) {
     const B = '#6b4a2a', BD = '#4f3519', T = '#e8c890', W = '#fff';
     p.px(B, [5, 1], [6, 2], [6, 3], [7, 3], [18, 1], [17, 2], [17, 3], [16, 3]);
@@ -1122,7 +1215,7 @@ export function gachaIcon(id) {
 
 export const WALKERS = ['colgadin', 'lolete', 'tigrito', 'cuy', 'patito', 'heladoncio'];
 export const NPCS = ['fuxia', 'scooby', 'cuca', 'lolete', 'perrunfli', 'bart', 'mono', 'tigrito', 'ratita_p', 'ratita_o', 'ratita_b', 'kai', 'cuy',
-  'peludito', 'mantecas', 'manteca2', 'patito', 'capybara', 'owito_w', 'owito_k', 'owito_v', 'owito_g', 'owito_c', 'owito_t', 'heladoncio', 'owinken', 'clon', 'owito_n', 'owito_r', 'awawa', 'siri'];
+  'peludito', 'mantecas', 'manteca2', 'patito', 'capybara', 'owito_w', 'owito_k', 'owito_v', 'owito_g', 'owito_c', 'owito_t', 'heladoncio', 'owinken', 'clon', 'owito_n', 'owito_r', 'awawa', 'siri', 'ovejoncio', 'gato', 'gatot'];
 
 export function makeTextures(scene) {
   const add = (key, cv) => { if (scene.textures.exists(key)) scene.textures.remove(key); scene.textures.addCanvas(key, cv); };

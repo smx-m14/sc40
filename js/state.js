@@ -22,6 +22,9 @@ export const CHARACTERS = [
   { id: 'owitos_navidad', name: 'Owitos de Navidad', where: 'Casa de la Navidad' },
   { id: 'owinken', name: 'Owinken', where: 'TEDI' },
   { id: 'heladoncio', name: 'Heladoncio', where: 'Sweet Famosa' },
+  { id: 'gatos', name: 'Los gatos reversibles', where: 'Castillo' },
+  { id: 'siri', name: 'Siri y los awawas', where: 'Kapadokya' },
+  { id: 'ovejoncio', name: 'Ovejoncio', where: 'TEDI' },
 ];
 
 // Regalos del gachapón (dibujados en art.js → GACHA_ART). Faltan por decidir hasta llegar a 10.
@@ -33,10 +36,9 @@ export const GACHA = [
   { id: 'poyopoyo', name: 'Poyopoyo' },
   { id: 'princesa-bultos', name: 'Princesa Bultos' },
   { id: 'socrates', name: 'Sócrates' },
-  // Provisionales hasta que se decidan los tres últimos
-  { id: 'gatolleta', name: 'Gatolleta' },
-  { id: 'nabo', name: 'Nabo de la suerte' },
-  { id: 'mini-colgadin', name: 'Mini Colgadín' },
+  { id: 'crash', name: 'Crash Bandicoot' },
+  { id: 'larva', name: 'Larva' },
+  { id: 'spyro', name: 'Spyro' },
 ];
 
 // Regalos especiales que se consiguen superando pruebas
@@ -110,6 +112,7 @@ export const State = {
         const ids = GACHA.map((g) => g.id);
         this.d.gacha = this.d.gacha.filter((g) => ids.includes(g)); // partidas antiguas guardaban nombres
         delete this.d.lps;
+        if (this.d.flags.awawas && !this.d.flags.globos) this.d.flags.globos = true; // antes Kapadokya daba calcetines
         if (this.d.pairsTraded && !this.d.traded.length) this.d.traded = this.sockPairs().slice(0, this.d.pairsTraded); // partidas antiguas
         if (this.d.flags.kai) Object.assign(this.d.flags, { m1: 0, m2: 0, m3: 2, m4: 1, m5: 0, m6: 0, m7: 2, m8: 0, m9: 0 }); // espejos en su sitio
         if (this.d.flags.caveOpen && this.d.party.includes('lolete')) { this.d.party = this.d.party.filter((p) => p !== 'lolete'); this.d.home.push('lolete'); }

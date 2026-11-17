@@ -24,16 +24,51 @@ export const STEPS = [
   { id: 'pato', label: 'Patito y los capybaras', flag: 'pato', apply() { f('metCapys', 'pato'); inv('patito', 'capybaras'); } },
   { id: 'simon', label: 'Teatro Real', flag: 'simon', apply() { f('simon'); inv('owitos_teatro'); home('tigrito'); } },
   { id: 'horno', label: 'Pastelería Real', flag: 'horno', apply() { f('metMantecas', 'horno'); inv('mantecas'); } },
-  { id: 'gate', label: 'Peludito abre la puerta', flag: 'gateOpen', apply() { f('metPeludito', 'gateOpen'); inv('peludito'); } },
-  { id: 'narwal', label: 'Llamar a Narwal', flag: 'narwal', apply() { f('narwal'); inv('narwal'); } },
+  { id: 'gate', label: 'Andamios (gatos reversibles)', flag: 'gateOpen', apply() { f('metPeludito', 'andamios', 'gateOpen'); inv('peludito', 'gatos'); } },
+  { id: 'narwal', label: 'Llamar a Narwal (Otamatone)', flag: 'narwal', apply() { f('narwal'); inv('narwal'); } },
+  { id: 'hack', label: 'Hackear la puerta de TEDI', flag: 'tediHack', apply() { f('metOvejoncio', 'tediHack'); inv('ovejoncio'); } },
   { id: 'tedi', label: 'Jefe de TEDI (Owinken)', flag: 'tedi', apply() { f('metHel', 'tedi'); inv('owinken'); } },
+  { id: 'cali', label: 'Fitness Fattory', flag: 'cali', apply() { f('metBart', 'cali'); gift('miausis'); inv('bart'); } },
   { id: 'tarta', label: 'Escolta de la tarta', flag: 'tarta', apply() { S.d.flags.tarta = 4; inv('heladoncio'); } },
   { id: 'luces', label: 'Luces de la Casa de la Navidad', flag: 'luces', apply() { f('luces'); inv('owitos_navidad'); } },
+  { id: 'globos', label: 'Globos (awawas de Kapadokya)', flag: 'globos', apply() { f('metSiri', 'globos'); inv('siri'); } },
   { id: 'gramola', label: 'Prueba de oído de Fuxia', flag: 'gramola', apply() { f('metFuxia', 'gramola'); inv('fuxia'); } },
-  { id: 'awawas', side: true, label: 'Awawas de Kapadokya', flag: 'awawas', apply() { f('metSiri', 'awawas'); for (const k of ['s11', 's12', 's13']) if (!S.d.socks.includes(k)) S.d.socks.push(k); } },
   { id: 'paella', side: true, label: 'Paella de Perrunfli', flag: 'paella', apply() { f('metPerrunfli', 'paella'); gift('mocadora'); inv('perrunfli'); } },
-  { id: 'cali', side: true, label: 'Calistenia de Bart', flag: 'cali', apply() { f('metBart', 'cali'); gift('miausis'); inv('bart'); } },
 ];
+
+// Deshacer una prueba ya superada para volver a jugarla: se borra lo que la marca como hecha (el resto de la
+// partida se queda igual) y se lleva a Colgadín junto a quien la propone. Las invitaciones y regalos se conservan.
+const no = (...k) => k.forEach((x) => { delete S.d.flags[x]; });
+const free = (id) => { out(id); S.d.home = S.d.home.filter((p) => p !== id); };
+const MIRRORS = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9'];
+export const UNDO = {
+  lolete: { at: ['isla', 11, 18], undo() { no('lolete'); S.d.sokoLevel = 0; free('lolete'); } },
+  tigrito: { at: ['isla', 41, 12], undo() { no('tigrito'); free('tigrito'); } },
+  cueva: { at: ['isla', 46, 11], undo() { no('caveOpen'); } },
+  ratitas: { at: ['ratitas', 2, 11], undo() { no('r1', 'r2', 'r3', 'metRatitaB'); S.d.flags.lamps = [0, 0, 0, 0, 0]; if (!S.flag('kai')) MIRRORS.forEach((m) => { S.d.flags[m] = 0; }); } },
+  kai: { at: ['ratitas', 2, 11], undo() { no('kai'); MIRRORS.forEach((m) => { S.d.flags[m] = 0; }); } },
+  candado: { at: ['ratitas', 27, 11], undo() { no('hatchOpen'); } },
+  pato: { at: ['castillo', 26, 12], undo() { no('pato'); } },
+  simon: { at: ['castillo', 5, 8], undo() { no('simon'); free('tigrito'); join('tigrito'); } },
+  horno: { at: ['castillo', 32, 19], undo() { no('horno'); } },
+  gate: { at: ['castillo', 19, 24], undo() { no('andamios', 'gateOpen'); } },
+  narwal: { at: ['isla', 9, 11], undo() { no('narwal'); } },
+  hack: { at: ['helada', 27, 12], undo() { no('tediHack'); S.d.flags.hackLevel = 0; } },
+  tedi: { at: ['helada', 30, 11], undo() { no('tedi'); } },
+  cali: { at: ['helada', 26, 18], undo() { no('cali'); } },
+  tarta: { at: ['helada', 22, 9], undo() { no('tarta'); } },
+  luces: { at: ['helada', 8, 12], undo() { no('luces'); } },
+  globos: { at: ['isla', 46, 35], undo() { no('globos'); } },
+  gramola: { at: ['isla', 15, 31], undo() { no('gramola'); S.d.flags.fuxiaPts = 0; } },
+  paella: { at: ['isla', 24, 26], undo() { no('paella'); } },
+};
+export function undoStep(id) {
+  const u = UNDO[id];
+  u.undo();
+  const [map, tx, ty] = u.at;
+  S.d.pos = { map, x: tx * 16 + 8, y: ty * 16 + 12, dir: 'up' };
+  S.save();
+}
 
 // Da por hecho el paso indicado y, si es de la historia principal, todos los anteriores
 export function skipTo(id) {
@@ -44,7 +79,7 @@ export function skipTo(id) {
 }
 
 export const PLACES = [
-  ['Casa de Cait', 'cait', 6, 6], ['Templo', 'isla', 31, 18], ['Gimnasio', 'isla', 38, 26], ['Bosque', 'isla', 40, 12],
+  ['Casa de Cait', 'cait', 6, 6], ['Templo', 'isla', 31, 18], ['Gimnasio', 'helada', 24, 19], ['Bosque', 'isla', 40, 12],
   ['Muelle', 'isla', 9, 10], ['Kapadokya', 'isla', 46, 33], ['Apartamento', 'ratitas', 2, 11], ['Castillo', 'castillo', 5, 20], ['Isla Helada', 'helada', 19, 21],
 ];
 export function teleport(i) {

@@ -6,6 +6,7 @@ import { UI } from './ui.js';
 import { Sound } from './audio.js';
 import { gachaIcon } from './art.js';
 import { fuxiaQuiz, GOAL } from './fuxia.js';
+import { hack } from './hack.js';
 
 const S = State;
 const C = 'Colgadín';
@@ -30,11 +31,14 @@ export function hint() {
   if (!S.flag('pato')) return 'En el Castillo de Mazapán, los capybaras no se atreven a entrar en su estanque: algo hace «cuac» entre los juncos.';
   if (!S.flag('simon')) return 'Los Owitos del Teatro Real no pueden ensayar sin Tigrito.';
   if (!S.flag('horno')) return 'En la Pastelería Real, Mantecas necesita manos para hornear el mazapán de la muralla.';
-  if (!S.flag('gateOpen')) return 'La muralla está reconstruida: avisa al Rey Peludito para que abra la puerta del castillo.';
+  if (!S.flag('gateOpen')) return 'La muralla está entera, pero los andamios siguen tapando la puerta del castillo. Los gatos reversibles saben desmontarlos… al compás.';
   if (!S.flag('narwal')) return 'Toca en el muelle la melodía de los Owitos con el Otamatone.';
-  if (!S.flag('tedi')) return 'Narwal te lleva desde el muelle a la Isla Helada. Allí la fábrica TEDI no para de escupir clones que se comen todos los pasteles.';
-  if (!S.flag('tarta')) return 'Con TEDI apagada, Heladoncio ya puede hacer la tarta en Sweet Famosa.';
+  if (!S.flag('tediHack')) return 'En la Isla Helada, la puerta de TEDI está cerrada. Una oveja muy grande tiene un plan.';
+  if (!S.flag('tedi')) return 'La puerta de TEDI está abierta: toca apagar la máquina clonadora.';
+  if (!S.flag('cali')) return 'Heladoncio no te dará la tarta hasta que entrenes en el Fitness Fattory.';
+  if (!S.flag('tarta')) return 'Heladoncio tiene la tarta lista en Sweet Famosa. Hay que llevarla hasta Narwal.';
   if (!S.flag('luces')) return 'Los Owitos de Navidad, en la Isla Helada, tienen las luces para la fiesta.';
+  if (!S.flag('globos')) return 'Una fiesta sin globos no es fiesta. Dicen que al sur del castillo hay unos bichitos con muchos.';
   if (!S.flag('gramola')) return 'Falta la música: Fuxia, al suroeste de la Isla de Cait, quiere ponerte a prueba.';
   if (!S.flag('fin')) return '¡Todo listo! Vuelve a casa de Cait para empezar la fiesta.';
   return 'La fiesta ha sido un éxito. Puedes seguir paseando, buscar calcetines o repetirla desde la mesa de casa de Cait.';
@@ -149,7 +153,7 @@ export const SCRIPTS = {
       'Y si por el camino hay que cavar algo, yo cavo. Es mi especialidad.',
     ]);
     S.set('lolete');
-    S.join('lolete');
+    if (S.flag('caveOpen')) S.goHome('lolete'); else S.join('lolete');
     invite('lolete', 'Lolete');
     await UI.say('', '¡Lolete se une a la aventura!');
   },
@@ -195,7 +199,7 @@ export const SCRIPTS = {
       '¿Una fiesta para Cait? ¡Me apunto! Voy contigo, que al teatro se llega por el castillo.',
     ]);
     S.set('tigrito');
-    S.join('tigrito');
+    if (S.flag('simon')) S.goHome('tigrito'); else S.join('tigrito');
     invite('tigrito', 'Tigrito');
     await UI.say('Monos', '¡Uh uh…! Vale, nos hemos pasado. Dejamos el camino libre. ¿Habrá plátanos en esa fiesta?');
     await UI.say('', '¡Tigrito se une a la aventura! Los monos despejan el camino hacia la cueva.');
@@ -368,7 +372,10 @@ export const SCRIPTS = {
   },
 
   // ---------------------------------------------------------- Castillo de Mazapán
-  async sewerDown(scene) { scene.warp('ratitas', 26, 10, 'left'); return true; },
+  async sewerDown() {
+    await UI.say(C, ['Uf… Me he hartado a mazapanes. Por esa alcantarilla ya no quepo ni de lado.', 'Tendré que salir por la puerta principal… cuando quiten los andamios.']);
+    return false;
+  },
   async exitCastle(scene) { scene.warp('isla', 50, 28, 'down'); return true; },
   async gateIn() { await UI.say('', 'La puerta principal del castillo, cerrada y cubierta de andamios. El Rey Peludito no la abrirá hasta que la muralla esté reconstruida.'); },
   async peludito(scene) {
@@ -384,19 +391,19 @@ export const SCRIPTS = {
       return;
     }
     if (S.flag('horno') && !S.flag('gateOpen')) {
-      await UI.say(P, ['¡La muralla vuelve a estar entera! Y huele de maravilla.', '¡Que se abra la puerta principal del Castillo de Mazapán!']);
-      Sound.logro();
-      scene.cameras.main.shake(500, 0.004);
-      S.set('gateOpen');
-      scene.sync();
-      await UI.say('', 'Los andamios desaparecen. Ya se puede entrar y salir del castillo por la puerta principal, al sur de la plaza.');
+      return UI.say(P, [
+        '¡La muralla vuelve a estar entera! Y huele de maravilla.',
+        'Pero la puerta sigue tapada por los andamios. De desmontarlos se encargan los gatos reversibles, ahí junto a la puerta.',
+        'Trabajan al compás… cuando están del lado contento.',
+      ]);
+    }
+    if (S.flag('gateOpen') && !S.d.invited.includes('peludito')) {
       await UI.say(P, '¿Una fiesta para Cait? Un rey nunca falta a una fiesta. Sobre todo si hay tarta.');
-      invite('peludito', P);
-      return;
+      return invite('peludito', P);
     }
     if (!S.flag('horno')) return UI.say(P, 'La Pastelería Real está al este de la plaza. Sin mazapán no hay muralla, y sin muralla no hay puerta.');
     invite('peludito', P);
-    await UI.say(P, 'Reinar cansa mucho. Me voy a echar una siesta real encima de la fuente.');
+    await UI.say(P, 'Reinar cansa mucho. Me quedo aquí, en mi trono, esperando a que empiece la fiesta. Sentado. Como casi siempre.');
   },
   async capybaras(scene) {
     const K = 'Capybara';
@@ -449,6 +456,26 @@ export const SCRIPTS = {
     S.goHome('tigrito');
     await UI.say('', 'Tigrito se marcha a casa de Cait.');
   },
+  async gatos(scene) {
+    const G = 'Gato reversible';
+    if (S.flag('andamios')) { invite('gatos', 'los gatos reversibles'); return UI.say(G, ['Miau. (Este lado está contento.)', '¿Una fiesta? Iremos los dos. Uno sonreirá en las fotos y el otro pondrá esta cara. Equilibrio.']); }
+    if (!S.flag('horno')) return UI.say(G, ['Miau. (Está del lado enfurruñado.)', '¿Desmontar los andamios con la muralla llena de agujeros? Ni hablar. Primero, mazapán.']);
+    await UI.say(G, [
+      '¡Miau! Somos los gatos reversibles. Si algo sale bien, se nos ve contentos. Si sale mal, nos damos la vuelta.',
+      'Los andamios se desmontan a martillazos, pero al compás: yo marco el ritmo y tú lo repites.',
+    ]);
+    if (await UI.choose(G, '¿Le damos al martillo?', ['¡Al compás!', 'Ahora no']) !== 0) return;
+    scene.startScene('ritmo', 19, 24);
+  },
+  async ritmoDone() {
+    Sound.logro();
+    await UI.say('Gato reversible', ['¡Ocho tablones al suelo! Mira qué cara de contento se me ha quedado. Por este lado, claro.', 'El otro sigue enfurruñado. Es su naturaleza.']);
+    S.set('andamios');
+    invite('gatos', 'los gatos reversibles');
+    await UI.say('Rey Peludito', '¡Sin andamios y con la muralla entera! ¡Que se abra la puerta principal del Castillo de Mazapán!');
+    S.set('gateOpen');
+    await UI.say('', 'La puerta principal se abre. Ya se puede entrar y salir del castillo por el sur de la plaza.');
+  },
   async statue(scene, ent) {
     await UI.say('', [
       'Estatua de piedra: «Su Majestad el Rey Peludito, sentado. Como casi siempre».',
@@ -478,7 +505,7 @@ export const SCRIPTS = {
   },
   async hornoDone() {
     Sound.logro();
-    await UI.say('Mantecas', ['¡CINCO MAZAPANES! ¡Manteca2, a tapar agujeros!', 'Tú avisa al Rey Peludito: la muralla está lista y ya puede abrir la puerta.']);
+    await UI.say('Mantecas', ['¡DIEZ PEDIDOS! ¡Manteca2, owitos, a tapar agujeros!', 'Tú avisa al Rey Peludito: la muralla está lista y ya puede abrir la puerta.']);
     S.set('horno');
     invite('mantecas', 'Mantecas y Manteca2');
     await UI.say('', 'Los albañiles reales colocan los mazapanes en la muralla. Ha quedado como nueva (y ligeramente mordisqueable).');
@@ -497,6 +524,13 @@ export const SCRIPTS = {
       ]);
       S.set('metHel');
       return;
+    }
+    if (S.flag('tedi') && !S.flag('cali')) {
+      return UI.say(H, [
+        '¡La máquina se ha parado! Ya puedo hornear en paz.',
+        'Pero una tarta de cuatro pisos pesa lo suyo, y por el camino quedan clones. Así, sin preparación, no te la doy: se te caería en el primer resbalón.',
+        'Ve al Fitness Fattory, aquí al lado, y que Bart te ponga en forma. Luego hablamos.',
+      ]);
     }
     if (!S.flag('tedi')) return UI.say(H, 'Mientras esa máquina de TEDI siga escupiendo clones, aquí no llega un pastel entero ni a la puerta. Está al este, la del logo azul y amarillo.');
     await UI.say(H, ['¡La máquina se ha parado! ¡Por fin puedo hornear en paz!', 'Tengo lista una tarta de cuatro pisos para Cait. Solo falta llevarla hasta Narwal… y aún quedan clones despistados por el camino.']);
@@ -523,6 +557,7 @@ export const SCRIPTS = {
   },
   async tediDoor(scene) {
     if (S.flag('tedi')) return UI.say('', 'La fábrica TEDI está apagada. Dentro, los clones se han quedado quietos, mirando una máquina que ya no hace nada.');
+    if (!S.flag('tediHack')) return UI.say('', ['La puerta de TEDI está cerrada con un panel de seguridad. Por dentro se oye un «oink» multiplicado por mil.', 'Junto a la entrada, una oveja enorme mira la puerta con los brazos cruzados. Bueno, con las patitas.']);
     await UI.say('', ['TEDI. Dentro se oye un «oink» multiplicado por mil y el zumbido de una máquina enorme.', 'Un cartel dice: «Clones generados con IA. Cualquier parecido con un cerdito real es exactamente la idea».']);
     if (await UI.choose(C, '¿Entro a apagar la máquina clonadora?', ['¡Adentro!', 'Ahora no']) !== 0) return;
     scene.startScene('tedi', 30, 11);
@@ -537,6 +572,29 @@ export const SCRIPTS = {
     ]);
     S.set('tedi');
     invite('owinken', 'Owinken');
+  },
+  async ovejoncio() {
+    const O = 'Ovejoncio';
+    if (S.flag('tediHack')) {
+      invite('ovejoncio', O);
+      return UI.say(O, S.flag('tedi') ? 'Máquina apagada, Owinken libre. Lo celebraré comiéndome un trozo de césped. Bueno, de nieve.' : 'La puerta está abierta. Yo vigilo desde aquí. Si algo sale mal, grita «¡beeee!».');
+    }
+    if (!S.flag('metOvejoncio')) {
+      await UI.say(O, [
+        'Beee. Soy Ovejoncio. Llevo días intentando entrar en TEDI para pararles los pies a esos clones.',
+        'La puerta se abre desde un panel que está dentro. Y la única forma de llegar es ese conducto de ventilación.',
+        'Yo no quepo: tengo demasiada lana. Tú, en cambio, eres justo del tamaño.',
+        'El panel se programa en JavaScript. Tú escribe; yo te dicto pistas desde aquí fuera.',
+      ]);
+      S.set('metOvejoncio');
+    }
+    if (await UI.choose(O, '¿Te metes por el conducto?', ['¡Me meto!', 'Ahora no']) !== 0) return;
+    await UI.say('', 'Colgadín se escurre por el conducto de ventilación. Al fondo brilla un terminal con tres cerraduras.');
+    if (!(await hack())) return UI.say(O, 'Sal cuando quieras. El terminal recuerda en qué cerradura te quedaste.');
+    Sound.logro();
+    S.set('tediHack');
+    invite('ovejoncio', O);
+    await UI.say(O, ['¡CLIC! ¡La puerta de TEDI está abierta!', 'Cait lo habría hecho con los ojos cerrados, pero tú no lo has hecho nada mal.', 'Yo me quedo aquí vigilando. Ah, y a la fiesta voy. Llevo el portátil.']);
   },
   async owinken() { invite('owinken', 'Owinken'); await UI.say('Owinken', 'Estoy enseñando a mis clones a pedir las cosas por favor. Vamos por «oink, por favor». Es un comienzo.'); },
   async clon() { await UI.say('Clon', ['Oink. Soy Owinken. Oink. Soy Owinken. Oink. Soy Owinken.', '(Lleva un pastel debajo de cada pata y te mira sin parpadear. Tiene seis dedos en una pezuña.)']); },
@@ -559,13 +617,13 @@ export const SCRIPTS = {
 
   // ---------------------------------------------------------- La fiesta
   async fiestaCheck(scene, ent, forced) {
-    const ready = S.flag('luces') && S.flag('tarta') && S.flag('gramola');
+    const ready = S.flag('luces') && S.flag('tarta') && S.flag('gramola') && S.flag('globos');
     if (!ready) {
-      if (forced) await UI.say(C, 'Todavía no está todo: ' + [!S.flag('gramola') && 'falta la música', !S.flag('luces') && 'faltan las luces', !S.flag('tarta') && 'falta la tarta'].filter(Boolean).join(', ') + '.');
+      if (forced) await UI.say(C, 'Todavía no está todo: ' + [!S.flag('gramola') && 'falta la música', !S.flag('luces') && 'faltan las luces', !S.flag('globos') && 'faltan los globos', !S.flag('tarta') && 'falta la tarta'].filter(Boolean).join(', ') + '.');
       return;
     }
     const missing = CHARACTERS.filter((c) => !S.d.invited.includes(c.id));
-    const line = missing.length ? `Luces, tarta y música: ¡todo listo! Aunque ${missing.length === 1 ? 'falta por invitar a' : 'faltan por invitar'} ${missing.map((c) => c.name).join(', ')}.` : 'Luces, tarta, música… ¡y todos los invitados! No falta nada.';
+    const line = missing.length ? `Luces, globos, tarta y música: ¡todo listo! Aunque ${missing.length === 1 ? 'falta por invitar a' : 'faltan por invitar'} ${missing.map((c) => c.name).join(', ')}.` : 'Luces, globos, tarta, música… ¡y todos los invitados! No falta nada.';
     await UI.say(C, line);
     if (await UI.choose(C, S.flag('fin') ? '¿Repetimos la fiesta?' : '¿Empezamos la fiesta sorpresa?', ['¡Que empiece la fiesta!', 'Todavía no']) !== 0) return;
     scene.startScene('fiesta', 6, 6);
@@ -746,14 +804,14 @@ export const SCRIPTS = {
       await UI.say(B, BART_MAS[(S.d.flags.bartN = ((S.d.flags.bartN || 0) + 1)) % BART_MAS.length]);
       invite('bart', B);
       const again = await UI.choose(B, '¿Otra tanda? Las escápulas no se retraen solas.', ['Venga, otra', 'Me duele todo']);
-      if (again === 0) scene.startScene('cali', 39, 26);
+      if (again === 0) scene.startScene('cali', 26, 18);
       return;
     }
     const c = await UI.choose(B, 'Tres series: dominadas, fondos y muscle-ups. Técnica ESTRICTA. ¿Empezamos?', ['Vale…', 'Ahora no']);
     if (c !== 0) {
       return UI.say(B, 'Eso mismo dijo Cait el primer día. «Ahora no». Y mira, volvió. Volvió porque aquí conoció a Mindeos, no por la barra, pero volvió. Te espero. Yo siempre estoy aquí. Literalmente: duermo colgada.');
     }
-    scene.startScene('cali', 39, 26);
+    scene.startScene('cali', 26, 18);
   },
   async bartWin() {
     const B = 'Bart';
@@ -777,29 +835,30 @@ export const SCRIPTS = {
   // ---------------------------------------------------------- Kapadokya
   async siri(scene) {
     const N = 'Siri';
-    if (S.flag('awawas')) {
-      return UI.say(N, ['¡Awawa! Los calcetines ya están contigo. Mis sobrinos han forrado las madrigueras con hojas, que es lo suyo.', 'Vuelve cuando quieras. Aquí siempre hay un awawa asomado a algo.']);
+    if (S.flag('globos')) {
+      invite('siri', 'Siri y los awawas');
+      return UI.say(N, ['¡Awawa! Los globos ya están camino de casa de Cait. Mis sobrinos van dentro, claro.', 'Vuelve cuando quieras. Aquí siempre hay un awawa asomado a algo.']);
     }
     if (!S.flag('metSiri')) {
       await UI.say(N, [
         '¡Awawa! Bienvenido a KAPADOKYA. Soy Siri. Sí, soy un damán. No, no soy un conejillo de Indias. Mira qué dientecitos.',
-        'Aquí vivimos en madrigueras excavadas en las chimeneas de hadas. Y los globos… los globos ya estaban cuando llegamos.',
-        'Tengo que confesarte una cosa: mis sobrinos han cogido «prestados» tres calcetines de la isla para forrar sus madrigueras.',
-        'Yo se lo he dicho: «eso no es vuestro». Pero un awawa con un calcetín es muy difícil de convencer.',
+        'Aquí vivimos en madrigueras excavadas en las chimeneas de hadas. Y esos globos de ahí arriba son nuestros.',
+        '¿Globos para una fiesta? Te los prestaría… pero mis sobrinos no dejan nada en paz hasta que alguien les gana a su juego favorito.',
+        'Se pasan un calcetín de madriguera en madriguera. Si consigues quitárselo tres veces, los globos son tuyos.',
       ]);
       S.set('metSiri');
     }
-    if (await UI.choose(N, 'Si les haces cosquillas mientras asoman, lo sueltan. ¿Lo intentas?', ['¡A por los calcetines!', 'Ahora no']) !== 0) return;
+    if (await UI.choose(N, '¿Juegas con ellos?', ['¡A por el calcetín!', 'Ahora no']) !== 0) return;
     scene.startScene('awawas', 46, 35);
   },
   async awawa() { await UI.say('Awawa', ['¡Awawa!', '(Te enseña los dientecitos. No queda claro si es una amenaza o una sonrisa.)']); },
   async awawasDone() {
     Sound.logro();
-    await UI.say('Siri', ['¡AWAWA! ¡Los tres! Y sin que nadie haya salido mordido. Eso aquí es noticia.', 'Toma, son tuyos. Les he sacudido la tierra. Un poco.']);
-    for (const id of ['s11', 's12', 's13']) if (!S.d.socks.includes(id)) S.d.socks.push(id);
-    S.set('awawas');
-    give('{sock_5}{sock_6}{sock_7} ¡Tres calcetines recuperados!');
-    await UI.say('Siri', 'Recuerda que cada uno tiene su pareja en algún otro rincón. Los awawas solo robamos de uno en uno. Por principios.');
+    await UI.say('Siri', ['¡AWAWA! ¡Tres veces! Mis sobrinos no salen de su asombro. Ni de sus madrigueras.', 'Trato es trato: los globos son para la fiesta de Cait. Los inflamos nosotros.']);
+    S.set('globos');
+    give('{balloon} Globos para la fiesta', true);
+    invite('siri', 'Siri y los awawas');
+    await UI.say('Siri', 'El calcetín se lo quedan ellos, eso sí. Es su juguete. No es de nadie de la isla, no te preocupes.');
   },
 
   // ---------------------------------------------------------- Vecinos
@@ -865,18 +924,22 @@ export const SCRIPTS = {
     await UI.say('', ['MUELLE. Próximas salidas: ninguna.', '(Alguien ha escrito debajo: «los barcos no, pero los amigos grandes sí».)']);
     if (!S.flag('simon') || S.flag('narwal')) return;
     if (await UI.choose(C, 'Grandes animales capaces de surcar los mares… ¿Toco la melodía de los Owitos con el Otamatone?', ['¡Tocar!', 'Ahora no']) !== 0) return;
-    Sound.seq(['A5', null, 'E5', null, 'G5', null, 'C5', null, 'A5', null, 'A5', null, 'E5', null, 'G5'], 0.16, 'sine', 0.25);
-    await UI.say('', ['Uuuh-uuh-uuuh-uuh… (El Otamatone suena como un fantasma con hipo.)', 'El mar empieza a burbujear junto al muelle…']);
-    scene.cameras.main.shake(600, 0.005);
+    scene.startScene('otama', 9, 11);
+  },
+  async narwalCalled() {
     Sound.logro();
     S.set('narwal');
-    scene.sync();
-    await UI.say('Narwal', ['¡Fiuuuu! ¿Quién ha llamado? Hacía siglos que nadie tocaba esa canción.', '¿Una fiesta para Cait? ¡Cuenta con mi cuerno! Y si necesitas cruzar el mar hasta la Isla Helada, súbete cuando quieras.']);
+    await UI.say('Narwal', [
+      '¡Fiuuuu! ¿Quién ha tocado la canción de los grandes animales del mar? Hacía siglos que nadie se la sabía entera.',
+      'Sí, ya sé lo que estás pensando: no tengo cuerno. Mis padres son dinosaurios. Mis abuelos, dinosaurios. Y yo salí narval.',
+      'Nadie sabe por qué. En las cenas de Navidad es un tema delicado.',
+      '¿Una fiesta para Cait? ¡Cuenta conmigo! Y si necesitas cruzar el mar hasta la Isla Helada, súbete cuando quieras. Agárrate a la corona.',
+    ]);
     invite('narwal', 'Narwal');
   },
   async narwal(scene) {
     invite('narwal', 'Narwal');
-    if (await UI.choose('Narwal', '¡Fiuuu! ¿Rumbo a la Isla Helada? Agárrate al cuerno.', ['¡A la Isla Helada!', 'Ahora no']) === 0) scene.warp('helada', 19, 22, 'up');
+    if (await UI.choose('Narwal', '¡Fiuuu! ¿Rumbo a la Isla Helada? Agárrate a la corona, que de cuerno no ando bien.', ['¡A la Isla Helada!', 'Ahora no']) === 0) scene.warp('helada', 19, 22, 'up');
   },
   async narwalBack(scene) {
     if (await UI.choose('Narwal', '¿Volvemos a la Isla de Cait?', ['Sí, vámonos', 'Todavía no']) === 0) scene.warp('isla', 9, 10, 'down');

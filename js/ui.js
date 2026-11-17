@@ -2,7 +2,7 @@
 import { State, CHARACTERS, GACHA, GIFTS, ALBUM, TOTAL_SOCKS, SOCK_DESIGNS, SOCK_DESIGN } from './state.js';
 import { Input } from './input.js';
 import { Sound } from './audio.js';
-import { STEPS, PLACES, skipTo, teleport, reloadWorld } from './debug.js';
+import { STEPS, PLACES, UNDO, skipTo, undoStep, teleport, reloadWorld } from './debug.js';
 import { completion } from './progress.js';
 import { gachaIcon, icon } from './art.js';
 
@@ -154,7 +154,11 @@ export const UI = {
     show($('minibar'), !!text);
     if (!text) return;
     $('minibar-text').textContent = text;
-    for (const k of ['undo', 'reset', 'exit']) { $('mb-' + k).onclick = on[k] || null; show($('mb-' + k), !!on[k]); }
+    this.mbLabels = this.mbLabels || Object.fromEntries(['undo', 'reset', 'exit'].map((k) => [k, $('mb-' + k).innerHTML]));
+    for (const k of ['undo', 'reset', 'exit']) {
+      $('mb-' + k).onclick = on[k] || null; show($('mb-' + k), !!on[k]);
+      $('mb-' + k).innerHTML = on.labels && on.labels[k] ? pix(esc(on.labels[k])) : this.mbLabels[k];
+    }
     show($('mb-win'), !!State.settings.debug);
   },
 
@@ -313,12 +317,12 @@ export const UI = {
     if (this.tab === 'prep') {
       const cp = completion();
       h += `<h3>Juego completado: ${cp.pct} %</h3><div class="pct"><div style="width:${cp.pct}%"></div></div>`;
-      h += `<h3>Ahora mismo</h3><ul><li><span>👉</span><span class="grow">${esc(this.hintFn())}</span></li></ul>`;
       h += '<h3>La fiesta sorpresa de Cait</h3><ul>';
-      h += li(d.invited.length === CHARACTERS.length, 'Repartir las invitaciones', `${d.invited.length}/${CHARACTERS.length}`);
-      h += li(State.flag('gramola'), 'Música: Fuxia y su colección de discos');
-      h += li(State.flag('luces'), 'Luces: los Owitos de Navidad');
-      h += li(State.flag('tarta'), 'Tarta: Sweet Famosa');
+      h += li(d.invited.length === CHARACTERS.length, 'Invitados', `${d.invited.length}/${CHARACTERS.length}`);
+      h += li(State.flag('gramola'), 'Música');
+      h += li(State.flag('luces'), 'Luces');
+      h += li(State.flag('globos'), 'Globos');
+      h += li(State.flag('tarta'), 'Tarta');
       h += li(d.gifts.length + d.gacha.length > 0, 'Regalos para Cait', `${d.gifts.length + d.gacha.length}`);
       h += '</ul><h3>Para llegar al 100 %</h3><ul>';
       for (const p of cp.parts) h += li(p.done >= p.total, esc(p.name), `${Math.min(p.done, p.total)}/${p.total}`);
@@ -329,7 +333,7 @@ export const UI = {
         const inv = d.invited.includes(c.id), party = d.party.includes(c.id);
         h += inv || party
           ? `<li><span>${party ? '🐾' : '💌'}</span><span class="grow">${esc(c.name)}</span><small>${party ? 'Te acompaña' : 'Invitado'}</small></li>`
-          : `<li class="todo"><span>❔</span><span class="grow">???</span><small>${esc(c.where)}</small></li>`;
+          : '<li class="todo"><span>❔</span><span class="grow">???</span></li>';
       }
       h += '</ul>';
     } else if (this.tab === 'cosas') {
@@ -356,18 +360,17 @@ export const UI = {
       h += GACHA.map((g) => d.gacha.includes(g.id) ? `<figure><img src="${gachaIcon(g.id)}" alt=""><figcaption>${esc(g.name)}</figcaption></figure>` : '<figure class="todo"><div class="capsule">?</div><figcaption>???</figcaption></figure>').join('');
       h += '</div>';
     } else if (this.tab === 'debug') {
-      h += '<h3>Saltar pruebas <small>(da por hecho ese paso y los anteriores)</small></h3><ul>';
+      h += '<h3>Pruebas <small>(Saltar: da por hecho ese paso y los anteriores · Deshacer: vuelve a dejarla por hacer y te lleva allí)</small></h3><ul>';
       for (const s of STEPS) {
         const done = State.flag(s.flag);
-        h += `<li class="${done ? 'todo' : ''}"><span>${done ? '✅' : s.side ? '➕' : '⬜'}</span><span class="grow">${esc(s.label)}${s.side ? ' <small>(opcional)</small>' : ''}</span>${done ? '' : `<button class="btn" data-skip="${s.id}">Saltar</button>`}</li>`;
+        h += `<li class="${done ? 'todo' : ''}"><span>${done ? '✅' : s.side ? '➕' : '⬜'}</span><span class="grow">${esc(s.label)}${s.side ? ' <small>(opcional)</small>' : ''}</span>${done ? (UNDO[s.id] ? `<button class="btn" data-undo="${s.id}">Deshacer</button>` : '') : `<button class="btn" data-skip="${s.id}">Saltar</button>`}</li>`;
       }
       h += '</ul><h3>Ir a…</h3><ul><li><span class="grow">' + PLACES.map((p, i) => `<button class="btn" data-tp="${i}">${esc(p[0])}</button>`).join(' ') + '</span></li>';
       h += '<li><span class="grow">Monedas de gachapón</span><button class="btn" data-act="coins">+5 🪙</button></li>';
       h += '<li><span class="grow"><small>Mayús+D activa o desactiva este modo. Dentro de una prueba, Mayús+W (o el botón «Ganar») la supera.</small></span></li></ul>';
     } else {
       const m = Math.floor(d.time / 60);
-      h += `<ul><li><span class="grow">Música <small>${State.settings.music === 'mp3' ? 'grabaciones originales' : 'versión chiptune generada a partir de los mp3'}</small></span><button class="btn" data-act="music">${State.settings.music === 'mp3' ? '💿 Original' : '🎹 Chiptune'}</button></li>`;
-      h += `<li><span class="grow">Pantalla completa</span><button class="btn" data-act="full">${document.fullscreenElement ? 'Salir' : 'Activar'}</button></li>`;
+      h += `<ul><li><span class="grow">Pantalla completa</span><button class="btn" data-act="full">${document.fullscreenElement ? 'Salir' : 'Activar'}</button></li>`;
       h += `<li><span class="grow">Sonido</span><button class="btn" data-act="mute">${State.settings.mute ? '🔇 Apagado' : '🔊 Encendido'}</button></li>`;
       h += `<li><span class="grow">Tiempo de juego</span><small>${Math.floor(m / 60)} h ${m % 60} min</small></li>`;
       h += '<li><span class="grow">La partida se guarda sola en este navegador.</span></li>';
@@ -380,11 +383,11 @@ export const UI = {
     if (!b) return;
     if (b.dataset.act === 'album') this.album();
     if (b.dataset.act === 'coins') { State.d.coins += 5; State.save(); this.updateHud(); this.renderMenu(); }
+    if (b.dataset.undo) { undoStep(b.dataset.undo); this.toggleMenu(false); reloadWorld(); }
     if (b.dataset.skip) { skipTo(b.dataset.skip); this.toggleMenu(false); reloadWorld(); }
     if (b.dataset.tp) { teleport(+b.dataset.tp); this.toggleMenu(false); reloadWorld(); }
     if (b.dataset.act === 'full') { this.fullscreen(); setTimeout(() => this.open === 'menu' && this.renderMenu(), 400); }
     if (b.dataset.act === 'mute') { this.toggleMute(); this.renderMenu(); }
-    if (b.dataset.act === 'music') { Sound.init(); Sound.setMode(State.settings.music === 'mp3' ? 'chip' : 'mp3'); this.renderMenu(); }
     if (b.dataset.act === 'wipe') {
       if (!this._wipe) { this._wipe = true; this.renderMenu(); return; }
       State.reset(); location.reload();
