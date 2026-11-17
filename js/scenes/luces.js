@@ -39,7 +39,7 @@ export class LucesScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#1f3a2e').fadeIn(250);
     UI.hud(false);
     Sound.music('navidad');
-    this.idx = 0;
+    this.idx = 0; this.lit = false;
     this.g = this.add.graphics();
     this.texts = [];
     this.loadPuzzle();

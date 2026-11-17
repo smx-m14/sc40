@@ -17,6 +17,7 @@ export class WorldScene extends Phaser.Scene {
 
   create() {
     const pos = State.d.pos;
+    this.beamG = null; this.gone = false; // la escena se reutiliza: nada de referencias de la visita anterior
     const m = this.map = buildMap(pos.map);
     this.cameras.main.setBackgroundColor(m.id === 'isla' ? '#3f8fd8' : '#1a1412');
     this.drawGround();

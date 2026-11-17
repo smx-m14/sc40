@@ -61,6 +61,9 @@ function isla() {
   // Campo de nabos
   m.fill(19, 24, 23, 26, 'n');
 
+  // Kapadokya: la tierra clara al sur del castillo, con sus chimeneas de hadas
+  for (let y = 33; y <= 38; y++) for (let x = 42; x <= 57; x++) if (!'~r'.includes(m.get(x, y))) m.set(x, y, 'd');
+
   // Estanque y río
   for (let y = 11; y <= 15; y++) for (let x = 36; x <= 39; x++) if (Math.hypot(x - 37.5, y - 13) < 1.9) m.set(x, y, 'r');
   const pts = [[37, 14], [36, 19], [33, 24], [30, 29], [27, 34], [26, 42]];
@@ -104,6 +107,9 @@ function isla() {
   m.obj('paifang', 30, 15, 3, 1, { open: [[31, 15]] });
   m.obj('biang', 23, 15, 4, 2);
   m.obj('gym', 35, 24, 4, 2);
+  for (const [x, y] of [[43, 34], [48, 35], [52, 34], [55, 35], [44, 36], [50, 37], [54, 37]]) m.obj('chimney', x, y);
+  for (const [x, y] of [[47, 33], [53, 33], [45, 37]]) m.objects.push({ tex: 'balloon', x: x * TILE + 8, y: y * TILE - 26 });
+  for (const [x, y] of [[49, 34], [51, 36], [46, 36], [53, 35]]) m.objects.push({ tex: 'burrow', x: x * TILE + 8, y: y * TILE + 14, flat: true, top: true });
   m.obj('paellera', 25, 26, 2, 1); m.obj('saco', 26, 24); m.obj('saco', 27, 24); m.obj('saco', 27, 25);   // la paella de Perrunfli
   m.obj('combini', 33, 29, 4, 2);
   m.obj('cone', 33, 31);
@@ -148,11 +154,14 @@ function isla() {
   m.ent({ id: 'monos2', npc: 'mono', tx: 43, ty: 12, solid: true, script: 'monos', when: () => !S.flag('tigrito') });
   m.ent({ id: 'sign_cross', tex: 'sign', tx: 23, ty: 20, solid: true, script: 'signCross' });
   m.ent({ id: 'narwal', tex: 'narwal', tx: 4, ty: 10, ox: -8, oy: 6, solid: true, script: 'narwal', bob: true, when: () => S.flag('narwal') });
+  m.ent({ id: 'siri', npc: 'siri', tx: 46, ty: 34, solid: true, script: 'siri' });
+  m.ent({ id: 'awawa1', npc: 'awawa', tx: 50, ty: 35, solid: true, script: 'awawa' });
+  m.ent({ id: 'awawa2', npc: 'awawa', tx: 52, ty: 36, solid: true, script: 'awawa' });
   m.ent({ id: 'sign_dock', tex: 'sign', tx: 10, ty: 10, solid: true, script: 'signDock' });
   m.ent({ id: 'sign_castle', tex: 'sign', tx: 48, ty: 31, solid: true, script: 'signCastle' });
   m.ent({ id: 'sign_temple', tex: 'sign', tx: 33, ty: 18, solid: true, script: 'signTemple' });
   sock(m, 's1', 1, 9); sock(m, 's2', 10, 29); sock(m, 's3', 35, 18); sock(m, 's4', 20, 35);
-  sock(m, 's11', 38, 22); sock(m, 's12', 55, 30); sock(m, 's13', 22, 23); sock(m, 's20', 46, 11);
+  sock(m, 's20', 46, 11); // s11, s12 y s13 los tienen los awawas de Kapadokya
 
   // Árboles: bosque denso al noreste y sueltos por el resto, sin tapar caminos ni entidades
   const keep = new Set();
@@ -186,6 +195,7 @@ function isla() {
     { name: 'Fitness Fattory', x0: 34, y0: 23, x1: 39, y1: 27, music: 'gym' },
     { name: 'Combini', x0: 32, y0: 28, x1: 38, y1: 31, jingle: 'combini' },
     { name: 'Castillo de Mazapán', x0: 43, y0: 16, x1: 58, y1: 31 },
+    { name: 'Kapadokya', x0: 42, y0: 33, x1: 58, y1: 39 },
     { name: 'La cueva', x0: 45, y0: 6, x1: 49, y1: 11, music: 'bosque' },
     { name: 'Bosque de los monos', x0: 39, y0: 9, x1: 47, y1: 14, music: 'bosque' },
     { name: 'Muelle', x0: 0, y0: 7, x1: 10, y1: 11 },

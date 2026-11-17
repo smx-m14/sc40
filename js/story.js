@@ -5,6 +5,7 @@ import { traceBeam } from './beam.js';
 import { UI } from './ui.js';
 import { Sound } from './audio.js';
 import { gachaIcon } from './art.js';
+import { fuxiaQuiz, GOAL } from './fuxia.js';
 
 const S = State;
 const C = 'Colgadín';
@@ -584,7 +585,12 @@ export const SCRIPTS = {
   // ---------------------------------------------------------- Fuxia
   async fuxia() {
     const F = 'Fuxia';
-    if (S.flag('gramola')) { invite('fuxia', F); return UI.say(F, 'La gramola ya está camino de casa de Cait. Llevo la colección entera: no pienso repetir ni una canción.'); }
+    if (S.flag('gramola')) {
+      invite('fuxia', F);
+      if (await UI.choose(F, 'La gramola ya está camino de casa de Cait. ¿Quieres otra ronda, solo por gusto? Te pongo canciones distintas.', ['¡Otra ronda!', 'Ahora no']) !== 0) return;
+      if (await fuxiaQuiz()) await UI.say(F, 'Otros cien puntos. Empiezo a pensar que me espías la colección.');
+      return;
+    }
     if (!S.flag('metFuxia')) {
       await UI.say(F, [
         'Soy Fuxia, la mayor melómana de la isla. Tengo más discos que zanahorias.',
@@ -593,28 +599,17 @@ export const SCRIPTS = {
       ]);
       S.set('metFuxia');
     }
-    if (await UI.choose(F, 'Te pongo unos segundos de una canción de por aquí, pero DEFORMADA. Tú me dices de dónde es. ¿Empezamos?', ['¡Dale!', 'Ahora no']) !== 0) return;
-    const NAMES = { isla: 'Isla de Cait', templo: 'Templo de los Sabios', pasteleria: 'Castillo de Mazapán', bosque: 'Bosque de los monos', lolete: 'Casa de Lolete', ratitas: 'Apartamento de las Ratitas', teatro: 'Teatro Real', capybaras: 'Estanque de los Capybaras' };
-    const ROUNDS = [['isla', 'fast', 'acelerada'], ['lolete', 'low', 'muy, muy grave'], ['templo', 'rev', 'al revés'], ['bosque', 'short', 'pero solo un segundo']];
-    const prev = Sound.curId, AGAIN = 'Otra vez';
-    Sound.music(null);
-    for (const [id, mode, how] of ROUNDS) {
-      const others = shuffle(Object.keys(NAMES).filter((k) => k !== id)).slice(0, 2);
-      await UI.say(F, `Atento. Esta va ${how}.`);
-      for (;;) {
-        await new Promise((r) => setTimeout(r, Sound.riddle(id, mode) * 1000));
-        const opts = [...shuffle([id, ...others]).map((k) => NAMES[k]), AGAIN];
-        const pick = opts[await UI.choose(F, '¿De dónde es esta música?', opts)];
-        if (pick === AGAIN) continue;
-        if (pick === NAMES[id]) { Sound.sfx('get'); break; }
-        Sound.sfx('bad');
-        await UI.say(F, 'Uy, qué oreja. Y mira que las tienes grandes. Escucha otra vez.');
-      }
-    }
-    Sound.music(prev, true);
+    const pts = S.d.flags.fuxiaPts || 0;
+    await UI.say(F, [
+      `Te pongo un trocito de una canción y tú me escribes el título. ${pts ? `Llevas ${pts} puntos de ${GOAL}.` : `Necesitas ${GOAL} puntos.`}`,
+      'A la primera son 10 puntos. Si me pides una pista te digo quién la canta, y entonces vale 5. Y si aun así no caes, te doy cuatro opciones por 2 puntitos.',
+      'No me pongo tiquismiquis con las tildes ni con las mayúsculas. Y cada vez saco discos distintos.',
+    ]);
+    if (await UI.choose(F, '¿Empezamos?', ['¡Dale!', 'Ahora no']) !== 0) return;
+    if (!(await fuxiaQuiz())) return UI.say(F, `Te quedas con ${S.d.flags.fuxiaPts || 0} puntos. Vuelve cuando quieras: te los guardo.`);
     Sound.logro();
     S.set('gramola');
-    await UI.say(F, ['¡Oído absoluto! Bueno, oído suficiente.', 'Trato hecho: llevo la gramola y toda mi colección a la fiesta de Cait. Hoy pincho yo.']);
+    await UI.say(F, ['¡Cien puntos! ¡Oído absoluto! Bueno, oído suficiente.', 'Trato hecho: llevo la gramola y toda mi colección a la fiesta de Cait. Hoy pincho yo.']);
     invite('fuxia', F);
   },
   async doorFuxia() {
@@ -688,6 +683,7 @@ export const SCRIPTS = {
     if (c !== 0) return;
     Sound.sfx('biang');
     await UI.say('Cocinero', '¡BIANG! ¡BIANG!');
+    S.set('biang');
     Sound.sfx('biang');
     await UI.say('', [
       '(Es el ruido de la masa al golpear la mesa. De ahí el nombre.)',
@@ -776,6 +772,34 @@ export const SCRIPTS = {
   },
   async gymDoor() {
     await UI.say('', ['FITNESS FATTORY. «Entra como puedas, sal como una barra».', 'Dentro huele a magnesio y a sufrimiento. La monitora está fuera, hablando con alguien que ya se ha ido.']);
+  },
+
+  // ---------------------------------------------------------- Kapadokya
+  async siri(scene) {
+    const N = 'Siri';
+    if (S.flag('awawas')) {
+      return UI.say(N, ['¡Awawa! Los calcetines ya están contigo. Mis sobrinos han forrado las madrigueras con hojas, que es lo suyo.', 'Vuelve cuando quieras. Aquí siempre hay un awawa asomado a algo.']);
+    }
+    if (!S.flag('metSiri')) {
+      await UI.say(N, [
+        '¡Awawa! Bienvenido a KAPADOKYA. Soy Siri. Sí, soy un damán. No, no soy un conejillo de Indias. Mira qué dientecitos.',
+        'Aquí vivimos en madrigueras excavadas en las chimeneas de hadas. Y los globos… los globos ya estaban cuando llegamos.',
+        'Tengo que confesarte una cosa: mis sobrinos han cogido «prestados» tres calcetines de la isla para forrar sus madrigueras.',
+        'Yo se lo he dicho: «eso no es vuestro». Pero un awawa con un calcetín es muy difícil de convencer.',
+      ]);
+      S.set('metSiri');
+    }
+    if (await UI.choose(N, 'Si les haces cosquillas mientras asoman, lo sueltan. ¿Lo intentas?', ['¡A por los calcetines!', 'Ahora no']) !== 0) return;
+    scene.startScene('awawas', 46, 35);
+  },
+  async awawa() { await UI.say('Awawa', ['¡Awawa!', '(Te enseña los dientecitos. No queda claro si es una amenaza o una sonrisa.)']); },
+  async awawasDone() {
+    Sound.logro();
+    await UI.say('Siri', ['¡AWAWA! ¡Los tres! Y sin que nadie haya salido mordido. Eso aquí es noticia.', 'Toma, son tuyos. Les he sacudido la tierra. Un poco.']);
+    for (const id of ['s11', 's12', 's13']) if (!S.d.socks.includes(id)) S.d.socks.push(id);
+    S.set('awawas');
+    give('{sock_5}{sock_6}{sock_7} ¡Tres calcetines recuperados!');
+    await UI.say('Siri', 'Recuerda que cada uno tiene su pareja en algún otro rincón. Los awawas solo robamos de uno en uno. Por principios.');
   },
 
   // ---------------------------------------------------------- Vecinos

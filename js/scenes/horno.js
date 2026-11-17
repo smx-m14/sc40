@@ -39,8 +39,9 @@ export class HornoScene extends Phaser.Scene {
     for (const s of STATIONS) this.add.image(px(s.x), py(s.y), s.tex).setOrigin(0).setDepth(2);
     this.add.image(px(12) + 4, py(5) + 14, 'mantecas_down_0').setOrigin(0.5, 1).setScale(2).setDepth(3);
     const small = { fontFamily: 'Pixelify', fontSize: '16px', color: '#fff6dc' };
-    [['1 COGER', 1], ['2 MESA', 3.5], ['3 MOLDE', 6.5], ['4 HORNO', 10], ['BASURA', 12.5]].forEach(([t, x]) => this.add.text(px(x), py(0) - 9, t, small).setOrigin(0.5).setScale(0.5).setDepth(5));
-    this.add.text(px(11.5), py(5) + 19, '5 ENTREGA', small).setOrigin(0.5).setScale(0.5).setDepth(5);
+    // Números de paso bien visibles sobre cada grupo de estaciones (el nombre y la acción salen en la barra de arriba)
+    [['1', 1], ['2', 3.5], ['3', 6.5], ['4', 10]].forEach(([t, x]) => this.add.text(px(x), py(0) - 9, t, { ...small, color: '#ffe066', stroke: '#1a1412', strokeThickness: 3 }).setOrigin(0.5).setDepth(5));
+    this.add.text(px(11.5), py(5) + 22, '5', { ...small, color: '#ffe066', stroke: '#1a1412', strokeThickness: 3 }).setOrigin(0.5).setDepth(5);
     this.fx = this.add.graphics().setDepth(6);
     this.tickets = this.add.graphics().setDepth(20);
     this.ticketImg = [0, 1, 2].map((i) => this.add.image(0, 0, 'it_maz_o').setDepth(21).setScale(2).setVisible(false));

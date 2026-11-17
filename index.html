@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#1b2a3a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style"   content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
   <title>Super Cait's 40</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -65,6 +69,25 @@
         <div class="row">
           <button id="code-cancel" class="btn">Cancelar</button>
           <button id="code-ok" class="btn primary">Abrir</button>
+        </div>
+      </div>
+
+      <!-- Prueba de oído de Fuxia -->
+      <div id="quiz" class="panel hidden">
+        <div class="quiz-head"><b>Prueba de oído de Fuxia</b><span id="quiz-n"></span><span id="quiz-score"></span></div>
+        <div class="quiz-track"><div id="quiz-bar"></div></div>
+        <div id="quiz-msg"></div>
+        <div id="quiz-typing">
+          <input id="quiz-input" type="text" maxlength="60" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Título de la canción">
+          <button id="quiz-ok" class="btn primary">Responder</button>
+        </div>
+        <div id="quiz-options" class="hidden"></div>
+        <div class="quiz-foot">
+          <button id="quiz-replay" class="btn">Oír otra vez</button>
+          <button id="quiz-hint" class="btn">Pista</button>
+          <span id="quiz-worth"></span>
+          <button id="quiz-win" class="btn hidden">Ganar</button>
+          <button id="quiz-exit" class="btn">Salir</button>
         </div>
       </div>
 

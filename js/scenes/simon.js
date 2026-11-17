@@ -44,7 +44,7 @@ export class SimonScene extends Phaser.Scene {
       this.pads[dir] = spr;
     }
 
-    this.n = FIRST; this.pos = 0; this.lock = true;
+    this.n = FIRST; this.pos = 0; this.lock = true; this.leaving = false; this.won = false;
     this.bar();
     Input.clear();
     UI.say('Owito director', [

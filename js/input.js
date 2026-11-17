@@ -15,7 +15,8 @@ export const Input = {
   interceptor: null, // (btn) => true si el interfaz consume la pulsación
 
   press(btn) {
-    if (this.held[btn]) return;
+    // No se ignora una pulsación porque la tecla figure como «mantenida»: si el navegador se come un keyup
+    // (cambio de foco, pantalla completa…) el botón dejaba de responder para siempre.
     this.held[btn] = true;
     if (this.interceptor && this.interceptor(btn)) return;
     this.just[btn] = true;

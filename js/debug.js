@@ -30,6 +30,7 @@ export const STEPS = [
   { id: 'tarta', label: 'Escolta de la tarta', flag: 'tarta', apply() { S.d.flags.tarta = 4; inv('heladoncio'); } },
   { id: 'luces', label: 'Luces de la Casa de la Navidad', flag: 'luces', apply() { f('luces'); inv('owitos_navidad'); } },
   { id: 'gramola', label: 'Prueba de oído de Fuxia', flag: 'gramola', apply() { f('metFuxia', 'gramola'); inv('fuxia'); } },
+  { id: 'awawas', side: true, label: 'Awawas de Kapadokya', flag: 'awawas', apply() { f('metSiri', 'awawas'); for (const k of ['s11', 's12', 's13']) if (!S.d.socks.includes(k)) S.d.socks.push(k); } },
   { id: 'paella', side: true, label: 'Paella de Perrunfli', flag: 'paella', apply() { f('metPerrunfli', 'paella'); gift('mocadora'); inv('perrunfli'); } },
   { id: 'cali', side: true, label: 'Calistenia de Bart', flag: 'cali', apply() { f('metBart', 'cali'); gift('miausis'); inv('bart'); } },
 ];
@@ -44,7 +45,7 @@ export function skipTo(id) {
 
 export const PLACES = [
   ['Casa de Cait', 'cait', 6, 6], ['Templo', 'isla', 31, 18], ['Gimnasio', 'isla', 38, 26], ['Bosque', 'isla', 40, 12],
-  ['Muelle', 'isla', 9, 10], ['Apartamento', 'ratitas', 2, 11], ['Castillo', 'castillo', 5, 20], ['Isla Helada', 'helada', 19, 21],
+  ['Muelle', 'isla', 9, 10], ['Kapadokya', 'isla', 46, 33], ['Apartamento', 'ratitas', 2, 11], ['Castillo', 'castillo', 5, 20], ['Isla Helada', 'helada', 19, 21],
 ];
 export function teleport(i) {
   const [, map, tx, ty] = PLACES[i];
@@ -54,7 +55,9 @@ export function teleport(i) {
 
 // Vuelve a la exploración recargando el mapa (desde cualquier escena)
 export function reloadWorld() {
-  const sm = window.SC40.game.scene;
-  sm.getScenes(true).forEach((s) => s.scene.stop());
-  sm.start('world');
+  const sm = window.SC40.game.scene, act = sm.getScenes(true);
+  const world = act.find((s) => s.scene.key === 'world');
+  if (world) world.scene.restart();                 // ya estamos explorando: se recarga el mapa
+  else if (act.length) act[0].scene.start('world'); // desde un minijuego: se cierra y se vuelve al mapa
+  else sm.start('world');
 }

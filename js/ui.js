@@ -3,6 +3,7 @@ import { State, CHARACTERS, GACHA, GIFTS, ALBUM, TOTAL_SOCKS, SOCK_DESIGNS, SOCK
 import { Input } from './input.js';
 import { Sound } from './audio.js';
 import { STEPS, PLACES, skipTo, teleport, reloadWorld } from './debug.js';
+import { completion } from './progress.js';
 import { gachaIcon, icon } from './art.js';
 
 const $ = (id) => document.getElementById(id);
@@ -183,6 +184,19 @@ export const UI = {
     });
   },
 
+  // ------------------------------------------------------------ Pantalla completa
+  // Los navegadores solo la permiten tras un toque del usuario: se pide al pulsar «Continuar» / «Nueva partida»
+  // en móviles y tabletas, y desde Ajustes en cualquier dispositivo.
+  fullscreen(on = !document.fullscreenElement) {
+    try {
+      const el = document.documentElement;
+      if (on) {
+        const req = el.requestFullscreen || el.webkitRequestFullscreen;
+        if (req) Promise.resolve(req.call(el, { navigationUI: 'hide' })).then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {})).catch(() => {});
+      } else if (document.fullscreenElement) document.exitFullscreen();
+    } catch {}
+  },
+
   // ------------------------------------------------------------ Debug
   setDebug(on, quiet) {
     State.settings.debug = on; State.saveSettings();
@@ -272,6 +286,7 @@ export const UI = {
           return;
         }
         Sound.init();
+        if (matchMedia('(pointer: coarse)').matches) this.fullscreen(true);
         show($('title'), false);
         this.open = null;
         Input.clear();
@@ -296,6 +311,8 @@ export const UI = {
     const li = (done, a, b = '') => `<li class="${done ? '' : 'todo'}"><span>${done ? '✅' : '⬜'}</span><span class="grow">${a}</span><small>${b}</small></li>`;
     let h = '';
     if (this.tab === 'prep') {
+      const cp = completion();
+      h += `<h3>Juego completado: ${cp.pct} %</h3><div class="pct"><div style="width:${cp.pct}%"></div></div>`;
       h += `<h3>Ahora mismo</h3><ul><li><span>👉</span><span class="grow">${esc(this.hintFn())}</span></li></ul>`;
       h += '<h3>La fiesta sorpresa de Cait</h3><ul>';
       h += li(d.invited.length === CHARACTERS.length, 'Repartir las invitaciones', `${d.invited.length}/${CHARACTERS.length}`);
@@ -303,6 +320,8 @@ export const UI = {
       h += li(State.flag('luces'), 'Luces: los Owitos de Navidad');
       h += li(State.flag('tarta'), 'Tarta: Sweet Famosa');
       h += li(d.gifts.length + d.gacha.length > 0, 'Regalos para Cait', `${d.gifts.length + d.gacha.length}`);
+      h += '</ul><h3>Para llegar al 100 %</h3><ul>';
+      for (const p of cp.parts) h += li(p.done >= p.total, esc(p.name), `${Math.min(p.done, p.total)}/${p.total}`);
       h += '</ul>';
     } else if (this.tab === 'amigos') {
       h += '<ul>';
@@ -348,6 +367,7 @@ export const UI = {
     } else {
       const m = Math.floor(d.time / 60);
       h += `<ul><li><span class="grow">Música <small>${State.settings.music === 'mp3' ? 'grabaciones originales' : 'versión chiptune generada a partir de los mp3'}</small></span><button class="btn" data-act="music">${State.settings.music === 'mp3' ? '💿 Original' : '🎹 Chiptune'}</button></li>`;
+      h += `<li><span class="grow">Pantalla completa</span><button class="btn" data-act="full">${document.fullscreenElement ? 'Salir' : 'Activar'}</button></li>`;
       h += `<li><span class="grow">Sonido</span><button class="btn" data-act="mute">${State.settings.mute ? '🔇 Apagado' : '🔊 Encendido'}</button></li>`;
       h += `<li><span class="grow">Tiempo de juego</span><small>${Math.floor(m / 60)} h ${m % 60} min</small></li>`;
       h += '<li><span class="grow">La partida se guarda sola en este navegador.</span></li>';
@@ -362,6 +382,7 @@ export const UI = {
     if (b.dataset.act === 'coins') { State.d.coins += 5; State.save(); this.updateHud(); this.renderMenu(); }
     if (b.dataset.skip) { skipTo(b.dataset.skip); this.toggleMenu(false); reloadWorld(); }
     if (b.dataset.tp) { teleport(+b.dataset.tp); this.toggleMenu(false); reloadWorld(); }
+    if (b.dataset.act === 'full') { this.fullscreen(); setTimeout(() => this.open === 'menu' && this.renderMenu(), 400); }
     if (b.dataset.act === 'mute') { this.toggleMute(); this.renderMenu(); }
     if (b.dataset.act === 'music') { Sound.init(); Sound.setMode(State.settings.music === 'mp3' ? 'chip' : 'mp3'); this.renderMenu(); }
     if (b.dataset.act === 'wipe') {

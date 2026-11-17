@@ -1,0 +1,25 @@
+// Porcentaje de juego completado. Cada cosa conseguida cuenta un punto; el 100 % exige hacerlo todo.
+import { State, CHARACTERS, GACHA, GIFTS, TOTAL_SOCKS, SOCK_DESIGNS } from './state.js';
+
+const STORY = ['invites', 'lolete', 'tigrito', 'caveOpen', 'r1', 'r2', 'r3', 'kai', 'cuy', 'hatchOpen', 'cuyTemple',
+  'pato', 'simon', 'horno', 'gateOpen', 'narwal', 'tedi', 'tarta', 'luces', 'gramola', 'fin'];
+const SIDE = ['paella', 'cali', 'awawas'];
+
+export function completion() {
+  const d = State.d, f = d.flags;
+  const count = (list) => list.filter((k) => f[k]).length;
+  const extras = [d.vales > 0, +f.tarta === 4, !!f.biang];
+  const parts = [
+    { name: 'Historia', done: count(STORY), total: STORY.length },
+    { name: 'Pruebas opcionales (paella, gimnasio, Kapadokya)', done: count(SIDE), total: SIDE.length },
+    { name: 'Invitaciones entregadas', done: d.invited.length, total: CHARACTERS.length },
+    { name: 'Calcetines encontrados', done: d.socks.length, total: TOTAL_SOCKS },
+    { name: 'Parejas entregadas a Scooby', done: d.traded.length, total: SOCK_DESIGNS.length },
+    { name: 'Regalos del gachapón', done: d.gacha.length, total: GACHA.length },
+    { name: 'Regalos especiales', done: d.gifts.length, total: Object.keys(GIFTS).length },
+    { name: 'Curiosidades (vale de Aeroflot, tarta de 4 pisos, fideo Biang Biang)', done: extras.filter(Boolean).length, total: extras.length },
+  ];
+  const done = parts.reduce((n, p) => n + Math.min(p.done, p.total), 0), total = parts.reduce((n, p) => n + p.total, 0);
+  // Solo marca 100 si de verdad está todo; nunca redondea hacia arriba
+  return { pct: done >= total ? 100 : Math.min(99, Math.floor((done / total) * 100)), done, total, parts };
+}

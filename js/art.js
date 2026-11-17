@@ -230,6 +230,9 @@ const CHARS = {
   // Owitos de Navidad
   owito_n(p, dir, o) { owito(p, o, '#f7b8c8', '#ffffff'); p.rect(7, 1 + o, 5, 4, '#3f9f4f').px('#fff', [7, 2 + o], [8, 3 + o], [11, 2 + o], [10, 3 + o]).rect(9, 1 + o, 1, 4, '#e2574c'); },
   owito_r(p, dir, o) { owito(p, o, '#c98f4e', '#8a5a2a'); p.rect(6, 3 + o, 7, 2, '#e2574c').rect(5, 5 + o, 9, 1, '#fff').px('#fff', [13, 2 + o]).px('#e2574c', [9, 12 + o]); },
+  // Awawas (damanes): redondos, marrones y con sus dos dientecitos. Siri lleva un pañuelo rosa
+  awawa(p, dir, o) { hyrax(p, o, false); },
+  siri(p, dir, o) { hyrax(p, o, true); },
   fuxia(p, dir, o) {
     const W = '#fbeef0', S = '#eecdd6';
     p.ell(5.5, 4.5 + o, 1.8, 3.8, W).ell(12.5, 4.5 + o, 1.8, 3.8, W);
@@ -269,6 +272,16 @@ function dog(p, dir, o, f, c) {
 const SIZE = { perrunfli: [26, 22] };
 const HALO = ['scooby', 'cuca']; // aureola, como los difuntos de Dragon Ball
 
+function hyrax(p, o, scarf) {
+  const B = '#8a5a2e', L = '#cfa468', D = '#5e3a1c';
+  p.ell(4.5, 6 + o, 1.9, 1.9, D).ell(13.5, 6 + o, 1.9, 1.9, D);
+  p.ell(9, 13.5, 5.6, 3.8, B).rect(5, 16, 2, 1, D).rect(11, 16, 2, 1, D);
+  p.ell(9, 9 + o, 5.5, 4.7, B).ell(9, 11.2 + o, 3.5, 2.5, L).px('#a06e3a', [6, 5 + o], [11, 5 + o], [9, 6 + o]);
+  p.px(BLACK, [6, 8 + o], [12, 8 + o]).px('#fff', [6, 7 + o], [12, 7 + o]);
+  p.px(D, [8, 10 + o], [9, 10 + o], [10, 10 + o], [9, 11 + o]).rect(7, 12 + o, 5, 1, D);
+  p.px('#ffffff', [8, 13 + o], [10, 13 + o], [8, 14 + o], [10, 14 + o]);                    // los dientecitos
+  if (scarf) p.rect(4, 14 + o, 10, 2, '#E0B0D5').px('#E0B0D5', [13, 16 + o], [14, 16 + o], [14, 17]).px('#c690b9', [5, 15 + o], [9, 15 + o], [12, 15 + o]);
+}
 function manteca(p, o) {
   const T = '#d9b07a', L = '#e8c898';
   p.ell(9, 11.5 + o, 7, 5.4, T).ell(8, 8 + o, 3.4, 1.2, L).rect(5, 16, 2, 1, '#b08a50').rect(11, 16, 2, 1, '#b08a50');
@@ -375,6 +388,7 @@ export function makeTiles() {
   mk('L', 24, '#c8935a', (p) => { // pilar de piedra del pasillo de las ratitas (corta el rayo de luz)
     p.rect(0, 7, 16, 1, '#a8743c').ell(8, 13, 6.5, 2.5, '#8a8f9a').rect(3, 1, 10, 12, '#b9b9b0').rect(3, 1, 3, 12, '#d6d6cf').rect(11, 1, 2, 12, '#9c9c92').rect(2, 0, 12, 2, '#9c9c92').rect(2, 12, 12, 2, '#9c9c92');
   });
+  mk('d', 25, '#ecd9b0', (p, r) => { p.speck(r, 14, '#e2c896', '#f3e4c4', '#f0d0b8'); p.rect(2, 11, 5, 1, '#e2c896').rect(9, 4, 4, 1, '#f0d0b8'); }); // toba de Kapadokya
   mk('S', 21, '#f4f8fb', (p, r) => p.speck(r, 12, '#e4eef4', '#ffffff', '#dbe8f0'));
   mk('I', 22, '#bfe3f7', (p, r) => { p.speck(r, 6, '#d7eefb'); p.line(3, 4, 7, 2, '#e8f6fd').line(10, 12, 13, 10, '#e8f6fd').px('#a9d6ee', [5, 10], [12, 5]); });
   mk('P', 23, '#dbe4ea', (p, r) => p.speck(r, 14, '#ccd8e0', '#e6eef2'));
@@ -623,6 +637,23 @@ const OBJ = {
     return p;
   },
   note() { return new PX(10, 11).rect(1, 1, 8, 9, '#fff6dc').rect(2, 3, 6, 1, '#6e4520').rect(2, 5, 5, 1, '#6e4520').rect(2, 7, 6, 1, '#6e4520').px('#e2574c', [5, 1]).outline(INK); },
+  // ---- Kapadokya
+  chimney() { // chimenea de hadas: cono de roca clara con su sombrero más oscuro y una casita excavada
+    const p = new PX(24, 40), R = '#ecd9b0', RD = '#d8bf90', C = '#b08a60';
+    for (let y = 12; y < 39; y++) { const w = 5 + (y - 12) * 0.36; p.rect(12 - w, y, 2 * w, 1, y % 7 === 0 ? RD : R); }
+    for (let y = 0; y < 13; y++) { const w = 1 + y * 0.75; p.rect(12 - w, y, 2 * w, 1, y > 10 ? '#8f6c46' : C); }
+    p.rect(10, 28, 4, 7, '#5e3a1c').rect(11, 27, 2, 1, '#5e3a1c').rect(7, 20, 2, 3, '#5e3a1c').rect(15, 22, 2, 3, '#5e3a1c').px('#f7c8b0', [5, 30], [18, 33], [8, 36]);
+    return p.outline(INK);
+  },
+  balloon() {
+    const p = new PX(18, 26);
+    p.ell(9, 8, 8, 8, '#e2574c').rect(5, 1, 3, 15, '#ffe066').rect(11, 1, 3, 15, '#3f8fd8');
+    for (let y = 0; y < 26; y++) for (let x = 0; x < 18; x++) if (y < 17 && ((x + 0.5 - 9) / 8) ** 2 + ((y + 0.5 - 8) / 8) ** 2 > 1) p.set(x, y, null);
+    p.line(4, 15, 7, 21, INK).line(13, 15, 10, 21, INK).rect(6, 21, 6, 4, '#8a5a2a').rect(6, 21, 6, 1, '#c98f4e');
+    return p.outline(INK);
+  },
+  burrow() { return new PX(22, 10).ell(11, 5, 10.5, 4.5, '#b08a60').ell(11, 5, 8.5, 3.2, '#2b1a10'); },
+  burrow_front() { const p = new PX(22, 6); p.ell(11, 0, 10.5, 4.5, '#b08a60').ell(11, -1, 8.5, 3.2, null); return p; },
   // ---- Paella de Perrunfli
   paellera() {
     const p = new PX(36, 16);
@@ -830,8 +861,10 @@ const OBJ = {
     const p = new PX(64, 46);
     p.rect(1, 2, 62, 43, '#f4f4ee').rect(1, 2, 62, 3, '#c9c9c0');
     p.rect(1, 8, 62, 3, '#f08a24').rect(1, 11, 62, 3, '#3f8f6b').rect(1, 14, 62, 3, '#e2574c');
-    p.rect(26, 6, 12, 13, '#ffffff').rect(27, 7, 10, 11, '#3f8f6b');
-    p.px('#fff', [29, 9], [30, 9], [31, 9], [31, 10], [30, 11], [30, 12], [30, 13], [33, 9], [33, 10], [33, 11], [33, 12], [33, 13], [34, 9], [35, 9], [35, 10], [35, 11], [35, 12], [35, 13], [34, 13]);
+    p.rect(21, 6, 22, 13, '#ffffff').rect(22, 7, 20, 11, '#3f8f6b'); // rótulo «7/11»
+    p.px('#fff', [24, 10], [25, 10], [26, 10], [26, 11], [25, 12], [25, 13], [25, 14]);                 // 7
+    p.px('#fff', [30, 10], [30, 11], [29, 12], [28, 13], [28, 14]);                                     // /
+    for (const x of [33, 37]) p.px('#fff', [x, 10], [x - 1, 11], [x, 11], [x, 12], [x, 13], [x - 1, 14], [x, 14], [x + 1, 14]); // 1 1
     p.rect(18, 24, 14, 21, '#6a7a86').rect(19, 25, 6, 20, '#a9d6ee').rect(26, 25, 5, 20, '#a9d6ee');
     for (let i = 0; i < 14; i++) { p.set(18 + i, 31 + (i >> 1) % 2, i % 4 < 2 ? '#ffe066' : INK); p.set(18 + i, 36 + (i >> 1) % 2, i % 4 < 2 ? '#ffe066' : INK); }
     p.rect(4, 24, 10, 12, '#6a7a86').rect(5, 25, 8, 10, '#a9d6ee');
@@ -1089,7 +1122,7 @@ export function gachaIcon(id) {
 
 export const WALKERS = ['colgadin', 'lolete', 'tigrito', 'cuy', 'patito', 'heladoncio'];
 export const NPCS = ['fuxia', 'scooby', 'cuca', 'lolete', 'perrunfli', 'bart', 'mono', 'tigrito', 'ratita_p', 'ratita_o', 'ratita_b', 'kai', 'cuy',
-  'peludito', 'mantecas', 'manteca2', 'patito', 'capybara', 'owito_w', 'owito_k', 'owito_v', 'owito_g', 'owito_c', 'owito_t', 'heladoncio', 'owinken', 'clon', 'owito_n', 'owito_r'];
+  'peludito', 'mantecas', 'manteca2', 'patito', 'capybara', 'owito_w', 'owito_k', 'owito_v', 'owito_g', 'owito_c', 'owito_t', 'heladoncio', 'owinken', 'clon', 'owito_n', 'owito_r', 'awawa', 'siri'];
 
 export function makeTextures(scene) {
   const add = (key, cv) => { if (scene.textures.exists(key)) scene.textures.remove(key); scene.textures.addCanvas(key, cv); };

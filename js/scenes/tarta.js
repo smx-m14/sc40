@@ -71,7 +71,7 @@ export class TartaScene extends Phaser.Scene {
   spawn(seg) {
     const cam = this.cameras.main, p = this.p;
     const mk = (fromLeft) => this.clones.push({
-      x: fromLeft ? cam.scrollX - 14 : cam.scrollX + 334, y: Y0 + Math.random() * (Y1 - Y0), dir: fromLeft ? 1 : -1,
+      x: fromLeft ? cam.scrollX - 14 : cam.scrollX + cam.width + 14, y: Y0 + Math.random() * (Y1 - Y0), dir: fromLeft ? 1 : -1,
       v: [36, 44, 54][seg], st: 'walk', t: 0, spr: this.add.image(0, 0, 'clon_down_0').setOrigin(0.5, 1).setDepth(8),
     });
     if (p.x > GOAL - 150) return;
@@ -116,7 +116,7 @@ export class TartaScene extends Phaser.Scene {
           if (dist < 13) { this.layers++; c.st = 'gone'; Sound.sfx('get'); UI.toast('¡Piso recuperado!'); }
           else if ((c.t -= dt) <= 0) { c.st = 'flee'; c.dir = c.x < p.x ? -1 : 1; c.carry = true; }
         } else if (c.st === 'flee') { c.x += c.dir * 110 * dt; }
-        if (c.x < cam.scrollX - 60 || c.x > cam.scrollX + 380) c.st = 'gone';
+        if (c.x < cam.scrollX - 60 || c.x > cam.scrollX + cam.width + 60) c.st = 'gone';
       }
       this.clones = this.clones.filter((c) => (c.st !== 'gone' ? true : (c.spr.destroy(), false)));
       if (Input.take('b')) this.exit();
@@ -126,7 +126,7 @@ export class TartaScene extends Phaser.Scene {
     Input.just = {};
 
     // Dibujo
-    cam.scrollX = Phaser.Math.Clamp(p.x - 120, 0, LEN - 320);
+    cam.scrollX = Phaser.Math.Clamp(p.x - 120, 0, LEN - cam.width);
     this.pSpr.setPosition(Math.round(p.x), Math.round(p.y)).setFlipX(p.face < 0).setTexture(`colgadin_side_${this.hug ? 0 : Math.floor(p.anim / 0.15) % 2}`).setDepth(p.y);
     const g = this.cake.clear().setDepth(p.y + 1);
     const cx = Math.round(p.x + (this.hug ? 0 : p.face * 3)), top = Math.round(p.y) - (this.hug ? 12 : 17);

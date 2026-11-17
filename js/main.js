@@ -15,6 +15,7 @@ import { LucesScene } from './scenes/luces.js';
 import { TediScene } from './scenes/tedi.js';
 import { TartaScene } from './scenes/tarta.js';
 import { FiestaScene } from './scenes/fiesta.js';
+import { AwawasScene } from './scenes/awawas.js';
 import './story.js';
 
 class BootScene extends Phaser.Scene {
@@ -27,7 +28,8 @@ class BootScene extends Phaser.Scene {
     State.load();
     Input.init();
     UI.init();
-    try { await document.fonts.ready; } catch {}
+    // Los textos dibujados dentro del lienzo necesitan la fuente ya cargada (si no, salen con una de sistema)
+    try { await document.fonts.load('16px Pixelify'); await document.fonts.ready; } catch {}
 
     Sound.wanted = 'isla';
 
@@ -56,10 +58,21 @@ class BootScene extends Phaser.Scene {
   }
 }
 
+// El alto del juego son siempre 180 píxeles; el ancho se adapta a la pantalla (entre 16:9 y 22:9) para no dejar
+// franjas negras en los móviles apaisados. La exploración enseña más mapa; las pruebas, que están pensadas para
+// 320 de ancho, se centran.
+const BASE_W = 320, MAX_W = 440;
+function gameWidth() {
+  const st = document.getElementById('stage'), r = st.clientWidth / Math.max(1, st.clientHeight);
+  return Math.max(BASE_W, Math.min(MAX_W, Math.round((180 * r) / 2) * 2));
+}
+const FREE_CAMERA = ['boot', 'world', 'sokoban', 'tarta']; // escenas que ya colocan su cámara según el ancho
+function center(scene) { if (!FREE_CAMERA.includes(scene.scene.key)) scene.cameras.main.setScroll(-(scene.scale.width - BASE_W) / 2, 0); }
+
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
-  width: 320,
+  width: gameWidth(),
   height: 180,
   backgroundColor: '#1b2a3a',
   pixelArt: true,
@@ -67,8 +80,25 @@ const game = new Phaser.Game({
   audio: { noAudio: true },
   input: { keyboard: false },
   scale: { mode: Phaser.Scale.NONE },
-  scene: [BootScene, WorldScene, SokobanScene, CaliScene, MonosScene, PatoScene, SimonScene, HornoScene, LucesScene, TediScene, TartaScene, FiestaScene],
+  scene: [BootScene, WorldScene, SokobanScene, CaliScene, MonosScene, PatoScene, SimonScene, HornoScene, LucesScene, TediScene, TartaScene, FiestaScene, AwawasScene],
 });
+
+game.events.once('ready', () => {
+  for (const sc of game.scene.scenes) sc.events.on('create', () => center(sc));
+});
+let resizeT = null;
+function fit() {
+  const w = gameWidth();
+  if (w === game.scale.width) return;
+  game.scale.resize(w, 180);
+  for (const sc of game.scene.getScenes(true)) {
+    if (sc.scene.key === 'world') { sc.savePos(); sc.scene.restart(); } else center(sc);
+  }
+}
+const refit = () => { clearTimeout(resizeT); resizeT = setTimeout(fit, 150); };
+window.addEventListener('resize', refit);
+window.addEventListener('orientationchange', refit);
+document.addEventListener('fullscreenchange', refit);
 
 // Guardar al salir o al pasar a segundo plano
 const flush = () => { if (State.flag('intro')) State.save(); };

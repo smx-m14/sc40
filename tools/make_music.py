@@ -44,7 +44,7 @@ MIDI_OPTS = {
     # Música de logro: pista 2 = melodía, 3 = segunda voz, 4 = bajo
     'logro': dict(roles=dict(melody=[2], bass=[4], chords=[3]), melody_shift=-12),
     # Apartamento de las ratitas: 1 = voz, 4 = guitarra solista (suena cuando la voz calla), 3 = bajo, 5 = acordes
-    'ratitas': dict(roles=dict(melody=[1, 4, 2], bass=[3], chords=[5]), melody_shift=12, max_beats=330),
+    'ratitas': dict(roles=dict(melody=[1, 4, 2], bass=[3], chords=[5]), melody_shift=12),
     # Estanque de los capybaras: 0 = el canto (notas repetidas), 3 = bajo, 1 y 4 = adornos
     'capybaras': dict(roles=dict(melody=[0], bass=[3], chords=[1, 4]), melody_shift=12),
     # Fitness Fattory: 6 = melodía (4 entra en la segunda parte), 2 = bajo, 1 = arpegios
@@ -52,9 +52,9 @@ MIDI_OPTS = {
     # Fuxia: se salta la introducción y empieza en el tema principal (negra 38). 2 = tema, 7/5 = puente, 8 = bajo
     'fuxia': dict(roles=dict(melody=[2, 7, 5], bass=[8], chords=[9, 3]), melody_shift=12, start_beat=38),
     # Pastelería Real: 1 = melodía, 2 = contracanto, 4 = bajo, 3 = acordes
-    'pasteleria': dict(roles=dict(melody=[1, 2], bass=[4], chords=[3]), max_beats=248),
+    'pasteleria': dict(roles=dict(melody=[1, 2], bass=[4], chords=[3])),
     # Teatro de los Owitos: 2 = melodía en octavas, 0 = bajo, 1 = piano
-    'teatro': dict(roles=dict(melody=[2], bass=[0], chords=[1]), melody_shift=-12, max_beats=260),
+    'teatro': dict(roles=dict(melody=[2], bass=[0], chords=[1]), melody_shift=-12),
 }
 NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 

@@ -40,7 +40,7 @@ export class TediScene extends Phaser.Scene {
     this.pSpr = this.add.image(ENTRY.x, ENTRY.y, 'colgadin_down_0').setOrigin(0.5, 1).setDepth(10);
 
     this.p = { ...ENTRY, dir: 'down', anim: 0 };
-    this.removed = [false, false, false]; this.count = 0;
+    this.removed = [false, false, false]; this.count = 0; this.done = false;
     this.lid = { i: -1, t: 2.5, open: false };
     this.clones = []; this.spawnT = 1; this.swing = null; this.lock = true; this.smoke = 0;
     this.bar();
