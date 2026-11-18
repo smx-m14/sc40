@@ -431,7 +431,7 @@ export const SCRIPTS = {
       'Qué susto. Creía que eras uno de esos ratones gigantes que rondan el estanque. Llevo días sin salir de los juncos.',
     ]);
     await UI.say(C, 'No son ratones: son capybaras. Y están aterrados… de ti.');
-    await UI.say('Patito', ['¿De mí? Si yo ni siquiera soy un pato. Soy un peluche. Me llaman Patito porque soy amarillo.', 'De pequeño me tragué el altavoz de un pato de juguete. Desde entonces, cuando me pongo nervioso, me sale el «cuac».']);
+    await UI.say('Patito', ['¿De mí? Si yo ni siquiera soy un pato. Me llaman Patito porque soy amarillo.', 'De pequeño me tragué el altavoz de un pato de juguete. Desde entonces, cuando me pongo nervioso, me sale el «cuac».']);
     await UI.say('Capybara', '¿Ese era el monstruo? Pero si es blandito. Anda, ven al agua, que hay sitio para todos.');
     Sound.logro();
     S.set('pato');
@@ -851,13 +851,14 @@ export const SCRIPTS = {
     const N = 'Siri';
     if (S.flag('globos')) {
       invite('siri', 'Siri y los awawas');
-      return UI.say(N, ['¡Awawa! Los globos ya están camino de casa de Cait. Mis sobrinos van dentro, claro.', 'Vuelve cuando quieras. Aquí siempre hay un awawa asomado a algo.']);
+      return UI.say(N, ['¡Awawa! Mis sobrinos ya han llevado los globos a casa de Cait. Bien atados, que si no salen volando… y ellos detrás.', 'Vuelve cuando quieras. Aquí siempre hay un awawa asomado a algo.']);
     }
     if (!S.flag('metSiri')) {
       await UI.say(N, [
         '¡Awawa! Bienvenido a KAPADOKYA. Soy Siri. Sí, soy un damán. No, no soy un conejillo de Indias. Mira qué dientecitos.',
         'Aquí vivimos en madrigueras excavadas en las chimeneas de hadas. Y esos globos de ahí arriba son nuestros.',
-        '¿Globos para una fiesta? Te los prestaría… pero mis sobrinos no dejan nada en paz hasta que alguien les gana a su juego favorito.',
+        '¿Globos para una fiesta? De esos grandes no, que no caben por la puerta. Pero de los de fiesta tenemos un montón.',
+        'Te los daría… pero mis sobrinos no dejan nada en paz hasta que alguien les gana a su juego favorito.',
         'Se pasan un calcetín de madriguera en madriguera. Si consigues quitárselo tres veces, los globos son tuyos.',
       ]);
       S.set('metSiri');
@@ -870,7 +871,7 @@ export const SCRIPTS = {
     Sound.logro();
     await UI.say('Siri', ['¡AWAWA! ¡Tres veces! Mis sobrinos no salen de su asombro. Ni de sus madrigueras.', 'Trato es trato: los globos son para la fiesta de Cait. Los inflamos nosotros.']);
     S.set('globos');
-    give('{balloon} Globos para la fiesta', true);
+    give('{party_balloons} Globos para la fiesta', true);
     invite('siri', 'Siri y los awawas');
     await UI.say('Siri', 'El calcetín se lo quedan ellos, eso sí. Es su juguete. No es de nadie de la isla, no te preocupes.');
   },

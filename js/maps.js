@@ -206,13 +206,13 @@ function isla() {
     { name: 'Embarcadero', x0: 31, y0: 24, x1: 36, y1: 27 },
     { name: 'Casa de Lolete', x0: 8, y0: 14, x1: 13, y1: 19, music: 'lolete' },
     { name: 'Casa Fucsia', x0: 10, y0: 26, x1: 16, y1: 31, music: 'fuxia' },
-    { name: 'Aeropuerto', x0: 6, y0: 33, x1: 22, y1: 38 },
+    { name: 'Aeropuerto', x0: 6, y0: 33, x1: 22, y1: 38, music: 'aeroflot' },
     { name: 'Templo de los Sabios', x0: 27, y0: 9, x1: 35, y1: 18, music: 'templo' },
     { name: 'Biang Biang Mian', x0: 23, y0: 14, x1: 26, y1: 18 },
     { name: 'Campo de nabos', x0: 18, y0: 23, x1: 25, y1: 27 },
     { name: 'Combini', x0: 32, y0: 28, x1: 38, y1: 31, jingle: 'combini' },
     { name: 'Castillo de Mazapán', x0: 43, y0: 16, x1: 58, y1: 31 },
-    { name: 'Kapadokya', x0: 42, y0: 33, x1: 58, y1: 39 },
+    { name: 'Kapadokya', x0: 42, y0: 33, x1: 58, y1: 39, music: 'kapadokya' },
     { name: 'La cueva', x0: 45, y0: 6, x1: 49, y1: 11, music: 'bosque' },
     { name: 'Bosque de los monos', x0: 39, y0: 9, x1: 47, y1: 14, music: 'bosque' },
     { name: 'Muelle', x0: 0, y0: 7, x1: 10, y1: 11 },
@@ -398,7 +398,7 @@ function castillo() {
     { name: 'Plaza Principal', x0: 13, y0: 10, x1: 26, y1: 20 },
     { name: 'Estanque de los Capybaras', x0: 23, y0: 3, x1: 38, y1: 12, music: 'capybaras' },
     { name: 'Teatro Real', x0: 1, y0: 3, x1: 10, y1: 10, music: 'teatro' },
-    { name: 'Pastelería Real', x0: 28, y0: 14, x1: 36, y1: 19 },
+    { name: 'Pastelería Real', x0: 28, y0: 14, x1: 36, y1: 19, music: 'horno' },
   ];
   return m;
 }
@@ -407,7 +407,7 @@ function castillo() {
 function helada() {
   const W = 40, H = 26, m = base('helada', 'Isla Helada', W, H, '~');
   const S = State;
-  m.music = 'navidad';
+  m.music = 'helada'; // la Casa de la Navidad tiene la suya («navidad»), en su región
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const e = 1 - (((x - 19.5) / 17) ** 2 + ((y - 11.5) / 9) ** 2) + Math.sin(x * 0.5) * 0.05 + Math.cos(y * 0.7) * 0.05;
     if (e > 0) m.set(x, y, e < 0.12 ? 'I' : 'S');
@@ -440,8 +440,8 @@ function helada() {
 
   m.regions = [
     { name: 'Sweet Famosa', x0: 15, y0: 3, x1: 24, y1: 9, music: 'sweetfamosa' },
-    { name: 'Casa de la Navidad', x0: 4, y0: 8, x1: 12, y1: 13 },
-    { name: 'TEDI', x0: 26, y0: 7, x1: 34, y1: 12, music: 'puzle' },
+    { name: 'Casa de la Navidad', x0: 4, y0: 8, x1: 12, y1: 13, music: 'navidad' },
+    { name: 'TEDI', x0: 26, y0: 7, x1: 34, y1: 12, music: 'tedi' },
     { name: 'Fitness Fattory', x0: 21, y0: 14, x1: 27, y1: 18, music: 'gym' },
     { name: 'Muelle helado', x0: 17, y0: 20, x1: 23, y1: 25 },
   ];

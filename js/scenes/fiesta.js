@@ -46,7 +46,8 @@ export class FiestaScene extends Phaser.Scene {
       return { spr: this.add.image(x, y, s + '_down_0').setOrigin(0.5, 1).setDepth(y), tex: s, y, ph: i * 0.7 };
     });
     if (d.invited.includes('narwal')) this.add.image(160, 50, 'narwal').setOrigin(0.5, 1).setDepth(50);
-    if (State.flag('globos')) for (const [x, y] of [[24, 46], [296, 46], [70, 40], [250, 40], [120, 36], [200, 36]]) this.add.image(x, y, 'balloon').setDepth(55).setScale(0.8);
+    // Globos de fiesta de los awawas (normales, de colores)
+    if (State.flag('globos')) [[24, 46], [296, 46], [70, 40], [250, 40], [120, 36], [200, 36]].forEach(([x, y], i) => this.add.image(x, y, 'pballoon_' + 'rybpgr'[i]).setDepth(55));
     if (State.flag('gramola')) this.add.image(116, 56, 'gramola').setOrigin(0.5, 1).setDepth(50);
     this.add.image(160, 108, 'table').setOrigin(0.5, 1).setScale(1.5).setDepth(100);
     this.col = this.add.image(160, 150, 'colgadin_up_0').setOrigin(0.5, 1).setDepth(150).setScale(2);

@@ -36,7 +36,7 @@ export class HornoScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#3b2a20').fadeIn(250);
     UI.hud(false);
-    Sound.music('pasteleria');
+    Sound.music('horno');
     for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) this.add.image(px(x), py(y), y === 0 || y === ROWS - 1 || x > WX ? 'tile_K' : 'tile_k').setOrigin(0);
     // Zonas marcadas en el suelo delante de cada estación, del color de su grupo
     const zone = this.add.graphics().setDepth(1);

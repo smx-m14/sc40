@@ -1,23 +1,32 @@
-// Minijuego: llamar a Narwal tocando con el Otamatone la melodía de 16 notas de los Owitos del Teatro.
-// El dedo se desliza por el mástil con arriba/abajo y se «imanta» a cuatro marcas (las de los Owitos);
-// el botón de acción toca la nota donde esté el dedo. Si está entre dos marcas, desafina.
-// La partitura se ve arriba; «Recordar» vuelve a tararear la frase actual. Cada frase de cuatro notas
-// agita más el mar; un fallo devuelve al principio de la frase.
+// Minijuego: llamar a Narwal tocando con el Otamatone la melodía de los Owitos del Teatro (11 notas).
+// El dedo se desliza por el mástil con arriba/abajo y se «imanta» a seis marcas, una por Owito (de su color); el
+// botón de acción toca la nota donde esté el dedo. Si está entre dos marcas, desafina. No hay partitura: se toca de
+// memoria (es la del ensayo en el teatro) y, si el jugador se pierde, el director le da una pista.
+// Arriba se va escribiendo en un pentagrama lo que se ha tocado bien. Cada frase (4, 4 y 3 notas) agita más el mar;
+// un fallo borra la partitura y se vuelve a empezar desde la primera nota.
 import { Input } from '../input.js';
 import { UI } from '../ui.js';
 import { Sound } from '../audio.js';
 import { SCRIPTS } from '../story.js';
-import { MELODY } from './simon.js';
+import { MELODY, OWITOS, PHRASES } from './simon.js';
 
-// Marcas del mástil, de arriba (grave) a abajo (agudo, junto a la cabeza), con el color de cada Owito
-const FRETS = [
-  { dir: 'left', note: 'C5', f: 523.25, y: 40, col: 0xf7a8c0 },
-  { dir: 'right', note: 'E5', f: 659.25, y: 70, col: 0xf4f4f0 },
-  { dir: 'down', note: 'G5', f: 783.99, y: 100, col: 0xb8a0d8 },
-  { dir: 'up', note: 'A5', f: 880.0, y: 130, col: 0x8fd070 },
-];
-const SX = 262, TOP = 26, BOT = 144, TOL = 5, SPEED = 120;
-const fretOf = (dir) => FRETS.findIndex((f) => f.dir === dir);
+// El mástil de un Otamatone funciona como una cuerda: lo grave queda arriba, lejos de la cara, y según el dedo baja
+// hacia la boca la nota sube y las notas se van juntando (como los trastes de una guitarra). La nota depende de lo
+// lejos que esté el dedo del «puente» (BRIDGE): a la mitad de distancia, una octava más aguda. La nota más grave de
+// la melodía (la3) va arriba del todo (LOW_Y); por debajo de la más aguda (la4) queda mástil libre, como en el real.
+const BRIDGE = 200, LOW_Y = 26, LOW_F = 220;
+const freqAt = (y) => LOW_F * (BRIDGE - LOW_Y) / (BRIDGE - y);
+const yOf = (f) => BRIDGE - LOW_F * (BRIDGE - LOW_Y) / f;
+// Marcas: una por Owito, en la posición de su nota y con su color
+const midi = (n) => { const m = /^([A-G])(#?)(\d)$/.exec(n); return 12 * (+m[3] + 1) + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] ? 1 : 0); };
+const FRETS = OWITOS.map((o) => ({ note: o.note, col: o.col, f: 440 * 2 ** ((midi(o.note) - 69) / 12) }))
+  .sort((a, b) => a.f - b.f).map((fr) => ({ ...fr, y: Math.round(yOf(fr.f)) }));
+const SX = 262, TOP = 20, BOT = 146, TOL = 3, SPEED = 110; // TOL: menos de medio semitono entre mi y fa (las más juntas)
+const fretOf = (step) => FRETS.findIndex((f) => f.note === step.note);
+const phraseEnd = (p) => PHRASES[p + 1] ?? MELODY.length;
+// Pentagrama: posición de cada nota en escalones de línea/espacio contados desde do4 (do4 = 0, re4 = 1, mi4 = 2…)
+const staffStep = (n) => { const m = /^([A-G])#?(\d)$/.exec(n); return (+m[2] - 4) * 7 + 'CDEFGAB'.indexOf(m[1]); };
+const STAFF_E4 = 44; // altura de la primera línea (mi4); cada escalón son 3 px
 
 export class OtamaScene extends Phaser.Scene {
   constructor() { super('otama'); }
@@ -37,37 +46,24 @@ export class OtamaScene extends Phaser.Scene {
     this.stem = this.add.graphics();
     this.score = this.add.graphics();
     this.pos = 0; this.phrase = 0; this.fy = FRETS[0].y; this.vy = 0; this.mouth = 0; this.wave = 0;
+    this.misses = 0; this.idle = 0; this.hinted = false; // para notar si el jugador está perdido
     this.lock = true; this.done = false;
-    UI.minibar('Muelle · Llama a Narwal con el Otamatone', { reset: () => this.remind(), exit: () => this.exit(), labels: { reset: '♪ Recordar' } });
+    UI.minibar('Muelle · Llama a Narwal con el Otamatone', { exit: () => this.exit() });
     Input.clear();
     this.intro();
   }
 
   async intro() {
+    // Pocas indicaciones: el jugador prueba el Otamatone y descubre por sí mismo dónde está cada nota.
+    // No se tararea la melodía: ya la conoce del ensayo en el teatro.
     await UI.say('Owito director', [
-      '¡Colgadín! Hemos venido corriendo desde el teatro. Para llamar a Narwal hay que tocar entera la melodía de «Owicked»: dieciséis notas.',
-      'Desliza el dedo por el Otamatone con arriba y abajo: se queda pegado en las marcas de colores, que son las de mis Owitos. Toca con el botón de acción.',
-      'Arriba tienes la partitura. Si se te olvida, pulsa «Recordar» y te tarareamos la frase. Primero, entera, para que la oigas.',
+      '¡Colgadín! Para llamar a Narwal hay que tocar con el Otamatone la melodía que ensayamos en el teatro.',
+      'Arriba y abajo para mover el dedo, botón de acción para tocar. ¡Prueba!',
     ]);
-    await this.hum(0, MELODY.length);
-    this.lock = false;
-  }
-
-  // Los Owitos tararean un trozo de la melodía iluminando las marcas
-  async hum(from, to) {
-    this.lock = true;
-    for (let i = from; i < to; i++) {
-      const fr = FRETS[fretOf(MELODY[i])];
-      this.flash = { i: fretOf(MELODY[i]), t: 0.28 };
-      Sound.seq([fr.note], 0.3, 'triangle', 0.2);
-      await new Promise((r) => this.time.delayedCall(360, r));
-      if (this.done) return;
-    }
-    this.flash = null;
     this.lock = false;
     Input.clear();
   }
-  remind() { if (!this.lock && !UI.busy && !this.done) this.hum(this.phrase * 4, Math.min(MELODY.length, this.phrase * 4 + 4)); }
+
   exit() {
     if (UI.busy || this.leaving) return;
     this.leaving = true; this.done = true; UI.minibar(null);
@@ -87,31 +83,36 @@ export class OtamaScene extends Phaser.Scene {
   }
 
   play() {
-    // Frecuencia continua entre marcas (en semitonos), para que fuera de ellas suene desafinado
-    let k = 0;
-    while (k < FRETS.length - 2 && this.fy > FRETS[k + 1].y) k++;
-    const a = FRETS[k], b = FRETS[k + 1], u = Phaser.Math.Clamp((this.fy - a.y) / (b.y - a.y), -0.6, 1.6);
-    this.sing(a.f * Math.pow(b.f / a.f, u));
+    this.sing(freqAt(this.fy)); // nota continua según dónde esté el dedo: fuera de las marcas suena desafinado
     this.mouth = 1;
     const near = FRETS.findIndex((f) => Math.abs(f.y - this.fy) <= TOL);
     const want = fretOf(MELODY[this.pos]);
     if (near === want) {
-      this.pos++;
+      this.pos++; this.idle = 0;
       this.wave = Math.min(1, this.wave + 0.06);
-      if (this.pos % 4 === 0) { // frase completa
-        this.phrase = this.pos / 4;
-        this.cameras.main.shake(300, 0.004 * this.phrase);
+      if (this.pos === phraseEnd(this.phrase)) { // frase completa
+        this.phrase++;
+        this.cameras.main.shake(300, 0.005 * this.phrase);
         Sound.sfx('get');
-        UI.toast(['El mar empieza a burbujear…', 'Las olas crecen junto al muelle…', '¡Algo enorme se mueve bajo el agua!', '¡¡AHÍ VIENE!!'][this.phrase - 1]);
+        UI.toast(['El mar empieza a burbujear…', '¡Algo enorme se mueve bajo el agua!', '¡¡AHÍ VIENE!!'][this.phrase - 1]);
       }
       if (this.pos >= MELODY.length) this.win();
       return;
     }
-    // Fallo: desafina o nota equivocada → vuelta al principio de la frase
+    // Fallo: desafina o nota equivocada → se borra la partitura y vuelta a empezar desde la primera nota
     Sound.sfx('bad');
-    this.pos = this.phrase * 4;
-    this.wave = Math.max(0, this.wave - 0.1);
-    UI.toast(near < 0 ? '¡Desafinado! El dedo estaba entre dos marcas. Desde el principio de la frase.' : 'Esa no era. El mar se calma… Desde el principio de la frase.');
+    this.pos = 0; this.phrase = 0;
+    this.wave = 0;
+    this.misses++;
+    UI.toast(near < 0 ? '¡Desafinado! El dedo estaba entre dos marcas. El mar se calma… ¡Desde el principio!' : 'Esa no era. El mar se calma… ¡Desde el principio!');
+  }
+
+  // Si el jugador parece perdido (tres fallos o un buen rato sin acertar), el director le da una pista, una sola vez
+  async hint() {
+    this.hinted = true; this.lock = true;
+    await UI.say('Owito director', ['¿Perdido? Te doy una pista: es una melodía muy, muy… POPULAR.', 'Seguro que la has tarareado alguna vez.']);
+    this.lock = false;
+    Input.clear();
   }
 
   async win() {
@@ -133,14 +134,14 @@ export class OtamaScene extends Phaser.Scene {
       if (d) this.fy = Phaser.Math.Clamp(this.fy + d * SPEED * dt, TOP, BOT);
       else { // imán suave hacia la marca más cercana
         const n = FRETS.reduce((a, f) => (Math.abs(f.y - this.fy) < Math.abs(a.y - this.fy) ? f : a));
-        this.fy += (n.y - this.fy) * Math.min(1, dt * 7);
+        this.fy += (n.y - this.fy) * Math.min(1, dt * 14);
       }
       if (Input.take('a')) this.play();
-      if (Input.take('reset')) this.remind();
       if (Input.take('b')) return this.exit();
+      this.idle += dt;
+      if (!this.hinted && (this.misses >= 3 || this.idle > 25)) this.hint();
     } else Input.clear();
     this.mouth = Math.max(0, this.mouth - dt * 3);
-    if (this.flash && (this.flash.t -= dt) <= 0) this.flash.t = 0;
 
     // Mar: cuanto más se avanza, más se agita
     const s = this.sea.clear(), amp = 1 + this.wave * 7;
@@ -152,23 +153,22 @@ export class OtamaScene extends Phaser.Scene {
     // Otamatone: mástil con marcas, dedo y cabeza con boca
     const g = this.stem.clear();
     g.fillStyle(0x1a1412).fillRect(SX - 4, TOP - 6, 8, BOT - TOP + 12).fillStyle(0xf4f4ee).fillRect(SX - 3, TOP - 5, 6, BOT - TOP + 10);
-    FRETS.forEach((f, i) => {
-      const lit = this.flash && this.flash.i === i && this.flash.t > 0;
-      g.fillStyle(0x1a1412).fillRect(SX - 12, f.y - 3, 24, 6).fillStyle(f.col).fillRect(SX - 11, f.y - 2, 22, 4);
-      if (lit) g.lineStyle(2, 0xffe066, 1).strokeRect(SX - 14, f.y - 5, 28, 10);
-    });
+    for (const f of FRETS) g.fillStyle(0x1a1412).fillRect(SX - 12, f.y - 2, 24, 4).fillStyle(f.col).fillRect(SX - 11, f.y - 1, 22, 2);
     g.fillStyle(0x1a1412).fillCircle(SX, 166, 15).fillStyle(0xf4f4ee).fillCircle(SX, 166, 13);
     g.fillStyle(0x1a1412).fillRect(SX - 7, 160, 2, 3).fillRect(SX + 5, 160, 2, 3);
     g.fillStyle(0xe2574c).fillEllipse(SX, 170, 10, 2 + this.mouth * 8);
     g.fillStyle(0xd8bb82).fillCircle(SX + 7, this.fy, 5).fillStyle(0x1a1412).fillRect(SX + 2, this.fy - 1, 3, 2);
 
-    // Partitura: 16 notas en 4 frases, con la siguiente resaltada
+    // Partitura: pentagrama (clave de sol) en el que se van escribiendo las notas bien tocadas, del color de su Owito
     const sc = this.score.clear();
-    sc.fillStyle(0xfff6dc, 0.92).fillRect(8, 16, 212, 22);
-    MELODY.forEach((dir, i) => {
-      const f = FRETS[fretOf(dir)], x = 18 + i * 12 + Math.floor(i / 4) * 6, y = 20 + fretOf(dir) * 4;
-      sc.fillStyle(0x1a1412).fillCircle(x, y + 2, 4).fillStyle(i < this.pos ? 0x555555 : f.col).fillCircle(x, y + 2, 3);
-      if (i === this.pos && !this.done) sc.lineStyle(1, 0xe2574c, 0.6 + 0.4 * Math.sin(time / 120)).strokeCircle(x, y + 2, 6);
-    });
+    sc.fillStyle(0xfff6dc, 0.92).fillRect(8, 14, 214, 48);
+    sc.fillStyle(0x6b5a4a); for (let k = 0; k < 5; k++) sc.fillRect(14, STAFF_E4 - k * 6, 202, 1); // mi4 sol4 si4 re5 fa5
+    for (let i = 0; i < this.pos; i++) {
+      const st = staffStep(MELODY[i].note), x = 30 + i * 17, y = STAFF_E4 - (st - 2) * 3; // st 2 = mi4 (primera línea)
+      sc.fillStyle(0x6b5a4a); for (let l = 0; l >= st; l -= 2) sc.fillRect(x - 6, STAFF_E4 - (l - 2) * 3, 12, 1); // líneas adicionales (do4, la3)
+      sc.fillStyle(0x1a1412).fillRect(x + 3, y - 15, 1, 15);                                                       // plica
+      sc.fillStyle(0x1a1412).fillEllipse(x, y, 9, 7).fillStyle(FRETS[fretOf(MELODY[i])].col).fillEllipse(x, y, 7, 5);
+    }
+
   }
 }

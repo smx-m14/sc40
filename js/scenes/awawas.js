@@ -22,7 +22,7 @@ export class AwawasScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#ecd9b0').fadeIn(250);
     UI.hud(false);
-    Sound.music('isla');
+    Sound.music('kapadokya');
     const g = this.add.graphics();
     g.fillStyle(0xbfe3f7).fillRect(-80, 0, 480, 46);
     g.fillStyle(0xf7c8b0).fillRect(-80, 40, 480, 8);

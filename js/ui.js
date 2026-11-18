@@ -136,6 +136,14 @@ export const UI = {
     const t = $('toast');
     t.innerHTML = pix(esc(text)); show(t, false); void t.offsetWidth; show(t);
   },
+  // Indicación corta en un cuadrito abajo (null la oculta); hot = en rojo, cuando le toca al jugador
+  cue(text, hot) {
+    const c = $('cue');
+    if (!text) { show(c, false); return; }
+    if (c.textContent !== text) c.textContent = text;
+    c.classList.toggle('hot', !!hot);
+    show(c, true);
+  },
   zone(text) {
     const z = $('zone');
     z.textContent = text; show(z, false); void z.offsetWidth; show(z);

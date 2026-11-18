@@ -1,17 +1,40 @@
 // Minijuego de ritmo (al estilo de Rhythm Heaven): desmontar los andamios del castillo con los Gemelos bipolares.
 // Cada ronda: cuenta de cuatro → el gato marca un ritmo con el martillo → otra cuenta de cuatro → Colgadín lo repite,
 // igual, con el botón de acción → compás de respiro en el que se ve el resultado. Si lo clava, cae un tablón y el gato se pone del lado feliz; si no, se da la vuelta
-// enfurruñado y el andamio recupera un tablón. Hay que tirar los 8 tablones.
+// enfurruñado y hay que repetir ese mismo ritmo (no se pierde ningún tablón). Hay que tirar los 8 tablones.
 import { Input } from '../input.js';
 import { UI } from '../ui.js';
 import { Sound } from '../audio.js';
 import { SCRIPTS } from '../story.js';
+import { GENERATED } from '../songs-data.js';
 
-const BPM = 92, BEAT = 60000 / BPM, EIGHTH = BEAT / 2, BAR = BEAT * 4, WIN = 135;
+// Suena la canción de los Andamios (js/songs-data.js, generada por tools/make_music.py) cuadrada con el reloj del
+// minijuego: el tempo sale de la propia canción y empieza justo en el primer compás de la cuenta.
+// Hay dos versiones para elegir: 'andamios' (la primera) y 'andamios2' (estribillo de Andamios2).
+const SONG = 'andamios2';
+const BPM = GENERATED[SONG].bpm, BEAT = 60000 / BPM, EIGHTH = BEAT / 2, BAR = BEAT * 4;
+const WIN = Math.min(135, EIGHTH * 0.48); // margen para acertar un golpe (ms), sin llegar a pisar la corchea de al lado
 const CYCLE = ['count', 'call', 'count2', 'resp', 'rest'];
+
+// Tonos en armonía con la música: los martillazos del gato, los de Colgadín y los clics de la cuenta suenan en
+// la nota del acorde que lleva la canción en ese momento, sacada de su bajo. HARMONIC = false vuelve a los tonos fijos.
+const HARMONIC = true;
+const STEP_MS = 60000 / BPM / (GENERATED[SONG].div || 2);
+const ROOTS = (() => { // nota del bajo (0–11) en cada paso de la canción; en los silencios sigue la última
+  const SEMI = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }, out = [];
+  let last = 4; // mi
+  for (const tok of GENERATED[SONG].tracks[1].notes.trim().split(/\s+/)) {
+    const [n, d] = tok.split(':'), m = /^([A-G])(#?)/.exec(n);
+    if (m) last = (SEMI[m[1]] + (m[2] ? 1 : 0)) % 12;
+    for (let k = 0; k < (+d || 1); k++) out.push(last);
+  }
+  return out;
+})();
+const hz = (pc, octave, interval = 0) => 440 * 2 ** ((12 * (octave + 1) + pc + interval - 69) / 12); // nota pc(+intervalo) en esa octava
 const GOAL = 8;
-// Posiciones de los golpes dentro del compás, en corcheas (0–7). De menos a más difícil.
-const PATTERNS = [[0, 2, 4, 6], [0, 4, 6], [0, 2, 3, 4], [0, 3, 4], [0, 2, 5, 6], [1, 3, 5], [0, 1, 2, 4, 6], [0, 3, 5, 6], [1, 2, 4, 5, 7], [0, 2, 3, 5, 6, 7]];
+// Posiciones de los golpes dentro del compás, en corcheas (0–7): una por tablón, de menos a más difícil.
+// Empieza en negras; enseguida entran contratiempos y síncopas, y acaba en parejas sincopadas de seis golpes.
+const PATTERNS = [[0, 2, 4, 6], [0, 2, 3, 4, 6], [0, 3, 4, 6], [0, 3, 5, 6], [1, 3, 5, 6], [1, 2, 4, 5, 7], [0, 2, 3, 5, 6, 7], [0, 1, 3, 4, 6, 7]];
 
 export class RitmoScene extends Phaser.Scene {
   constructor() { super('ritmo'); }
@@ -30,7 +53,7 @@ export class RitmoScene extends Phaser.Scene {
     this.cat2 = this.add.image(36, 132, 'gatot_down_0').setOrigin(0.5, 1).setScale(1.5).setAlpha(0.9);
     this.col = this.add.image(250, 132, 'colgadin_side_0').setOrigin(0.5, 1).setScale(2).setFlipX(true);
     this.fx = this.add.graphics().setDepth(10);
-    this.label = this.add.text(160, 150, '', { fontFamily: 'Pixelify', fontSize: '16px', color: '#3b2a20', stroke: '#fff6dc', strokeThickness: 4 }).setOrigin(0.5).setDepth(11);
+    // Las indicaciones («Escucha… 1», «¡Ahora tú!») van en un cuadrito HTML como el de los diálogos (UI.cue), nítido
     this.removed = 0; this.pat = 0; this.fails = 0; this.happy = true;
     this.lock = true; this.done = false; this.t0 = 0; this.bar = -1; this.presses = []; this.sched = new Set();
     this.catHit = 0; this.colHit = 0; this.planksShake = 0;
@@ -42,24 +65,26 @@ export class RitmoScene extends Phaser.Scene {
   bar_() { UI.minibar(`Andamios del castillo · Tablones ${this.removed}/${GOAL}`, { exit: () => this.exit() }); }
   exit() {
     if (UI.busy || this.leaving) return;
-    this.leaving = true; this.done = true; UI.minibar(null);
+    this.leaving = true; this.done = true; UI.minibar(null); UI.cue(null);
     this.scene.start('world');
   }
   debugWin() { if (!this.done) { this.removed = GOAL; this.win(); } }
 
   async intro(again) {
     this.lock = true;
+    Sound.music(null); // calla mientras se explica; al empezar vuelve a arrancar, cuadrada con la cuenta
     await UI.say('Gemelo bipolar', again
       ? ['Así no. ¡Escucha primero mi compás y luego repítelo en el siguiente, igualito!', 'Volvemos a empezar con la cuenta: un, dos, tres, cuatro…']
       : [
         '¡Miau! Somos los Gemelos bipolares: si algo sale bien, se nos ve contentos; si sale mal, nos damos la vuelta y ponemos esta cara.',
         'Los andamios se desmontan a martillazos, pero AL COMPÁS. Yo toco un ritmo en un compás y tú lo repites en el siguiente, igualito, con el botón de acción.',
         'Antes de mi ritmo cuento cuatro, y antes de tu turno vuelvo a contar cuatro: el primer golpe va justo después del «4».',
-        'Cada ritmo que clavas tira un tablón; si fallas, el andamio se rehace un poco. Son ocho tablones.',
+        'Cada ritmo que clavas tira un tablón; si fallas, lo repetimos hasta que salga. Son ocho tablones.',
       ]);
     Input.clear();
     this.fails = 0;
     this.t0 = performance.now() + 600; this.bar = -1; this.sched.clear(); this.presses = []; this.judged = new Set(); this.result = '';
+    if (Sound.ctx) Sound.music(SONG, true, Sound.ctx.currentTime + (this.t0 - performance.now()) / 1000);
     this.lock = false;
   }
 
@@ -71,6 +96,12 @@ export class RitmoScene extends Phaser.Scene {
   // Retraso de la salida de audio: el jugador pulsa con lo que OYE, que suena un poco después de lo programado
   latency() { const c = Sound.ctx; return c ? ((c.baseLatency || 0) + (c.outputLatency || 0)) * 1000 : 0; }
 
+  // Fundamental (0–11) del acorde que suena en la canción en el instante ms (la canción arranca en t0 y se repite)
+  rootAt(ms) {
+    const i = Math.floor((ms - this.t0) / STEP_MS + 1e-6);
+    return ROOTS[((i % ROOTS.length) + ROOTS.length) % ROOTS.length];
+  }
+
   // Sonidos programados con el reloj de audio (sin retrasos de fotograma)
   at(ms, f, dur, wave, vol) {
     if (!Sound.ctx) return;
@@ -79,14 +110,24 @@ export class RitmoScene extends Phaser.Scene {
   schedule(now) {
     for (let b = Math.max(0, Math.floor((now - this.t0) / BAR)); b <= Math.floor((now + 250 - this.t0) / BAR); b++) {
       const start = this.t0 + b * BAR;
-      for (let q = 0; q < 4; q++) { // metrónomo suave en cada pulso
+      // Clics de la cuenta (un, dos, tres, cuatro); el resto del tiempo el pulso lo lleva la música
+      const kind = CYCLE[b % CYCLE.length];
+      if (kind === 'count' || kind === 'count2') for (let q = 0; q < 4; q++) {
         const t = start + q * BEAT, key = 'm' + b + q;
-        const kind = CYCLE[b % CYCLE.length], count = kind === 'count' || kind === 'count2';
-        if (t > now - 10 && t < now + 250 && !this.sched.has(key)) { this.sched.add(key); this.at(t, count ? (kind === 'count' ? 1200 : 1500) : q === 0 ? 900 : 700, 0.05, 'square', count ? 0.1 : 0.03); }
+        if (t > now - 10 && t < now + 250 && !this.sched.has(key)) {
+          this.sched.add(key);
+          const f = HARMONIC ? hz(this.rootAt(t), 6, kind === 'count' ? 0 : 7) : kind === 'count' ? 1200 : 1500; // fundamental / quinta
+          this.at(t, f, 0.05, 'square', 0.1);
+        }
       }
       if (CYCLE[b % CYCLE.length] === 'call') for (const e of PATTERNS[this.pat % PATTERNS.length]) {
         const t = start + e * EIGHTH, key = 'c' + b + e;
-        if (t > now - 10 && t < now + 250 && !this.sched.has(key)) { this.sched.add(key); this.at(t, 330, 0.09, 'triangle', 0.3); this.at(t, 990, 0.03, 'square', 0.05); }
+        if (t > now - 10 && t < now + 250 && !this.sched.has(key)) {
+          this.sched.add(key);
+          // martillazo del gato: la fundamental del acorde que suena (si no, mi4 y si5 fijos)
+          const r = this.rootAt(t);
+          this.at(t, HARMONIC ? hz(r, 4) : 330, 0.09, 'triangle', 0.3); this.at(t, HARMONIC ? hz(r, 5, 7) : 990, 0.03, 'square', 0.05);
+        }
       }
     }
   }
@@ -108,7 +149,7 @@ export class RitmoScene extends Phaser.Scene {
       this.bar_();
       if (this.removed >= GOAL) return this.win();
     } else {
-      this.removed = Math.max(0, this.removed - 1); this.fails++; this.happy = false;
+      this.fails++; this.happy = false; // no se pierde tablón: se repite el mismo ritmo
       Sound.sfx('bad');
       this.bar_();
       if (this.fails >= 3) this.intro(true);
@@ -117,7 +158,7 @@ export class RitmoScene extends Phaser.Scene {
 
   async win() {
     this.done = true; this.lock = true;
-    UI.minibar(null);
+    UI.minibar(null); UI.cue(null);
     this.happy = true;
     this.cameras.main.shake(500, 0.006);
     await new Promise((r) => this.time.delayedCall(900, r));
@@ -147,17 +188,19 @@ export class RitmoScene extends Phaser.Scene {
           const start = ph.kind === 'resp' ? ph.start : early ? ph.start + BAR : ph.start - BAR;
           this.presses.push(t);
           const hit = PATTERNS[this.pat % PATTERNS.length].some((e) => Math.abs(start + e * EIGHTH - t) <= WIN);
-          this.at(now, hit ? 196 : 120, 0.1, hit ? 'square' : 'sawtooth', 0.14);
+          // acierto: la quinta del acorde que suena (contesta al gato en armonía); fallo: zumbido grave, a propósito
+          this.at(now, hit ? (HARMONIC ? hz(this.rootAt(now), 3, 7) : 196) : 120, 0.1, hit ? 'square' : 'sawtooth', 0.14);
           this.colHit = 1;
         }
       }
       if (Input.take('b')) return this.exit();
       // golpes del gato durante su compás (animación)
       if (ph.kind === 'call') for (const e of PATTERNS[this.pat % PATTERNS.length]) if (Math.abs(now - (ph.start + e * EIGHTH)) < 30) this.catHit = 1;
-      const n = ['1', '2', '3', '4'][Math.min(3, Math.floor((now - ph.start) / BEAT))];
-      this.label.setText(ph.kind === 'count' ? `Escucha… ${n}` : ph.kind === 'count2' ? `Te toca… ${n}` : ph.kind === 'call' ? '¡Escucha!' : ph.kind === 'resp' ? '¡Ahora tú!' : this.result)
-        .setColor(ph.kind === 'resp' || ph.kind === 'count2' ? '#c8402c' : '#3b2a20');
-    } else { Input.clear(); this.label.setText(''); }
+      // (antes de que arranque la primera cuenta, now < t0: sin número, que si no sale «undefined»)
+      const n = now < this.t0 ? '' : ['1', '2', '3', '4'][Math.min(3, Math.max(0, Math.floor((now - ph.start) / BEAT)))];
+      UI.cue(ph.kind === 'count' ? `Escucha… ${n}` : ph.kind === 'count2' ? `Te toca… ${n}` : ph.kind === 'call' ? '¡Escucha!' : ph.kind === 'resp' ? '¡Ahora tú!' : this.result,
+        ph.kind === 'resp' || ph.kind === 'count2');
+    } else { Input.clear(); UI.cue(null); }
     this.catHit = Math.max(0, this.catHit - 0.12); this.colHit = Math.max(0, this.colHit - 0.12); this.planksShake = Math.max(0, this.planksShake - 0.05);
 
     this.cat.setTexture(`${this.happy ? 'gato' : 'gatot'}_down_${this.catHit > 0.4 ? 1 : 0}`).setAngle(-this.catHit * 12);
@@ -169,6 +212,6 @@ export class RitmoScene extends Phaser.Scene {
     for (let i = 0; i < left; i++) { const y = 108 - i * 12; s.fillStyle(0x6e4520).fillRect(112 + sh, y, 96, 6).fillStyle(0xc98f4e).fillRect(113 + sh, y + 1, 94, 4); }
     // indicador de pulso
     const f = this.fx.clear(), beat = ((now - this.t0) % BEAT) / BEAT;
-    if (!this.lock && now > this.t0) f.fillStyle(0xe2574c, 1 - beat).fillCircle(160, 166, 4 + (1 - beat) * 3);
+    if (!this.lock && now > this.t0) f.fillStyle(0xe2574c, 1 - beat).fillCircle(160, 169, 4 + (1 - beat) * 3);
   }
 }

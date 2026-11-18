@@ -12,6 +12,12 @@ import os
 import subprocess
 
 SRC = 'Material Insipiración/Prueba Fuxia'
+# Canciones que vienen enteras: de dónde a dónde se corta el fragmento (segundo de inicio, duración). El resto ya
+# vienen recortadas a mano.
+CUTS = {
+    # Entrada del primer estribillo: el parón, el «Don't go yet» y el golpe de la base
+    "Camila Cabello - Don't Go Yet": (42.6, 2.6),
+}
 
 
 def main():
@@ -23,7 +29,8 @@ def main():
         name = os.path.splitext(os.path.basename(path))[0]
         artist, _, title = name.partition(' - ')
         sid = f'{i:02d}'
-        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', path, '-vn', '-ac', '2', '-b:a', '128k', f'assets/fuxia/{sid}.mp3'], check=True)
+        cut = ['-ss', str(CUTS[name][0]), '-t', str(CUTS[name][1])] if name in CUTS else []
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', *cut, '-i', path, '-vn', '-ac', '2', '-b:a', '128k', f'assets/fuxia/{sid}.mp3'], check=True)
         songs.append({'id': sid, 'artist': artist.strip(), 'title': title.strip()})
     with open('js/fuxia-songs.js', 'w', encoding='utf-8', newline='\n') as f:
         f.write('// GENERADO por tools/make_fuxia.py a partir de los nombres de fichero. No editar a mano.\n')

@@ -31,7 +31,7 @@ export class TediScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#2b2d34').fadeIn(250);
     UI.hud(false);
-    Sound.music('puzle');
+    Sound.music('tedi');
     const g = this.add.graphics();
     g.fillStyle(0x3a3d46).fillRect(-80, 0, 480, 180);
     for (const x of LANES) { g.fillStyle(0x565a66).fillRect(x - LW / 2, 40, LW, 128); g.fillStyle(0xffe000).fillRect(x - LW / 2 - 2, 40, 2, 128).fillRect(x + LW / 2, 40, 2, 128); }

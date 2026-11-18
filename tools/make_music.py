@@ -27,10 +27,17 @@ SONGS = {
     'bosque': ('Bosque de los monos 2', 640, dict(whole=True, search=True, mlo=67, mid=True)),
     'ratitas': ('Apartamento ratitas 2', 640, dict(whole=True, search=True, voices=True)),
     'capybaras': ('Estanque de los Capybaras', 192),
-    'pasteleria': ('Pastelería Real', 192),
+    'pasteleria': ('Pastelería Real', 192),       # en realidad suena la del Castillo de Mazapán (music/pasteleria.mid)
+    'horno': ('Pastelería real', 0),             # solo MIDI: la Pastelería Real por dentro y la prueba de Manteca
+    'andamios': ('Andamios', 0),                 # solo MIDI: minijuego de ritmo de los Gemelos bipolares (js/scenes/ritmo.js)
+    'andamios2': ('Andamios2', 0),
+    'kapadokya': ('Kapadokya', 0),
+    'helada': ('Isla Helada', 0),
+    'tedi': ('Tedi', 0),
+    'aeroflot': ('Aeroflot', 0),                 # solo MIDI: el aeropuerto de la Isla de Cait (quiosco de Aeroflot)                         # solo MIDI: tienda TEDI y su prueba (jefe)                # solo MIDI: la Isla Helada (menos la Casa de la Navidad y sus edificios)               # solo MIDI: zona de Kapadokya y prueba de los awawas               # solo MIDI: alternativa para el mismo minijuego (ritmo.js elige cuál)
     'teatro': ('Teatro de los Owitos', 192),
-    'navidad': ('Casa de la Navidad', 192),
-    'sweetfamosa': ('Sweet Famosa', 192),
+    'navidad': ('Casa de la Navidad', 192),     # sale de music/navidad.mid (solo suena en la Casa de la Navidad)
+    'sweetfamosa': ('Sweet Famosa', 192),       # sale de music/sweetfamosa.mid («Girl like me», el mismo MIDI que «andamios»)
     'logro': ('Música Logro 2', 128, dict(whole=True, search=True)),
     'gym': ('Fitness Fattory', 0),     # solo MIDI
     'fuxia': ('Fuxia', 0),             # solo MIDI
@@ -38,13 +45,20 @@ SONGS = {
 # Reparto de pistas para los MIDI con arreglo completo (music/<id>.mid). Sin entrada aquí se trata como piano.
 MIDI_OPTS = {
     # Isla de Cait: pista 6 = melodía (8 y 7 son adornos que entran cuando calla), 3 = bajo, 4 y 9 = acordes
-    'isla': dict(roles=dict(melody=[6, 8, 7], bass=[3], chords=[4, 9]), melody_shift=-12),
+    # La canción se toca dos veces: el compás 30 es idéntico al 1 (y así hasta el 51), y la segunda vuelta acaba con un
+    # final y silencio. El bucle es la primera vuelta entera, compases 1-29: el 29 es la transición que en el original
+    # lleva al 30 (= al 1), así que vuelve al principio sin costura (unos 70 s).
+    'isla': dict(roles=dict(melody=[6, 8, 7], bass=[3], chords=[4, 9]), melody_shift=-12, max_beats=116),
     # Bosque de los monos: pista 3 = melodía doblada en octavas (5 = adorno), 2 = bajo, 4 = acompañamiento
     'bosque': dict(roles=dict(melody=[3, 5], bass=[2], chords=[4]), melody_shift=-12),
     # Música de logro: pista 2 = melodía, 3 = segunda voz, 4 = bajo
     'logro': dict(roles=dict(melody=[2], bass=[4], chords=[3]), melody_shift=-12),
     # Apartamento de las ratitas: 1 = voz, 4 = guitarra solista (suena cuando la voz calla), 3 = bajo, 5 = acordes
-    'ratitas': dict(roles=dict(melody=[1, 4, 2], bass=[3], chords=[5]), melody_shift=12),
+    # Solo el estribillo («I'll be there for you…», tres frases de 4 compases) y los 2 compases de después. Ojo: el MIDI
+    # empieza con 9 negras en 1/4 antes del 4/4, así que el compás n del 4/4 empieza en la negra 9 + 4n. Se toma el
+    # último estribillo (compases 113-126 del 4/4), que la canción repite tal cual justo después: vuelve sin costura
+    # (unos 18 s). Melodía: solo la voz (el órgano y los coros, en sus huecos, la ensuciaban).
+    'ratitas': dict(roles=dict(melody=[1], bass=[3], chords=[5]), melody_shift=12, start_beat=457, max_beats=56),
     # Estanque de los capybaras: 0 = el canto (notas repetidas), 3 = bajo, 1 y 4 = adornos
     'capybaras': dict(roles=dict(melody=[0], bass=[3], chords=[1, 4]), melody_shift=12),
     # Fitness Fattory: 6 = melodía (4 entra en la segunda parte), 2 = bajo, 1 = arpegios
@@ -52,9 +66,61 @@ MIDI_OPTS = {
     # Fuxia: se salta la introducción y empieza en el tema principal (negra 38). 2 = tema, 7/5 = puente, 8 = bajo
     'fuxia': dict(roles=dict(melody=[2, 7, 5], bass=[8], chords=[9, 3]), melody_shift=12, start_beat=38),
     # Pastelería Real: 1 = melodía, 2 = contracanto, 4 = bajo, 3 = acordes
-    'pasteleria': dict(roles=dict(melody=[1, 2], bass=[4], chords=[3])),
+    # Castillo de Mazapán (id «pasteleria» por historia; music/pasteleria.mid). Sin la intro (compases 1-6): bucle de los
+    # compases 7-52, que es justo lo que la canción repite a partir del 53 (mismo arranque), así que no tiene costura.
+    'pasteleria': dict(roles=dict(melody=[1, 2], bass=[4], chords=[3]), start_beat=24, max_beats=184),
+    # Pastelería real (music/horno.mid, piano a dos manos): 0 = melodía, 1 = acordes; no tiene bajo, se saca de los
+    # acordes. Se salta el primer tema (compases 1-8) y repite del compás 9 al 44: termina en do7, que lleva de vuelta
+    # al fa del compás 9 igual que en el original (8→9), así que el bucle no tiene costura.
+    'horno': dict(roles=dict(melody=[0], chords=[1]), start_beat=32, max_beats=144, bass_from_chords=True),
+    # Andamios (music/andamios.mid): 1 = coro (melodía), 3 = bajo, 0 = sintetizador de acordes; la batería (canal 10)
+    # se descarta. Parte principal: compases 6-21 (2 de groove + 14 con el coro); el 21 acaba en si menor y vuelve
+    # al fa# menor del 6 sin costura. Es para el juego de ritmo: ritmo.js toma el tempo de aquí (bpm), así que la
+    # canción y el reloj del minijuego van siempre a la par; algo más lenta que el original (137) y muy bajita (vol) para
+    # que se oigan bien los martillazos.
+    'andamios': dict(roles=dict(melody=[1], bass=[3], chords=[0]), melody_shift=12, start_beat=20, max_beats=64, bpm=120, vol=0.35, chord_shift=12),
+    # Andamios2 (music/andamios2.mid, formato 0: todo en una pista, se reparte por canales). Está escrito a doble
+    # tempo (328 = 164 reales), así que beat=2. Compases 25-56 del MIDI: segunda estrofa (25-36), parón con la
+    # anacrusa (37-40) y estribillo (41-56: mi, sol#m, do#m, la, si, mi). El 56 acaba en mi con la anacrusa
+    # mi-fa#-sol#, que vuelve al mi del 25 sin costura.
+    # Canales: 3 = melodía, 2 = notas largas cuando calla, 8 = contracanto de la estrofa; 1 = bajo;
+    # 11 = guitarra de acordes del estribillo y 10 = sintetizador de la estrofa; batería fuera.
+    # Al tempo del minijuego (120) y tan bajita como la primera.
+    'andamios2': dict(roles=dict(melody=[3, 2, 8], bass=[1], chords=[11, 10]), by_channel=True, beat=2, start_beat=96, max_beats=128, bpm=120, vol=0.35),
+    # Kapadokya (music/kapadokya.mid): 5 = flauta (melodía); cuando calla, 7 = koto, 6 = guitarra y 0 = sitar
+    # (adornos); 3 = bajo; 4 = guitarra eléctrica y 8 = sintetizador como acordes; batería fuera. Compases 6-21: tema
+    # (dos veces), puente grave con el sintetizador y variación en octavas. El 21 acaba en do con el adorno del
+    # sitar (la#-sol-mi-do#) que en el original lleva al tema, así que vuelve al 6 sin costura (unos 35 s).
+    'kapadokya': dict(roles=dict(melody=[5, 7, 6, 0], bass=[3], chords=[4, 8]), start_beat=20, max_beats=64),
+    # Casa de la Navidad (music/navidad.mid, formato 0: se reparte por canales). Tras la intro lenta en 6/8 y 9/8
+    # («You know Dasher and Dancer…», a 110), arranca en 4/4 a 172 en la negra 44,5 del MIDI. Solo el estribillo:
+    # los 16 compases de «Rudolph, the red-nosed reindeer… reindeer games», que en el original se vuelven a cantar
+    # tal cual, así que el bucle cierra solo (unos 22 s). Canales: 3 = voz (melodía; el contracanto del 10 no, que se colaba en sus huecos),
+    # 1 = bajo, 4 = acordes; la batería (canal 10 del MIDI) fuera.
+    'navidad': dict(roles=dict(melody=[3], bass=[1], chords=[4]), by_channel=True, start_beat=44.5, max_beats=64, bpm=172),
+    # Isla Helada (music/helada.mid): 0 = koto (melodía), 1 = piano (acordes, arpegiados), 2 = piano eléctrico (el
+    # bajo es su nota más grave). Balada a 67. Estribillo: compases 16-24 del MIDI (el 16 de colchón con la anacrusa
+    # mi♭-fa del koto al final, y los 8 del estribillo; vuelve a sonar casi igual en el 53). El 24 acaba en si
+    # (sexta rebajada) y vuelve al re♭ del 16, como en el original al pasar al 25 (unos 32 s).
+    'helada': dict(roles=dict(melody=[0], bass=[2], chords=[1]), start_beat=60, max_beats=36),
+    # Tedi (music/tedi.mid): 1 = caja de música (melodía, en octavas), 2 = piano (bajo: su nota más grave),
+    # 0 = guitarra (acordes, ya arpegiados); batería fuera. Alterna mi y re todo el rato. Se salta la intro de
+    # guitarra sola (compases 1-4) y el acorde final: compases 5-18, con la entrada del piano y la melodía entera;
+    # el 18 (re) vuelve al mi del 5 sin costura (unos 28 s).
+    'tedi': dict(roles=dict(melody=[1], bass=[2], chords=[0]), start_beat=16, max_beats=56),
+    # Sweet Famosa: «Girl like me» (music/sweetfamosa.mid es el mismo fichero que andamios.mid). El mismo bucle que
+    # «andamios» (compases 6-21: groove y coro), pero a su tempo original (137) y con volumen normal: la de los
+    # Andamios va más lenta y bajita porque acompaña al juego de ritmo (unos 28 s).
+    'sweetfamosa': dict(roles=dict(melody=[1], bass=[3], chords=[0]), melody_shift=12, start_beat=20, max_beats=64, chord_shift=12),
+    # Aeroflot (music/aeroflot.mid): una versión de «Rasputin». Solo el estribillo, compases 23-42: el gancho del
+    # violín (si-si-si…) y el «Ra-ra-Rasputin, lover of the Russian queen…», que aquí lleva el piano (9), con los
+    # remates del violín (6) cuando calla; 3 = bajo; guitarra de jazz (7) y acústica (8) de acompañamiento; baterías
+    # fuera. En si menor a 128. El 42 acaba en si y vuelve al si del 23 sin costura (unos 38 s).
+    'aeroflot': dict(roles=dict(melody=[9, 6], bass=[3], chords=[7, 8]), start_beat=88, max_beats=80),
     # Teatro de los Owitos: 2 = melodía en octavas, 0 = bajo, 1 = piano
-    'teatro': dict(roles=dict(melody=[2], bass=[0], chords=[1]), melody_shift=-12),
+    # Sin la intro de piano (compases 1-5): bucle de los compases 6-30, el tema del violín entero (A y B). El 30 acaba
+    # resolviendo en re♭, que es justo donde arranca el tema en el 6, así que vuelve sin costura (unos 46 s).
+    'teatro': dict(roles=dict(melody=[2], bass=[0], chords=[1]), melody_shift=-12, start_beat=20, max_beats=100),
 }
 NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 

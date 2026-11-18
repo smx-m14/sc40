@@ -552,6 +552,18 @@ function shape(k, c) { // o naranja · f fresa · p pera · b plátano
   p.px('#ffffff', [4, 5]).px('#3f9f4f', [5, 1], [6, 1], [5, 2]);
   return p.outline(INK);
 }
+// Globo de fiesta (de los normales, no aerostático): cuerpo ovalado con brillo y nudito; (x, y) = centro
+function partyBalloon(p, x, y, c) {
+  const X = Math.round(x), Y = Math.round(y);
+  return p.ell(x, y, 4.3, 5.5, c).px('#ffffff', [X - 3, Y - 2], [X - 3, Y - 1], [X - 2, Y - 3]).px(c, [X - 1, Y + 5], [X, Y + 5], [X, Y + 6]);
+}
+const STRING = '#6b5a4a';
+function balloonSingle(c) { // un globo suelto con su cordel ondulado
+  const p = new PX(12, 26);
+  partyBalloon(p, 6, 6.5, c).outline(INK);
+  return p.line(6, 14, 5, 18, STRING).line(5, 18, 7, 22, STRING).line(7, 22, 6, 25, STRING);
+}
+
 function mold(c, k) {
   const p = new PX(16, 16);
   p.rect(0, 2, 16, 12, '#8a8f9a').rect(1, 3, 14, 10, '#c9ced8').rect(0, 12, 16, 2, '#6a6f7a');
@@ -746,13 +758,26 @@ const OBJ = {
     p.rect(10, 28, 4, 7, '#5e3a1c').rect(11, 27, 2, 1, '#5e3a1c').rect(7, 20, 2, 3, '#5e3a1c').rect(15, 22, 2, 3, '#5e3a1c').px('#f7c8b0', [5, 30], [18, 33], [8, 36]);
     return p.outline(INK);
   },
-  balloon() {
+  balloon() { // globo aerostático de Kapadokya (paisaje)
     const p = new PX(18, 26);
     p.ell(9, 8, 8, 8, '#e2574c').rect(5, 1, 3, 15, '#ffe066').rect(11, 1, 3, 15, '#3f8fd8');
     for (let y = 0; y < 26; y++) for (let x = 0; x < 18; x++) if (y < 17 && ((x + 0.5 - 9) / 8) ** 2 + ((y + 0.5 - 8) / 8) ** 2 > 1) p.set(x, y, null);
     p.line(4, 15, 7, 21, INK).line(13, 15, 10, 21, INK).rect(6, 21, 6, 4, '#8a5a2a').rect(6, 21, 6, 1, '#c98f4e');
     return p.outline(INK);
   },
+  // Globos de fiesta de los awawas (premio de Kapadokya y decoración de la fiesta)
+  party_balloons() { // ramillete de tres globos atados con un lazo
+    const p = new PX(20, 28);
+    partyBalloon(p, 5, 6, '#e2574c'); partyBalloon(p, 15, 6, '#4a90d8'); partyBalloon(p, 10, 9, '#ffd23f');
+    p.outline(INK);
+    p.line(5, 13, 10, 23, STRING).line(15, 13, 10, 23, STRING).line(10, 16, 10, 26, STRING);
+    return p.px('#f06aa8', [8, 22], [9, 23], [11, 23], [12, 22], [8, 24], [12, 24], [10, 23]); // lazo
+  },
+  pballoon_r: () => balloonSingle('#e2574c'),
+  pballoon_y: () => balloonSingle('#ffd23f'),
+  pballoon_b: () => balloonSingle('#4a90d8'),
+  pballoon_p: () => balloonSingle('#f06aa8'),
+  pballoon_g: () => balloonSingle('#5aa648'),
   burrow() { return new PX(22, 10).ell(11, 5, 10.5, 4.5, '#b08a60').ell(11, 5, 8.5, 3.2, '#2b1a10'); },
   burrow_front() { const p = new PX(22, 6); p.ell(11, 0, 10.5, 4.5, '#b08a60').ell(11, -1, 8.5, 3.2, null); return p; },
   // ---- Paella de Perrunfli
@@ -818,6 +843,15 @@ const OBJ = {
     p.px(D, [5, 2], [13, 2]).ell(9, 6, 4.8, 4, B).ell(9, 8, 2.7, 1.9, D).px(BLACK, [6, 5], [12, 5], [8, 8], [10, 8]).px('#f7a8c0', [11, 1], [12, 0], [13, 1], [12, 2]).px('#ffe066', [12, 1]);
     p.outline(INK);
     return p.rect(1, 10, 16, 1, '#bfe3f7').rect(3, 12, 12, 1, '#bfe3f7').rect(0, 11, 18, 1, '#6fb4ee');
+  },
+  capy_hide() { // capybara "escondido": se tapa la cara con su flor de loto cuando Patito mira (mismo tamaño que capybara_down)
+    const p = new PX(18, 18), B = '#a8794a', D = '#7a5230', K = '#f7a8c0', L = '#fcd6e2', M = '#e07a9e';
+    p.ell(9, 12.5, 6, 4.6, B).rect(5, 16, 2, 1, D).rect(11, 16, 2, 1, D);
+    p.px(D, [5, 5], [13, 5]).ell(9, 8, 4.6, 3.8, B);
+    p.ell(9, 8, 4.2, 3.6, K).px(M, [5, 8], [13, 8], [9, 4], [9, 12], [6, 5], [12, 5], [6, 11], [12, 11]).px(L, [7, 5], [6, 7], [11, 5], [12, 7]);
+    p.rect(8, 7, 3, 3, '#ffe066').px('#e8b820', [10, 9], [9, 9]);
+    p.px(D, [6, 12], [7, 12], [11, 12], [12, 12]); // las patitas que sujetan la flor
+    return p.outline(INK);
   },
   mirror_fa: () => stand(1, true),
   mirror_fb: () => stand(2, true),

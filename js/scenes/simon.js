@@ -1,19 +1,28 @@
-// Minijuego: ensayo en el Teatro Real (Simon). Los Owitos cantan una secuencia y hay que repetirla
-// con las flechas. La secuencia crece nota a nota hasta completar la melodía que llama a Narwal.
+// Minijuego: ensayo en el Teatro Real (tipo Simon). Los seis Owitos del Teatro están en fila, desordenados (no van
+// de grave a agudo), y cada uno canta una nota. Cantan una secuencia y hay que repetirla: con ← → se mueve el foco
+// hasta el Owito y con el botón de acción canta. La secuencia crece nota a nota hasta completar la melodía que
+// luego llama a Narwal con el Otamatone.
 import { Input } from '../input.js';
 import { UI } from '../ui.js';
 import { Sound } from '../audio.js';
 import { SCRIPTS } from '../story.js';
 
-// La melodía es fija: es la que luego se toca con el Otamatone en el muelle
-export const MELODY = ['up', 'right', 'down', 'left', 'up', 'up', 'right', 'down', 'left', 'left', 'up', 'right', 'down', 'up', 'left', 'right'];
-const PADS = {
-  up: { x: 160, y: 78, tex: 'owito_g', note: 'A5', ang: 0 },
-  left: { x: 104, y: 106, tex: 'owito_k', note: 'C5', ang: -90 },
-  right: { x: 216, y: 106, tex: 'owito_w', note: 'E5', ang: 90 },
-  down: { x: 160, y: 136, tex: 'owito_v', note: 'G5', ang: 180 },
-};
-const FIRST = 5;   // se empieza repitiendo cinco notas y se llega a las dieciséis
+// Los seis Owitos de las fotos de muestra («Fotos reales personajes/08 Owitos del Teatro»), de izquierda a derecha
+// tal como salen al escenario. col = su color en las marcas del Otamatone.
+export const OWITOS = [
+  { tex: 'owito_k', note: 'F4', col: 0xf7a8c0 }, // rosa, con su banderín
+  { tex: 'owito_t', note: 'A3', col: 0xb07a44 }, // el del sombrero de paja: la voz más grave
+  { tex: 'owito_g', note: 'G4', col: 0x8fd070 }, // verde
+  { tex: 'owito_w', note: 'C4', col: 0x4a90c8 }, // blanco con manchas azules y cascabel: la nota que más se repite
+  { tex: 'owito_c', note: 'A4', col: 0xf3e6c0 }, // crema, con el abanico: la más aguda
+  { tex: 'owito_v', note: 'E4', col: 0xb8a0d8 }, // lila
+];
+// La melodía es fija (luego se toca con el Otamatone en el muelle). who = qué Owito la canta.
+export const MELODY = ['C4', 'A3', 'C4', 'C4', 'C4', 'G4', 'E4', 'F4', 'F4', 'A4', 'C4']
+  .map((note) => ({ note, who: OWITOS.findIndex((o) => o.note === note) }));
+export const PHRASES = [0, 4, 8]; // dónde empieza cada frase (el Otamatone avanza y reintenta por frases)
+const FIRST = 3;   // se empieza repitiendo tres notas y se llega a las once
+const X0 = 70, DX = 36, FEET = 128; // fila: posición del primero, separación y altura de los pies
 
 export class SimonScene extends Phaser.Scene {
   constructor() { super('simon'); }
@@ -37,19 +46,19 @@ export class SimonScene extends Phaser.Scene {
     g.fillStyle(0xfbd0de, 0.85).fillCircle(254, 34, 9).fillStyle(0xffffff, 0.9).fillCircle(251, 31, 2);  // burbuja
     this.add.image(40, 172, 'tigrito_side_0').setOrigin(0.5, 1).setScale(2);
 
-    this.pads = {};
-    for (const [dir, p] of Object.entries(PADS)) {
-      const spr = this.add.image(p.x, p.y, p.tex + '_down_0').setOrigin(0.5, 1).setScale(2);
-      this.add.image(p.x, p.y + 7, 'arrow').setAngle(p.ang);
-      this.pads[dir] = spr;
-    }
+    // Foco del selector: un círculo de luz en el suelo y una flecha sobre la cabeza del Owito elegido
+    this.spot = this.add.graphics();
+    this.owitos = OWITOS.map((o, i) => this.add.image(X0 + i * DX, FEET, o.tex + '_down_0').setOrigin(0.5, 1).setScale(2).setDepth(2));
+    this.marker = this.add.image(0, FEET - 42, 'arrow').setAngle(180).setDepth(3);
+    this.cur = 3;
 
     this.n = FIRST; this.pos = 0; this.lock = true; this.leaving = false; this.won = false;
     this.bar();
     Input.clear();
     UI.say('Owito director', [
       '¡Silencio en la sala! Ensayo general de «MALOWITA: la historia jamás contada de los Owitos de Oz».',
-      'Tigrito pone la música. Tú, repite lo que canten mis Owitos con las flechas. Empezamos con cinco notas y la partitura tiene dieciséis. Si fallas, retrocedemos una. ¡Y desafiando a la gravedad!',
+      'Hoy ensayamos el número estrella. Mis seis Owitos cantan cada uno una nota, y los he puesto en fila a mi manera: nada de grave a agudo.',
+      'Tú repite lo que canten: muévete con ← → hasta el Owito y pulsa el botón de acción para que cante. Empezamos con tres notas y la partitura tiene once. Si fallas, retrocedemos una.',
     ]).then(() => this.show());
   }
 
@@ -61,11 +70,11 @@ export class SimonScene extends Phaser.Scene {
   }
   debugWin() { if (!this.leaving && !this.won) this.win(); }
 
-  flash(dir, ok = true) {
-    const spr = this.pads[dir], p = PADS[dir];
-    if (ok) Sound.seq([p.note], 0.28, 'triangle', 0.22);
-    spr.setTexture(p.tex + '_down_1');
-    this.tweens.add({ targets: spr, scale: 2.6, duration: 110, yoyo: true, onComplete: () => spr.setTexture(p.tex + '_down_0').setScale(2) });
+  flash(i, sing = true) { // el Owito i canta su nota (sing = false: fallo, no suena)
+    const spr = this.owitos[i], o = OWITOS[i];
+    if (sing) Sound.seq([o.note], 0.28, 'triangle', 0.22);
+    spr.setTexture(o.tex + '_down_1');
+    this.tweens.add({ targets: spr, scale: 2.6, duration: 110, yoyo: true, onComplete: () => spr.setTexture(o.tex + '_down_0').setScale(2) });
   }
 
   async show() {
@@ -73,18 +82,18 @@ export class SimonScene extends Phaser.Scene {
     await new Promise((r) => this.time.delayedCall(500, r));
     for (let i = 0; i < this.n; i++) {
       if (this.leaving) return;
-      this.flash(MELODY[i]);
-      await new Promise((r) => this.time.delayedCall(Math.max(250, 430 - (this.n - FIRST) * 16), r)); // cada vez más deprisa
+      this.flash(MELODY[i].who);
+      await new Promise((r) => this.time.delayedCall(Math.max(300, 520 - (this.n - FIRST) * 22), r)); // cada vez más deprisa
     }
     this.pos = 0; this.lock = false;
     Input.clear();
   }
 
-  async input_(dir) {
+  async sing() {
     if (this.lock || UI.busy || this.leaving) return;
-    if (dir !== MELODY[this.pos]) {
+    if (this.cur !== MELODY[this.pos].who) {
       this.lock = true;
-      Sound.sfx('bad'); this.flash(dir, false);
+      Sound.sfx('bad'); this.flash(this.cur, false);
       this.cameras.main.shake(150, 0.004);
       this.n = Math.max(FIRST, this.n - 1);   // un fallo hace retroceder una nota
       this.bar();
@@ -92,7 +101,7 @@ export class SimonScene extends Phaser.Scene {
       await new Promise((r) => this.time.delayedCall(900, r));
       return this.show();
     }
-    this.flash(dir);
+    this.flash(this.cur);
     if (++this.pos < this.n) return;
     this.lock = true;
     await new Promise((r) => this.time.delayedCall(600, r));
@@ -110,9 +119,16 @@ export class SimonScene extends Phaser.Scene {
     this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('world'));
   }
 
-  update() {
-    if (this.lock || UI.busy) { Input.clear(); return; }
-    for (const d of ['up', 'down', 'left', 'right']) if (Input.take(d)) return this.input_(d);
+  update(time) {
+    // El foco solo se ve cuando le toca al jugador
+    const on = !this.lock && !UI.busy && !this.leaving, x = X0 + this.cur * DX;
+    this.spot.clear();
+    if (on) this.spot.fillStyle(0xffe066, 0.3).fillEllipse(x, FEET - 1, 40, 10);
+    this.marker.setVisible(on).setPosition(x, FEET - 42 + Math.round(Math.sin(time / 160) * 1.5));
+    if (!on) { Input.clear(); return; }
+    if (Input.take('left')) this.cur = Math.max(0, this.cur - 1);
+    if (Input.take('right')) this.cur = Math.min(OWITOS.length - 1, this.cur + 1);
+    if (Input.take('a')) return this.sing();
     if (Input.take('b')) this.exit();
   }
 }

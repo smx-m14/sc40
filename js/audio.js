@@ -94,14 +94,15 @@ export const Sound = {
     o.start(t); o.stop(t + dur + 0.02);
   },
   // Cambia la música de fondo. Los mp3 se reanudan donde se quedaron al volver a su zona.
-  music(id, force) {
+  // at (opcional): instante del reloj de audio en que empieza, para cuadrarla con un minijuego de ritmo.
+  music(id, force, at) {
     this.wanted = id;
     if (!this.ctx || (!force && id === this.curId)) return;
     this.curId = id;
     if (this.playing) { this.playing.pause(); this.playing = null; }
     this.cur = null;
     if (SONGS[id]) {
-      this.cur = { ...compile(SONGS[id]), i: 0, next: this.ctx.currentTime + 0.08 };
+      this.cur = { ...compile(SONGS[id]), i: 0, next: at ?? this.ctx.currentTime + 0.08 };
     }
   },
   tick() {

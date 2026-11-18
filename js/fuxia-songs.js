@@ -27,106 +27,111 @@ export const FUXIA_SONGS = [
  },
  {
   "id": "06",
+  "artist": "Camila Cabello",
+  "title": "Don't Go Yet"
+ },
+ {
+  "id": "07",
   "artist": "Demi Lovato",
   "title": "Ghost"
  },
  {
-  "id": "07",
+  "id": "08",
   "artist": "Dua Lipa",
   "title": "Love Again"
  },
  {
-  "id": "08",
+  "id": "09",
   "artist": "Evanescence",
   "title": "Bring me to life"
  },
  {
-  "id": "09",
+  "id": "10",
   "artist": "Girls Aloud",
   "title": "The Promise"
  },
  {
-  "id": "10",
+  "id": "11",
   "artist": "Jade",
   "title": "Angel of my dreams"
  },
  {
-  "id": "11",
+  "id": "12",
   "artist": "JENNIE",
   "title": "MANTRA"
  },
  {
-  "id": "12",
+  "id": "13",
   "artist": "JISOO",
   "title": "earthquake"
  },
  {
-  "id": "13",
+  "id": "14",
   "artist": "Kylie Minogue",
   "title": "Wow"
  },
  {
-  "id": "14",
+  "id": "15",
   "artist": "La Oreja de Van Gogh",
   "title": "El Último Vals"
  },
  {
-  "id": "15",
+  "id": "16",
   "artist": "Lady Gaga",
   "title": "Vanish into you"
  },
  {
-  "id": "16",
+  "id": "17",
   "artist": "LISA",
   "title": "LALISA"
  },
  {
-  "id": "17",
+  "id": "18",
   "artist": "Mamamoo",
   "title": "HIP"
  },
  {
-  "id": "18",
+  "id": "19",
   "artist": "Marina",
   "title": "FROOT"
  },
  {
-  "id": "19",
+  "id": "20",
   "artist": "Perrie",
   "title": "Rocket Scientist"
  },
  {
-  "id": "20",
+  "id": "21",
   "artist": "ROSÉ",
   "title": "APT"
  },
  {
-  "id": "21",
+  "id": "22",
   "artist": "Sia",
   "title": "Chandelier"
  },
  {
-  "id": "22",
+  "id": "23",
   "artist": "Soraya",
   "title": "Fénix"
  },
  {
-  "id": "23",
+  "id": "24",
   "artist": "Spice girls",
   "title": "Wannabe"
  },
  {
-  "id": "24",
+  "id": "25",
   "artist": "Sugababes",
   "title": "Jungle"
  },
  {
-  "id": "25",
+  "id": "26",
   "artist": "The Corrs",
   "title": "Summer Sunshine"
  },
  {
-  "id": "26",
+  "id": "27",
   "artist": "Zara Larsson",
   "title": "Midnight sun"
  }
