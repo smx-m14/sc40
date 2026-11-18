@@ -45,7 +45,7 @@ export class OtamaScene extends Phaser.Scene {
 
   async intro() {
     await UI.say('Owito director', [
-      '¡Colgadín! Hemos venido corriendo desde el teatro. Para llamar a Narwal hay que tocar entera la melodía de «Malowita»: dieciséis notas.',
+      '¡Colgadín! Hemos venido corriendo desde el teatro. Para llamar a Narwal hay que tocar entera la melodía de «Owicked»: dieciséis notas.',
       'Desliza el dedo por el Otamatone con arriba y abajo: se queda pegado en las marcas de colores, que son las de mis Owitos. Toca con el botón de acción.',
       'Arriba tienes la partitura. Si se te olvida, pulsa «Recordar» y te tarareamos la frase. Primero, entera, para que la oigas.',
     ]);

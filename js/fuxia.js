@@ -1,4 +1,4 @@
-// Prueba de oído de Fuxia: suena un fragmento y hay que escribir el título de la canción.
+// Prueba de oído de Fucsia: suena un fragmento y hay que escribir el título de la canción.
 //   · A la primera, sin pistas ............ 10 puntos
 //   · Con la pista del artista ............  5 puntos (hay que escribir el título igualmente)
 //   · Con la segunda pista (4 opciones) ...  2 puntos (0 si se elige mal)

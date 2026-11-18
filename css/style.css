@@ -221,7 +221,7 @@ body { display: flex; flex-direction: column; align-items: center; justify-conte
 @font-face { font-family: 'PixelRu'; src: url('../fonts/pixel-cyrillic.woff2') format('woff2'); unicode-range: U+0400-04FF; size-adjust: 60%; font-display: swap; }
 #dialog-text.ruso, .ruso { font-family: 'PixelRu', 'Pixelify', 'Courier New', monospace; font-weight: 400; letter-spacing: 0; }
 
-/* Prueba de oído de Fuxia */
+/* Prueba de oído de Fucsia */
 #quiz { inset: calc(6 * var(--u)) calc(9 * var(--u)); gap: calc(1.6 * var(--u)); font-size: calc(3.2 * var(--u)); }
 .quiz-head { display: flex; gap: calc(2 * var(--u)); align-items: baseline; }
 .quiz-head b { flex: 1; font-size: calc(3.8 * var(--u)); font-weight: 400; }

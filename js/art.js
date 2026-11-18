@@ -191,15 +191,21 @@ const CHARS = {
   },
   mantecas(p, dir, o) { manteca(p, o); p.rect(6, 1 + o, 6, 4, '#fff').rect(5, 1 + o, 8, 2, '#fff').rect(6, 5 + o, 6, 1, '#d0d0c8'); },
   manteca2(p, dir, o) { manteca(p, o); p.px('#f06aa8', [7, 5 + o], [8, 6 + o], [9, 6 + o], [10, 6 + o], [11, 5 + o], [7, 6 + o], [11, 6 + o]); },
-  // Patito: peluche amarillo de orejas redondas (down: de frente · up: de espaldas)
-  patito(p, dir, o) { // peluche amarillo de orejas redondas con el interior naranja, mofletes y bracitos
-    const Y = '#ffd93b', L = '#ffee96', O = '#f08a24';
-    p.ell(4.5, 5.5 + o, 2.5, 2.7, Y).ell(13.5, 5.5 + o, 2.5, 2.7, Y);
-    p.rect(1, 11 + o, 3, 2, Y).rect(14, 11 + o, 3, 2, Y);
-    p.ell(9, 11 + o, 6.3, 5.6, Y).ell(9, 13.6 + o, 3.6, 2.5, L).rect(6, 16, 2, 1, O).rect(10, 16, 2, 1, O);
-    if (dir === 'up') p.px(O, [9, 15 + o], [8, 14 + o], [10, 14 + o]).px('#e8b820', [6, 8 + o], [12, 8 + o], [9, 7 + o]);
-    else p.px(O, [4, 5 + o], [5, 6 + o], [4, 6 + o], [13, 5 + o], [12, 6 + o], [13, 6 + o]).px(BLACK, [7, 10 + o], [11, 10 + o]).px('#fff', [7, 9 + o], [11, 9 + o])
-      .px('#5a4636', [8, 12 + o], [10, 12 + o], [9, 13 + o]).px('#f7a0a8', [5, 12 + o], [13, 12 + o]);
+  // Patito: peluche amarillo SIN brazos. Una bola peluda con dos orejas de interior naranja, ojitos muy separados,
+  // sonrisa ondulada bordada y un rabito en forma de tubo abajo (down: de frente · up: de espaldas)
+  patito(p, dir, o) {
+    const Y = '#ffd93b', L = '#ffee96', D = '#d9a818', O = '#f5a04a';
+    // orejas puntiagudas y redondeadas, separadas de la cabeza por un pliegue
+    p.ell(3.4, 4.6 + o, 2.4, 2.8, Y).ell(14.6, 4.6 + o, 2.4, 2.8, Y).px(Y, [2, 2 + o], [16, 2 + o]);
+    p.ell(9, 10.8 + o, 6.6, 5.9, Y).px(L, [7, 6 + o], [8, 6 + o], [11, 6 + o], [5, 9 + o], [4, 10 + o]);
+    p.px(D, [5, 6 + o], [4, 7 + o], [13, 6 + o], [14, 7 + o]);
+    // rabito en forma de tubo, abajo a la izquierda, con su agujero
+    p.ell(4, 15.4, 2.8, 1.8, Y).px(D, [2, 16], [6, 16], [4, 17]).px('#8a6a10', [4, 15], [5, 15]);
+    if (dir === 'up') p.px(D, [9, 8 + o], [8, 11 + o], [11, 13 + o], [7, 14 + o]);
+    else {
+      p.px(O, [2, 3 + o], [3, 3 + o], [3, 4 + o], [2, 4 + o], [3, 5 + o], [15, 3 + o], [16, 3 + o], [15, 4 + o], [16, 4 + o], [15, 5 + o]);
+      p.px(BLACK, [6, 9 + o], [12, 9 + o]).px(INK, [6, 12 + o], [7, 13 + o], [8, 12 + o], [9, 12 + o], [10, 13 + o], [11, 12 + o]);
+    }
   },
   capybara(p, dir, o) {
     const B = '#a8794a', D = '#7a5230';
@@ -240,7 +246,7 @@ const CHARS = {
     if (dir !== 'up') p.ell(9, 11.5 + o, 3.5, 3.1, F).px(BLACK, [7, 10 + o], [11, 10 + o]).px('#d98a8a', [9, 12 + o], [8, 13 + o], [10, 13 + o]);
     p.rect(5, 17, 2, 1, F).rect(11, 17, 2, 1, F);
   },
-  // Gatos reversibles (siameses de peluche): lado feliz y lado enfurruñado
+  // Gemelos bipolares (siameses de peluche): lado feliz y lado enfurruñado
   gato(p, dir, o) { siamese(p, o, true); },
   gatot(p, dir, o) { siamese(p, o, false); },
   // Awawas (damanes): redondos, marrones y con sus dos dientecitos. Siri lleva un pañuelo rosa
@@ -406,6 +412,7 @@ export function makeTiles() {
     p.rect(5, 0, 1, 7, '#a8743c').rect(12, 8, 1, 7, '#a8743c');
   });
   mk('W', 14, '#e8d5b0', (p) => { p.rect(0, 12, 16, 4, '#8a5a2a').rect(0, 11, 16, 1, '#6e4520'); for (let x = 3; x < 16; x += 6) p.rect(x, 2, 1, 7, '#decaa0'); });
+  mk('V', 26, '#e8d5b0', (p) => { for (let x = 3; x < 16; x += 6) p.rect(x, 5, 1, 9, '#decaa0'); p.rect(0, 0, 16, 2, '#d6c098'); }); // pared alta (sin zócalo)
   mk('x', 15, '#1a1412');
   mk('k', 16, '#cdb38a', (p, r) => { p.speck(r, 8, '#c2a77c'); p.rect(0, 15, 16, 1, '#bfa377').rect(15, 0, 1, 16, '#bfa377'); });
   mk('K', 17, '#7d6a5c', (p) => {
@@ -481,6 +488,55 @@ function statue(kind) {
   p.blit(q, 1, 5);
   if (kind === 2) p.line(17, 14, 17, 2, '#c9ced8').rect(15, 13, 5, 1, '#8a8a80');
   if (kind === 3) p.rect(2, 6, 1, 16, '#b0aa98').ell(2.5, 4.5, 1.6, 1.6, '#e8b820');
+  return p.outline(INK);
+}
+function sofa(back, seat, arm) {
+  const p = new PX(32, 20);
+  p.rect(1, 1, 30, 10, back).rect(1, 9, 30, 8, seat).rect(1, 6, 4, 11, arm).rect(27, 6, 4, 11, arm).rect(15, 9, 1, 8, arm).rect(3, 17, 3, 2, '#6e4520').rect(26, 17, 3, 2, '#6e4520');
+  return p.outline(INK);
+}
+// Cuadros de Cait (16x22 con marco): 1 Bulbasaur bajo el cerezo · 2 Squirtle flotando entre juncos · 3 Charmander en el cerezo
+function cuadro(n) {
+  const p = new PX(16, 22), PA = '#f7f0ea', PK = '#f4b3c6', PD = '#e5869f', PL = '#fbdbe5', TR = '#4a3c3e', TX = '#2b2320';
+  p.rect(0, 0, 16, 22, '#6e4520').rect(1, 1, 14, 20, PA);
+  if (n === 1) {
+    p.rect(12, 9, 3, 6, '#e3e2de').px('#d2d4d4', [13, 8], [14, 9]);
+    p.ell(9, 4, 7, 3.6, PK).ell(5, 3, 4, 2.4, PD).ell(12, 2.5, 2.5, 1.5, PL).px(PL, [7, 2], [10, 5], [4, 5]);
+    p.rect(1, 6, 3, 15, TR).rect(3, 6, 2, 2, TR).line(4, 6, 9, 5, TR).px('#6a5658', [2, 9], [2, 13], [1, 16]);
+    p.rect(1, 18, 14, 3, '#efd9de').px(PD, [5, 17], [13, 19], [7, 20], [11, 8], [14, 13], [9, 11]);
+    p.px(TX, [6, 8], [7, 8], [7, 9], [6, 10], [7, 10], [7, 11], [6, 12], [7, 13]);
+    const B = '#78c4b0', BD = '#4f9a88', G = '#5fae5a', GD = '#3f8a44';
+    p.ell(10.5, 17.5, 3.2, 2, B).ell(8.5, 14.5, 2.2, 2, G).px(GD, [8, 13], [9, 15], [7, 15]).ell(11.5, 15, 2.4, 1.8, B);
+    p.px(BD, [9, 18], [12, 17], [13, 14], [10, 14]).px('#c0392b', [11, 15], [13, 15]).px('#fff', [11, 14]).px(B, [13, 13], [10, 13]);
+  } else if (n === 2) {
+    p.rect(1, 1, 14, 20, '#f2ead6').ell(6, 5, 6, 2, '#d9dccb').ell(11, 6, 4, 1.5, '#cfd4c0');
+    for (const [x, y0] of [[2, 8], [3, 6], [4, 10], [14, 11]]) p.rect(x, y0, 1, 19 - y0, '#5c8a5a');
+    p.px('#7aa86a', [1, 10], [5, 12], [13, 13]).px('#8a6cc0', [14, 10], [13, 11]).px('#a88a50', [3, 5]);
+    p.px(TX, [13, 2], [14, 3], [13, 4], [13, 5], [14, 6], [13, 7], [14, 8]);
+    p.rect(8, 7, 1, 5, '#cfe6f2').px('#ffffff', [8, 6], [7, 5], [9, 5], [8, 4], [6, 7], [10, 7]);
+    p.rect(1, 18, 14, 3, '#bfd8c8').ell(3.5, 19.5, 2.2, 1, '#5c8a5a').ell(12, 20, 2.4, 1, '#5c8a5a').px('#f0a0b8', [3, 18], [4, 18]);
+    const SQ = '#7ab8d8', SD = '#4a8ab0';
+    p.ell(9.5, 16, 3.8, 2.2, '#8a5a2a').ell(9.5, 15.6, 3.4, 1.6, '#b07a40').ell(9.5, 14, 2.8, 1.5, '#efe0a8').px('#d9c48a', [8, 14], [10, 14]);
+    p.ell(5, 14, 2.2, 1.8, SQ).px(SD, [4, 13]).px(TX, [5, 13]).px(SQ, [8, 12], [11, 12], [13, 15], [14, 16]).ell(13, 17, 1.4, 1, SQ).px(SD, [13, 17]);
+  } else {
+    p.ell(8, 4, 7, 3.8, PK).ell(4, 5, 3, 2, PD).ell(12, 3, 3, 2, PD).px(PL, [6, 2], [9, 5], [13, 6], [2, 3]);
+    p.rect(6, 8, 3, 11, TR).line(7, 8, 3, 5, TR).line(8, 8, 12, 5, TR).rect(4, 18, 7, 1, TR).px('#6a5658', [7, 12], [6, 15]);
+    p.rect(1, 19, 14, 2, '#efd9de').px(PD, [2, 12], [13, 10], [12, 17], [3, 16], [10, 20]);
+    p.px(TX, [12, 11], [13, 11], [12, 12], [13, 13], [12, 14], [12, 15], [13, 15]);
+    const O = '#f5a43a', OD = '#d9822a';
+    p.ell(9, 8.5, 1.8, 1.4, O).px(TX, [9, 8]).rect(9, 10, 2, 3, O).px(OD, [10, 12]).px(O, [8, 11], [11, 10]);
+    p.line(10, 13, 9, 15, O).ell(9, 16.5, 1.6, 1.6, '#e2574c').px('#ffd23f', [9, 17], [9, 16]).px('#f08a24', [8, 15], [10, 15]);
+  }
+  // el marco, por encima de todo para que nada se salga
+  const FR = '#6e4520';
+  p.rect(0, 0, 16, 1, FR).rect(0, 21, 16, 1, FR).rect(0, 0, 1, 22, FR).rect(15, 0, 1, 22, FR).rect(1, 1, 14, 1, '#8a5a2a');
+  return p.outline(INK);
+}
+function pot(flower, center) {
+  const p = new PX(12, 16);
+  p.rect(3, 10, 6, 5, '#c96a10').rect(2, 9, 8, 2, '#e07a2a').rect(3, 14, 6, 1, '#a8540c');
+  p.rect(5, 5, 1, 4, '#3f9f4f').rect(7, 6, 1, 3, '#3f9f4f').px('#5fbf5a', [4, 7], [8, 7]);
+  p.px(flower, [4, 3], [6, 3], [5, 2], [5, 4], [7, 4], [8, 5], [6, 5]).px(center, [5, 3], [7, 5]);
   return p.outline(INK);
 }
 // Plátano en forma de media luna, con el rabito marrón (ox, oy: desplazamiento)
@@ -632,7 +688,7 @@ const OBJ = {
   sock_0: () => sockArt('#3f8f6b', 0), sock_1: () => sockArt('#e2574c', 1), sock_2: () => sockArt('#3f6fd0', 2), sock_3: () => sockArt('#e8a820', 3), sock_4: () => sockArt('#b06ad8', 4),
   sock_5: () => sockArt('#f08a24', 0, true), sock_6: () => sockArt('#f06aa8', 1, true), sock_7: () => sockArt('#2fb8b0', 2, true), sock_8: () => sockArt('#8a8f9a', 3, true), sock_9: () => sockArt('#2b2b33', 4, true),
   // ---- Apartamento de las Ratitas
-  gem_r: () => gemArt('#e2574c', '#f7a8a0'), gem_b: () => gemArt('#3f6fd0', '#9fc0f7'),
+  gem_r: () => gemArt('#e2574c', '#f7a8a0'), gem_b: () => gemArt('#3f6fd0', '#9fc0f7'), gem_y: () => gemArt('#e8b820', '#fff0a0'), gem_g: () => gemArt('#3f9f4f', '#a8e8a0'),
   cup() { return new PX(8, 8).rect(1, 2, 5, 5, '#f4f4ee').rect(1, 2, 5, 1, '#6e4520').px('#f4f4ee', [6, 3], [7, 4], [6, 5]).px('#3f8fd8', [2, 4], [4, 5]).outline(INK); },
   cushion() { return new PX(11, 9).ell(5.5, 4.5, 4.6, 3.4, '#f06aa8').px('#f7a8c0', [3, 3], [4, 2]).px('#c8407c', [5, 4], [6, 5]).outline(INK); },
   frame() { return new PX(12, 11).rect(1, 1, 10, 9, '#8a5a2a').rect(2, 2, 8, 7, '#bfe3f7').rect(2, 6, 8, 3, '#82cc6a').px('#ffe066', [8, 3]).outline(INK); },
@@ -662,11 +718,10 @@ const OBJ = {
     p.px('#e2574c', [3, 15], [4, 15]).px('#3f8fd8', [6, 17], [7, 17]).px('#3f8f6b', [3, 20], [4, 20]).px('#f08a24', [8, 14], [9, 14]).px('#8a5fc0', [6, 22], [7, 22]).px('#ffd23f', [9, 19], [9, 20]);
     return p.outline(INK);
   },
-  sofa() {
-    const p = new PX(32, 20);
-    p.rect(1, 1, 30, 10, '#c8402c').rect(1, 9, 30, 8, '#e2574c').rect(1, 6, 4, 11, '#b83b33').rect(27, 6, 4, 11, '#b83b33').rect(15, 9, 1, 8, '#b83b33').rect(3, 17, 3, 2, '#6e4520').rect(26, 17, 3, 2, '#6e4520');
-    return p.outline(INK);
-  },
+  sofa: () => sofa('#c8402c', '#e2574c', '#b83b33'),
+  sofa_cait: () => sofa('#7d8ca6', '#93a3bc', '#6f7e98'), // sofá azul de Cait (#93A3BC)
+  // Cuadros de la pared de Cait, en el mismo orden que los originales
+  cuadro1: () => cuadro(1), cuadro2: () => cuadro(2), cuadro3: () => cuadro(3),
   stand: () => stand(0),
   mirror_a: () => stand(1),
   mirror_b: () => stand(2),
@@ -982,6 +1037,39 @@ const OBJ = {
     p.line(3, 9, 17, 21, '#8a5a2a').line(38, 9, 52, 21, '#8a5a2a').line(20, 25, 35, 43, '#8a5a2a').line(35, 25, 20, 43, '#8a5a2a');
     return p.outline(INK);
   },
+  // Cartel de madera con «CAIT» en letras de píxel
+  sign_cait() {
+    const p = new PX(22, 18), L = '#fff6dc';
+    p.rect(5, 11, 2, 6, '#6e4520').rect(15, 11, 2, 6, '#6e4520').rect(1, 1, 20, 11, '#c98f4e').rect(1, 1, 20, 1, '#dba865').rect(1, 11, 20, 1, '#a8743c');
+    p.rect(3, 4, 1, 5, L).rect(4, 4, 2, 1, L).rect(4, 8, 2, 1, L);                       // C
+    p.rect(7, 5, 1, 4, L).rect(9, 5, 1, 4, L).px(L, [8, 4]).px(L, [8, 6]);               // A
+    p.rect(12, 4, 1, 5, L).px(L, [11, 4], [13, 4], [11, 8], [13, 8]);                    // I
+    p.rect(15, 4, 3, 1, L).rect(16, 5, 1, 4, L);                                         // T
+    p.px('#e2574c', [19, 3]).px('#f7a8c0', [19, 9], [2, 10]);
+    return p.outline(INK);
+  },
+  // Macetitas con flores para la entrada de casa de Cait
+  pot_r: () => pot('#e2574c', '#ffd23f'), pot_y: () => pot('#ffd23f', '#f08a24'), pot_p: () => pot('#f7a8c0', '#ffffff'), pot_v: () => pot('#b8a0d8', '#ffe066'),
+  // Embarcadero: barca de remos amarrada y poste de amarre
+  boat() {
+    const p = new PX(26, 14), H = '#8a5a2a', HL = '#c98f4e', IN = '#a8743c';
+    p.ell(13, 7, 12, 5.5, H).ell(13, 6.6, 10, 4, IN).rect(6, 5, 1, 4, HL).rect(13, 3, 1, 8, HL).rect(19, 5, 1, 4, HL).rect(2, 6, 22, 1, '#6e4520');
+    p.line(8, 9, 14, 12, '#dba865').px('#dba865', [15, 12], [16, 12]);
+    return p.outline(INK);
+  },
+  boat2() {
+    const p = new PX(26, 14), H = '#3f8fd8', HL = '#ffffff', IN = '#bfe3f7';
+    p.ell(13, 7, 12, 5.5, H).ell(13, 6.6, 10, 4, IN).rect(13, 3, 1, 8, HL).rect(2, 6, 22, 1, '#2a6bb0').px('#e2574c', [21, 4], [21, 5]);
+    return p.outline(INK);
+  },
+  lotus() {
+    const p = new PX(14, 10);
+    p.ell(7, 7, 6, 2.5, '#3f9f4f').px('#2a6b3a', [7, 6], [8, 7]).rect(6, 7, 1, 2, '#63b04f');
+    p.ell(7, 5, 2.4, 2, '#f7a8c0').px('#f06aa8', [7, 3], [5, 5], [9, 5]).px('#ffe066', [7, 5]);
+    return p.outline(INK);
+  },
+  lotus_pad() { return new PX(12, 6).ell(6, 3, 5, 2.2, '#3f9f4f').px('#2a6b3a', [6, 2], [7, 3], [8, 3]).outline(INK); },
+  post() { return new PX(6, 14).rect(1, 2, 4, 11, '#6e4520').rect(1, 2, 4, 1, '#a8743c').rect(0, 6, 6, 1, '#dba865').outline(INK); },
   sign() { return new PX(14, 16).rect(6, 9, 2, 6, '#6e4520').rect(1, 2, 12, 8, '#c98f4e').rect(3, 4, 8, 1, '#6e4520').rect(3, 6, 6, 1, '#6e4520').outline(INK); },
   kiosk() {
     const p = new PX(14, 22);
@@ -996,6 +1084,14 @@ const OBJ = {
   },
   bubble() { return new PX(9, 12).rect(1, 1, 7, 8, '#fff').px('#fff', [4, 9]).rect(4, 2, 1, 4, '#e2574c').px('#e2574c', [4, 7]).outline(INK); },
   shadow() { return new PX(14, 5).ell(7, 2.5, 6.5, 2.2, '#000'); },
+  bed2() { // cama de matrimonio de Cait: dos almohadas y edredón
+    const p = new PX(32, 32), Q = '#5a78b0', QL = '#7d98c8';
+    p.rect(1, 1, 30, 30, '#8a5a2a').rect(1, 1, 30, 3, '#a8743c').rect(2, 4, 28, 26, '#fff');
+    p.rect(4, 5, 11, 6, '#e6edf6').rect(17, 5, 11, 6, '#e6edf6').rect(4, 10, 11, 1, '#c9d3e2').rect(17, 10, 11, 1, '#c9d3e2');
+    p.rect(2, 13, 28, 17, Q).rect(2, 13, 28, 2, QL);
+    for (let y = 18; y < 30; y += 4) p.rect(2, y, 28, 1, QL);
+    return p.outline(INK);
+  },
   bed() {
     const p = new PX(18, 32);
     p.rect(1, 1, 16, 30, '#8a5a2a').rect(2, 3, 14, 27, '#fff').rect(4, 4, 10, 6, '#bfe3f7').rect(2, 12, 14, 18, '#3f8f6b');

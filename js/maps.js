@@ -6,7 +6,7 @@ import { rng } from './art.js';
 import { State, SOCK_DESIGN } from './state.js';
 
 export const TILE = 16;
-const SOLID_TILES = '~rCicWxqL';
+const SOLID_TILES = '~rCicWVxqL';
 
 function base(id, name, w, h, fill) {
   const m = {
@@ -92,7 +92,7 @@ function isla() {
   path(21, 30, 21, 32); path(25, 30, 25, 32);
   path(22, 17, 26, 17);                                 // restaurante
   path(17, 25, 18, 25);                                 // campo de nabos
-  path(36, 26, 40, 26);                                 // gimnasio
+  path(36, 26, 40, 26);                                 // embarcadero (donde antes estaba el gimnasio)
 
   // Edificios y decorado
   m.obj('house_cait', 21, 9, 3, 2, { open: [[22, 10]] });
@@ -185,10 +185,27 @@ function isla() {
     else if (!forest && r() < 0.012) m.obj('rock', x, y);
   }
 
+  // Decorado añadido después del reparto de árboles (así no cambia dónde caen y los calcetines siguen tapados)
+  const clear = (x, y) => {
+    m.objects = m.objects.filter((o) => !((o.tex === 'tree' || o.tex === 'rock') && Math.floor(o.x / TILE) === x && Math.floor(o.y / TILE) - 1 === y));
+    m.block[y][x] = false;
+  };
+  const extra = (tex, x, y) => { clear(x, y); m.obj(tex, x, y); };
+  // Entrada de casa de Cait: macetitas y el cartel con su nombre
+  extra('pot_r', 20, 10); extra('pot_y', 24, 10); extra('pot_p', 21, 11); extra('pot_v', 23, 11);
+  clear(20, 11); m.ent({ id: 'sign_cait', tex: 'sign_cait', tx: 20, ty: 11, solid: true, script: 'signCait' });
+  // Embarcadero al final del camino que hay detrás del Combini (las barcas solo son decorado)
+  for (const x of [34, 35]) { clear(x, 26); m.set(x, 26, 'p'); }
+  m.set(33, 26, 'b');
+  m.objects.push({ tex: 'boat', x: 33 * TILE + 6, y: 25 * TILE + 13 }, { tex: 'boat2', x: 32 * TILE + 6, y: 27 * TILE + 15 });
+  m.objects.push({ tex: 'post', x: 33 * TILE + 2, y: 26 * TILE + 4 }, { tex: 'post', x: 33 * TILE + 2, y: 27 * TILE + 2 });
+  m.ent({ id: 'dock_boats', tx: 33, ty: 26, script: 'boats' });
+
   m.regions = [
     { name: 'Casa de Cait', x0: 18, y0: 7, x1: 26, y1: 13 },
+    { name: 'Embarcadero', x0: 31, y0: 24, x1: 36, y1: 27 },
     { name: 'Casa de Lolete', x0: 8, y0: 14, x1: 13, y1: 19, music: 'lolete' },
-    { name: 'Casa Fuxia', x0: 10, y0: 26, x1: 16, y1: 31, music: 'fuxia' },
+    { name: 'Casa Fucsia', x0: 10, y0: 26, x1: 16, y1: 31, music: 'fuxia' },
     { name: 'Aeropuerto', x0: 6, y0: 33, x1: 22, y1: 38 },
     { name: 'Templo de los Sabios', x0: 27, y0: 9, x1: 35, y1: 18, music: 'templo' },
     { name: 'Biang Biang Mian', x0: 23, y0: 14, x1: 26, y1: 18 },
@@ -205,22 +222,27 @@ function isla() {
 
 // ---------------------------------------------------------------- Casa de Cait (interior)
 function cait() {
-  const m = base('cait', 'Casa de Cait', 12, 9, 'o');
+  const m = base('cait', 'Casa de Cait', 12, 10, 'o');
   m.music = 'casa';
-  m.fill(0, 0, 11, 0, 'W'); m.fill(0, 8, 11, 8, 'x'); m.set(6, 8, 'o');
-  m.obj('rug', 5, 4, 3, 2, { flat: true });
-  m.obj('bed', 1, 1, 1, 2);
-  m.obj('shelf', 8, 1, 2, 1);
-  m.obj('plant', 11, 1); m.obj('plant', 0, 7);
-  m.obj('table', 4, 2, 2, 1);
-  m.ent({ id: 'invites', tex: 'invites', tx: 5, ty: 2, oy: -7, script: 'invites', when: () => !State.flag('invites') });
-  m.ent({ id: 'bed', tx: 1, ty: 2, script: 'bed' });
-  m.ent({ id: 'shelf', tx: 8, ty: 1, script: 'shelf' });
-  m.ent({ id: 'exit', kind: 'step', tx: 6, ty: 8, script: 'exitCait' });
-  m.ent({ id: 'party', tx: 4, ty: 2, script: 'fiestaTable' });
-  sock(m, 's10', 0, 6, 5);
+  m.fill(0, 0, 11, 0, 'V'); m.fill(0, 1, 11, 1, 'W'); m.fill(0, 9, 11, 9, 'x'); m.set(6, 9, 'o');
+  // Los tres cuadros de Cait colgados en la pared, en su orden
+  [62, 86, 110].forEach((x, i) => m.objects.push({ tex: 'cuadro' + (i + 1), x, y: 26, flat: true, top: true }));
+  m.ent({ id: 'cuadros', tx: 5, ty: 1, script: 'cuadros' });
+  m.obj('rug', 5, 5, 3, 2, { flat: true });
+  m.obj('bed2', 1, 2, 2, 2);
+  m.obj('shelf', 8, 2, 2, 1);
+  m.obj('plant', 11, 2); m.obj('plant', 0, 8);
+  m.obj('table', 4, 3, 2, 1);
+  m.obj('sofa_cait', 9, 8, 2, 1);
+  m.ent({ id: 'invites', tex: 'invites', tx: 5, ty: 3, oy: -7, script: 'invites', when: () => !State.flag('invites') });
+  m.ent({ id: 'bed', tx: 1, ty: 3, script: 'bed' });
+  m.ent({ id: 'sofa', tx: 9, ty: 8, script: 'sofa' });
+  m.ent({ id: 'shelf', tx: 8, ty: 2, script: 'shelf' });
+  m.ent({ id: 'exit', kind: 'step', tx: 6, ty: 9, script: 'exitCait' });
+  m.ent({ id: 'party', tx: 4, ty: 3, script: 'fiestaTable' });
+  sock(m, 's10', 3, 3, -8); // asoma por debajo de la cama
   // Invitados que ya han cumplido y están preparando la fiesta
-  const SPOTS = [[2, 5], [9, 4], [3, 6], [9, 6], [1, 4], [10, 5], [7, 3], [2, 7]];
+  const SPOTS = [[2, 6], [9, 5], [3, 7], [9, 7], [1, 5], [10, 6], [7, 4], [2, 8]];
   ['lolete', 'tigrito'].forEach((id, i) => {
     m.ent({ id: 'home_' + id, npc: id, who: id, tx: SPOTS[i][0], ty: SPOTS[i][1], solid: true, script: 'homeGuest', when: () => State.d.home.includes(id) });
   });
@@ -229,11 +251,12 @@ function cait() {
 
 // ---------------------------------------------------------------- Apartamento de las Ratitas
 // Puzle del rayo de luz (pasillo, filas 8 a 11). st: 1 = «/», 2 = «\».
-const PEDS = [['m1', 5, 9], ['m2', 5, 10], ['m3', 5, 11], ['m4', 11, 8], ['m5', 14, 9], ['m6', 14, 11], ['m7', 17, 10], ['m8', 17, 11], ['m9', 20, 8]];
-const FIXED = [[11, 11, 1], [17, 8, 2], [23, 10, 1]];
-const GEMS = [[13, 8], [20, 10]];
+const PEDS = [['m1', 5, 9], ['m2', 5, 10], ['m3', 5, 11], ['m4', 11, 8], ['m5', 14, 9], ['m6', 14, 11], ['m7', 17, 10], ['m8', 17, 11], ['m9', 20, 8], ['m10', 9, 8], ['m11', 8, 10]];
+const FIXED = [[23, 11, 1], [19, 8, 1], [20, 10, 1]];
+// Cristales en orden rojo, azul, amarillo y verde (amarillo y verde estropean el lila)
+const GEMS = [[12, 10], [11, 10], [21, 8], [6, 9]];
 const PILLARS = [];
-export const BEAM_SOLUTION = { m3: 2, m4: 1, m7: 2 };
+export const BEAM_SOLUTION = { m2: 2, m7: 2, m8: 2 };
 // Tres cuartos (uno por ratita) + el de Cuy, sobre un pasillo con el rayo de luz, Kai y la alcantarilla.
 function ratitas() {
   const m = base('ratitas', 'Apartamento de las Ratitas', 30, 13, 'x');
@@ -253,13 +276,16 @@ function ratitas() {
   m.ent({ id: 'sign', tex: 'sign', tx: 4, ty: 11, solid: true, script: 'signRatitas' });
   m.ent({ id: 'grate', tx: 5, ty: 7, script: 'grate' });
   const mirrorTex = (id) => () => ['stand', 'mirror_a', 'mirror_b'][S.d.flags[id] || 0];
-  // Rayo de luz: tres espejos fijos atornillados al suelo, nueve pedestales para los tres espejos de mano
-  // y dos cristales de color. Solo una colocación lleva hasta Kai un rayo morado (rojo + azul).
+  // Rayo de luz: tres espejos fijos atornillados al suelo, once pedestales para los tres espejos de mano
+  // y cuatro cristales de color. Solo una colocación lleva hasta Kai un rayo lila (rojo + azul, sin amarillo ni verde);
+  // hay muchas que le llegan de otro color. Comprobado por ordenador.
   for (const [x, y] of PILLARS) m.set(x, y, 'L');
   for (const [id, tx, ty] of PEDS) m.ent({ id, tx, ty, solid: true, texFn: mirrorTex(id), script: 'mirror' });
   FIXED.forEach(([tx, ty, st], i) => m.ent({ id: 'fx' + i, tex: st === 1 ? 'mirror_fa' : 'mirror_fb', tx, ty, solid: true, script: 'mirrorFixed' }));
   m.ent({ id: 'gem_r', tex: 'gem_r', tx: GEMS[0][0], ty: GEMS[0][1], solid: true, script: 'gem' });
   m.ent({ id: 'gem_b', tex: 'gem_b', tx: GEMS[1][0], ty: GEMS[1][1], solid: true, script: 'gem' });
+  m.ent({ id: 'gem_y', tex: 'gem_y', tx: GEMS[2][0], ty: GEMS[2][1], solid: true, script: 'gem' });
+  m.ent({ id: 'gem_g', tex: 'gem_g', tx: GEMS[3][0], ty: GEMS[3][1], solid: true, script: 'gem' });
   m.beam = { src: [5, 8], dir: [0, 1], mirrors: PEDS.map(([id, tx, ty]) => ({ id, tx, ty })), fixed: FIXED.map(([tx, ty, st]) => ({ tx, ty, st })), gems: GEMS, target: [23, 8], stop: [24, 8] };
   m.ent({ id: 'kai_sleep', tex: 'kai_sleep', tx: 24, ty: 8, solid: true, script: 'kaiSleep', when: () => !S.flag('kai') });
   m.ent({ id: 'kai', npc: 'kai', tx: 23, ty: 8, solid: true, script: 'kai', when: () => S.flag('kai') });
@@ -356,13 +382,15 @@ function castillo() {
   for (const [x, y] of [[26, 5], [26, 7], [27, 9], [28, 10], [30, 10], [36, 10], [38, 8], [27, 3], [37, 3], [26, 6], [29, 11], [37, 10]]) m.deco('reeds', x, y);
   [[24, 8], [25, 10], [24, 11]].forEach(([tx, ty], i) => m.ent({ id: 'capy' + i, npc: 'capybara', tx, ty, solid: true, script: 'capybaras', when: () => !S.flag('pato') }));
   // Con Patito ya tranquilo, los capybaras se bañan en el estanque (solo asoma la cabeza)
-  [[31, 9], [33, 9], [35, 9]].forEach(([tx, ty], i) => m.ent({ id: 'capyh' + i, tex: 'capy_swim', tx, ty, oy: -2, bob: true, script: 'capybarasHappy', when: () => S.flag('pato') }));
+  [[29, 6], [31, 4], [34, 4], [36, 6], [30, 8], [33, 7], [35, 9]].forEach(([tx, ty], i) => m.ent({ id: 'capyh' + i, tex: 'capy_swim', tx, ty, oy: -2, bob: true, script: 'capybarasHappy', when: () => S.flag('pato') }));
+  // Flores de loto flotando en el estanque
+  for (const [x, y, t] of [[28, 7, 'lotus'], [32, 5, 'lotus_pad'], [37, 7, 'lotus'], [33, 9, 'lotus'], [31, 6, 'lotus_pad'], [35, 5, 'lotus'], [30, 9, 'lotus_pad']]) m.objects.push({ tex: t, x: x * TILE + 8, y: y * TILE + 12, flat: true, top: true });
   m.ent({ id: 'patito', npc: 'patito', tx: 32, ty: 11, solid: true, script: 'patito', when: () => S.flag('pato') });
 
   // Pastelería Real
   m.obj('pasteleria', 30, 15, 5, 3);
   m.ent({ id: 'mantecas', npc: 'mantecas', tx: 31, ty: 18, solid: true, script: 'mantecas' });
-  m.ent({ id: 'manteca2', npc: 'manteca2', tx: 33, ty: 18, solid: true, script: 'mantecas' });
+  m.ent({ id: 'manteca2', npc: 'manteca2', tx: 33, ty: 18, solid: true, script: 'manteca2' });
 
   for (const [x, y] of [[2, 4], [10, 4], [12, 6], [16, 5], [22, 5], [2, 12], [9, 18], [2, 24], [8, 24], [14, 23], [25, 23], [30, 22], [36, 23], [37, 13], [28, 23], [11, 11], [36, 20], [16, 7], [23, 7]]) m.obj('tree', x, y);
 

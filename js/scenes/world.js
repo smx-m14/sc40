@@ -6,7 +6,7 @@ import { Sound } from '../audio.js';
 import { buildMap, TILE } from '../maps.js';
 import { makeTiles } from '../art.js';
 import { SCRIPTS } from '../story.js';
-import { traceBeam } from '../beam.js';
+import { traceBeam, beamColor } from '../beam.js';
 
 const SPEED = 74;
 const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
@@ -113,16 +113,16 @@ export class WorldScene extends Phaser.Scene {
     if (!this.map.beam) return;
     const g = this.beamG = this.beamG || this.add.graphics().setDepth(2);
     const { cells } = traceBeam(this.map, State.d.flags);
-    const COL = [0xfff9d0, 0xff7a6a, 0xc07af0]; // blanco → rojo → morado según los cristales atravesados
+    const col = (mask) => beamColor(mask)[1]; // el rayo se tiñe con la mezcla de cristales atravesados
     g.clear();
     let prev = [this.map.beam.src[0] * TILE + 8, this.map.beam.src[1] * TILE - 4], n = 0;
     for (const [x, y, k] of cells) {
       const p = [x * TILE + 8, y * TILE + 8];
-      g.lineStyle(5, COL[n], 0.25).lineBetween(prev[0], prev[1], p[0], p[1]);
-      g.lineStyle(2, COL[n], 0.95).lineBetween(prev[0], prev[1], p[0], p[1]);
-      prev = p; n = Math.min(k, COL.length - 1);
+      g.lineStyle(5, col(n), 0.25).lineBetween(prev[0], prev[1], p[0], p[1]);
+      g.lineStyle(2, col(n), 0.95).lineBetween(prev[0], prev[1], p[0], p[1]);
+      prev = p; n = k;
     }
-    g.fillStyle(COL[n], 0.5).fillCircle(prev[0], prev[1], 5).fillStyle(0xffffff, 1).fillCircle(prev[0], prev[1], 2);
+    g.fillStyle(col(n), 0.5).fillCircle(prev[0], prev[1], 5).fillStyle(0xffffff, 1).fillCircle(prev[0], prev[1], 2);
   }
 
     tileOf() { return { x: Math.floor(this.p.x / TILE), y: Math.floor((this.p.y - 2) / TILE) }; }

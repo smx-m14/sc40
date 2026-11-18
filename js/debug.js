@@ -17,14 +17,14 @@ export const STEPS = [
   { id: 'tigrito', label: 'Bosque de los monos', flag: 'tigrito', apply() { f('metMonos', 'tigrito'); inv('tigrito'); if (!S.flag('simon')) join('tigrito'); } },
   { id: 'cueva', label: 'Cavar la cueva', flag: 'caveOpen', apply() { f('caveOpen'); home('lolete'); } },
   { id: 'ratitas', label: 'Los tres cuartos de las ratitas', flag: 'r3', apply() { f('r1', 'r2', 'r3', 'metRatitaO'); S.d.flags.lamps = [1, 1, 1, 1, 1]; } },
-  { id: 'kai', label: 'Espejos y Kai', flag: 'kai', apply() { Object.assign(S.d.flags, { m1: 0, m2: 0, m3: 2, m4: 1, m5: 0, m6: 0, m7: 2, m8: 0, m9: 0 }); f('kai'); inv('kai'); } },
+  { id: 'kai', label: 'Espejos y Kai', flag: 'kai', apply() { Object.assign(S.d.flags, { m1: 0, m2: 2, m3: 0, m4: 0, m5: 0, m6: 0, m7: 2, m8: 2, m9: 0, m10: 0, m11: 0 }); f('kai'); inv('kai'); } },
   { id: 'cuy', label: 'Cuy se une', flag: 'cuy', apply() { f('metCuy', 'cuy', 'nota', 'imanes'); inv('cuy'); if (!S.flag('cuyTemple')) join('cuy'); } },
   { id: 'candado', label: 'Candado de la alcantarilla', flag: 'hatchOpen', apply() { f('hatchOpen'); } },
   { id: 'cuca', label: 'Cuy traduce a Cuca', flag: 'cuyTemple', apply() { f('metScooby', 'cuyTemple'); out('cuy'); inv('scooby', 'cuca'); } },
   { id: 'pato', label: 'Patito y los capybaras', flag: 'pato', apply() { f('metCapys', 'pato'); inv('patito', 'capybaras'); } },
   { id: 'simon', label: 'Teatro Real', flag: 'simon', apply() { f('simon'); inv('owitos_teatro'); home('tigrito'); } },
   { id: 'horno', label: 'Pastelería Real', flag: 'horno', apply() { f('metMantecas', 'horno'); inv('mantecas'); } },
-  { id: 'gate', label: 'Andamios (gatos reversibles)', flag: 'gateOpen', apply() { f('metPeludito', 'andamios', 'gateOpen'); inv('peludito', 'gatos'); } },
+  { id: 'gate', label: 'Andamios (Gemelos bipolares)', flag: 'gateOpen', apply() { f('metPeludito', 'andamios', 'gateOpen'); inv('peludito', 'gatos'); } },
   { id: 'narwal', label: 'Llamar a Narwal (Otamatone)', flag: 'narwal', apply() { f('narwal'); inv('narwal'); } },
   { id: 'hack', label: 'Hackear la puerta de TEDI', flag: 'tediHack', apply() { f('metOvejoncio', 'tediHack'); inv('ovejoncio'); } },
   { id: 'tedi', label: 'Jefe de TEDI (Owinken)', flag: 'tedi', apply() { f('metHel', 'tedi'); inv('owinken'); } },
@@ -32,7 +32,7 @@ export const STEPS = [
   { id: 'tarta', label: 'Escolta de la tarta', flag: 'tarta', apply() { S.d.flags.tarta = 4; inv('heladoncio'); } },
   { id: 'luces', label: 'Luces de la Casa de la Navidad', flag: 'luces', apply() { f('luces'); inv('owitos_navidad'); } },
   { id: 'globos', label: 'Globos (awawas de Kapadokya)', flag: 'globos', apply() { f('metSiri', 'globos'); inv('siri'); } },
-  { id: 'gramola', label: 'Prueba de oído de Fuxia', flag: 'gramola', apply() { f('metFuxia', 'gramola'); inv('fuxia'); } },
+  { id: 'gramola', label: 'Prueba de oído de Fucsia', flag: 'gramola', apply() { f('metFuxia', 'gramola'); inv('fuxia'); } },
   { id: 'paella', side: true, label: 'Paella de Perrunfli', flag: 'paella', apply() { f('metPerrunfli', 'paella'); gift('mocadora'); inv('perrunfli'); } },
 ];
 
@@ -40,7 +40,7 @@ export const STEPS = [
 // partida se queda igual) y se lleva a Colgadín junto a quien la propone. Las invitaciones y regalos se conservan.
 const no = (...k) => k.forEach((x) => { delete S.d.flags[x]; });
 const free = (id) => { out(id); S.d.home = S.d.home.filter((p) => p !== id); };
-const MIRRORS = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9'];
+const MIRRORS = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9', 'm10', 'm11'];
 export const UNDO = {
   lolete: { at: ['isla', 11, 18], undo() { no('lolete'); S.d.sokoLevel = 0; free('lolete'); } },
   tigrito: { at: ['isla', 41, 12], undo() { no('tigrito'); free('tigrito'); } },
@@ -79,7 +79,7 @@ export function skipTo(id) {
 }
 
 export const PLACES = [
-  ['Casa de Cait', 'cait', 6, 6], ['Templo', 'isla', 31, 18], ['Gimnasio', 'helada', 24, 19], ['Bosque', 'isla', 40, 12],
+  ['Casa de Cait', 'cait', 6, 7], ['Templo', 'isla', 31, 18], ['Gimnasio', 'helada', 24, 19], ['Bosque', 'isla', 40, 12],
   ['Muelle', 'isla', 9, 10], ['Kapadokya', 'isla', 46, 33], ['Apartamento', 'ratitas', 2, 11], ['Castillo', 'castillo', 5, 20], ['Isla Helada', 'helada', 19, 21],
 ];
 export function teleport(i) {

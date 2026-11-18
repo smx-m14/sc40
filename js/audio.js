@@ -1,5 +1,5 @@
 // Sonido. Toda la música es chiptune sintetizado con WebAudio (las canciones de zona salen de js/songs-data.js);
-// solo los efectos grabados (monos, patito) y la prueba de Fuxia usan mp3. Pistas sintetizadas: "NOTA:pasos ..." (paso = corchea, "-" = silencio).
+// solo los efectos grabados (monos, patito) y la prueba de Fucsia usan mp3. Pistas sintetizadas: "NOTA:pasos ..." (paso = corchea, "-" = silencio).
 import { State } from './state.js';
 import { GENERATED } from './songs-data.js';
 
@@ -118,7 +118,7 @@ export const Sound = {
     }
   },
   // Música de logro: suena al conseguir cualquier cosa y baja la música de fondo mientras dura.
-  // Adivinanza musical de Fuxia: toca el arranque de una canción deformado. Devuelve cuánto dura (s).
+  // Adivinanza musical de Fucsia: toca el arranque de una canción deformado. Devuelve cuánto dura (s).
   // mode: 'fast' acelerada · 'rev' al revés · 'low' muy grave · 'short' solo un segundo
   riddle(id, mode) {
     if (!this.ctx || !SONGS[id]) return 0;

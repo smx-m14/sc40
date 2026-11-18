@@ -1,13 +1,14 @@
-// Minijuego de ritmo (al estilo de Rhythm Heaven): desmontar los andamios del castillo con los gatos reversibles.
-// El gato marca un ritmo con el martillo en un compás y Colgadín tiene que repetirlo, igual, en el compás siguiente
-// pulsando el botón de acción; después hay un compás de respiro en el que se ve el resultado. Si lo clava, cae un tablón y el gato se pone del lado feliz; si no, se da la vuelta
+// Minijuego de ritmo (al estilo de Rhythm Heaven): desmontar los andamios del castillo con los Gemelos bipolares.
+// Cada ronda: cuenta de cuatro → el gato marca un ritmo con el martillo → otra cuenta de cuatro → Colgadín lo repite,
+// igual, con el botón de acción → compás de respiro en el que se ve el resultado. Si lo clava, cae un tablón y el gato se pone del lado feliz; si no, se da la vuelta
 // enfurruñado y el andamio recupera un tablón. Hay que tirar los 8 tablones.
 import { Input } from '../input.js';
 import { UI } from '../ui.js';
 import { Sound } from '../audio.js';
 import { SCRIPTS } from '../story.js';
 
-const BPM = 100, BEAT = 60000 / BPM, EIGHTH = BEAT / 2, BAR = BEAT * 4, WIN = 115;
+const BPM = 92, BEAT = 60000 / BPM, EIGHTH = BEAT / 2, BAR = BEAT * 4, WIN = 135;
+const CYCLE = ['count', 'call', 'count2', 'resp', 'rest'];
 const GOAL = 8;
 // Posiciones de los golpes dentro del compás, en corcheas (0–7). De menos a más difícil.
 const PATTERNS = [[0, 2, 4, 6], [0, 4, 6], [0, 2, 3, 4], [0, 3, 4], [0, 2, 5, 6], [1, 3, 5], [0, 1, 2, 4, 6], [0, 3, 5, 6], [1, 2, 4, 5, 7], [0, 2, 3, 5, 6, 7]];
@@ -48,12 +49,13 @@ export class RitmoScene extends Phaser.Scene {
 
   async intro(again) {
     this.lock = true;
-    await UI.say('Gato reversible', again
+    await UI.say('Gemelo bipolar', again
       ? ['Así no. ¡Escucha primero mi compás y luego repítelo en el siguiente, igualito!', 'Volvemos a empezar con la cuenta: un, dos, tres, cuatro…']
       : [
-        '¡Miau! Somos los gatos reversibles: si algo sale bien, se nos ve contentos; si sale mal, nos damos la vuelta y ponemos esta cara.',
+        '¡Miau! Somos los Gemelos bipolares: si algo sale bien, se nos ve contentos; si sale mal, nos damos la vuelta y ponemos esta cara.',
         'Los andamios se desmontan a martillazos, pero AL COMPÁS. Yo toco un ritmo en un compás y tú lo repites en el siguiente, igualito, con el botón de acción.',
-        'Primero cuento cuatro. Cada ritmo que clavas tira un tablón; si fallas, el andamio se rehace un poco. Son ocho tablones.',
+        'Antes de mi ritmo cuento cuatro, y antes de tu turno vuelvo a contar cuatro: el primer golpe va justo después del «4».',
+        'Cada ritmo que clavas tira un tablón; si fallas, el andamio se rehace un poco. Son ocho tablones.',
       ]);
     Input.clear();
     this.fails = 0;
@@ -61,12 +63,13 @@ export class RitmoScene extends Phaser.Scene {
     this.lock = false;
   }
 
-  // Reloj: compás 0 = cuenta; después se repite llamada del gato → respuesta de Colgadín → respiro
+  // Reloj: se repite cuenta → llamada del gato → cuenta → respuesta de Colgadín → respiro
   phase(now) {
-    const b = Math.floor((now - this.t0) / BAR);
-    if (b < 1) return { kind: 'count', b, start: this.t0 };
-    return { kind: ['call', 'resp', 'rest'][(b - 1) % 3], b, start: this.t0 + b * BAR };
+    const b = Math.max(0, Math.floor((now - this.t0) / BAR));
+    return { kind: CYCLE[b % CYCLE.length], b, start: this.t0 + b * BAR };
   }
+  // Retraso de la salida de audio: el jugador pulsa con lo que OYE, que suena un poco después de lo programado
+  latency() { const c = Sound.ctx; return c ? ((c.baseLatency || 0) + (c.outputLatency || 0)) * 1000 : 0; }
 
   // Sonidos programados con el reloj de audio (sin retrasos de fotograma)
   at(ms, f, dur, wave, vol) {
@@ -78,9 +81,10 @@ export class RitmoScene extends Phaser.Scene {
       const start = this.t0 + b * BAR;
       for (let q = 0; q < 4; q++) { // metrónomo suave en cada pulso
         const t = start + q * BEAT, key = 'm' + b + q;
-        if (t > now - 10 && t < now + 250 && !this.sched.has(key)) { this.sched.add(key); this.at(t, b === 0 ? 1200 : q === 0 ? 900 : 700, 0.04, 'square', b === 0 ? 0.08 : 0.03); }
+        const kind = CYCLE[b % CYCLE.length], count = kind === 'count' || kind === 'count2';
+        if (t > now - 10 && t < now + 250 && !this.sched.has(key)) { this.sched.add(key); this.at(t, count ? (kind === 'count' ? 1200 : 1500) : q === 0 ? 900 : 700, 0.05, 'square', count ? 0.1 : 0.03); }
       }
-      if (b >= 1 && (b - 1) % 3 === 0) for (const e of PATTERNS[this.pat % PATTERNS.length]) {
+      if (CYCLE[b % CYCLE.length] === 'call') for (const e of PATTERNS[this.pat % PATTERNS.length]) {
         const t = start + e * EIGHTH, key = 'c' + b + e;
         if (t > now - 10 && t < now + 250 && !this.sched.has(key)) { this.sched.add(key); this.at(t, 330, 0.09, 'triangle', 0.3); this.at(t, 990, 0.03, 'square', 0.05); }
       }
@@ -136,9 +140,11 @@ export class RitmoScene extends Phaser.Scene {
       }
       if (ph.kind === 'call') this.result = '';
       if (Input.take('a')) {
-        const t = Input.t.a || now;
-        if (ph.kind === 'resp' || (ph.kind === 'rest' && now - ph.start < WIN)) {
-          const start = ph.kind === 'resp' ? ph.start : ph.start - BAR;
+        const t = (Input.t.a || now) - this.latency();
+        // se admite el primer golpe un pelín adelantado (al final de la cuenta) y el último algo tarde
+        const early = ph.kind === 'count2' && ph.start + BAR - t <= WIN;
+        if (ph.kind === 'resp' || early || (ph.kind === 'rest' && now - ph.start < WIN)) {
+          const start = ph.kind === 'resp' ? ph.start : early ? ph.start + BAR : ph.start - BAR;
           this.presses.push(t);
           const hit = PATTERNS[this.pat % PATTERNS.length].some((e) => Math.abs(start + e * EIGHTH - t) <= WIN);
           this.at(now, hit ? 196 : 120, 0.1, hit ? 'square' : 'sawtooth', 0.14);
@@ -148,7 +154,9 @@ export class RitmoScene extends Phaser.Scene {
       if (Input.take('b')) return this.exit();
       // golpes del gato durante su compás (animación)
       if (ph.kind === 'call') for (const e of PATTERNS[this.pat % PATTERNS.length]) if (Math.abs(now - (ph.start + e * EIGHTH)) < 30) this.catHit = 1;
-      this.label.setText(ph.kind === 'count' ? ['1', '2', '3', '4'][Math.min(3, Math.floor((now - this.t0) / BEAT))] || '' : ph.kind === 'call' ? '¡Escucha!' : ph.kind === 'resp' ? '¡Ahora tú!' : this.result).setColor(ph.kind === 'resp' ? '#c8402c' : '#3b2a20');
+      const n = ['1', '2', '3', '4'][Math.min(3, Math.floor((now - ph.start) / BEAT))];
+      this.label.setText(ph.kind === 'count' ? `Escucha… ${n}` : ph.kind === 'count2' ? `Te toca… ${n}` : ph.kind === 'call' ? '¡Escucha!' : ph.kind === 'resp' ? '¡Ahora tú!' : this.result)
+        .setColor(ph.kind === 'resp' || ph.kind === 'count2' ? '#c8402c' : '#3b2a20');
     } else { Input.clear(); this.label.setText(''); }
     this.catHit = Math.max(0, this.catHit - 0.12); this.colHit = Math.max(0, this.colHit - 0.12); this.planksShake = Math.max(0, this.planksShake - 0.05);
 

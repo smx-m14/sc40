@@ -7,7 +7,7 @@ export const CHARACTERS = [
   { id: 'lolete', name: 'Lolete', where: 'Casa de Lolete' },
   { id: 'scooby', name: 'Scooby', where: 'Templo de los Sabios' },
   { id: 'cuca', name: 'Cuca', where: 'Templo de los Sabios' },
-  { id: 'fuxia', name: 'Fuxia', where: 'Casa Fuxia' },
+  { id: 'fuxia', name: 'Fucsia', where: 'Casa Fucsia' },
   { id: 'perrunfli', name: 'Perrunfli', where: 'Campo de nabos' },
   { id: 'bart', name: 'Bart', where: 'Fitness Fattory' },
   { id: 'tigrito', name: 'Tigrito', where: 'Bosque' },
@@ -22,7 +22,7 @@ export const CHARACTERS = [
   { id: 'owitos_navidad', name: 'Owitos de Navidad', where: 'Casa de la Navidad' },
   { id: 'owinken', name: 'Owinken', where: 'TEDI' },
   { id: 'heladoncio', name: 'Heladoncio', where: 'Sweet Famosa' },
-  { id: 'gatos', name: 'Los gatos reversibles', where: 'Castillo' },
+  { id: 'gatos', name: 'Los Gemelos bipolares', where: 'Castillo' },
   { id: 'siri', name: 'Siri y los awawas', where: 'Kapadokya' },
   { id: 'ovejoncio', name: 'Ovejoncio', where: 'TEDI' },
 ];
@@ -45,6 +45,7 @@ export const GACHA = [
 export const GIFTS = {
   mocadora: { name: 'Mocadorà', icon: 'candy', desc: 'Figuritas de mazapán con forma de frutas y hortalizas de la huerta valenciana.' },
   miausis: { name: 'Libro de los Miausis', icon: 'book', desc: 'Un álbum de fotos de Cait y Mindeos.', album: true },
+  flores: { name: 'Centro de flores de loto', icon: 'flower', desc: 'Flores de loto del estanque del castillo, de parte de Patito y los capybaras.' },
 };
 
 // Libro de los Miausis, en orden cronológico
@@ -81,8 +82,8 @@ export const HATCH_CODE = '1987'; // el año en que nació Cait
 function fresh() {
   return {
     v: 1,
-    pos: { map: 'cait', x: 96, y: 88, dir: 'down' },
-    flags: {},
+    pos: { map: 'cait', x: 96, y: 104, dir: 'down' },
+    flags: { cait2: true },
     socks: [],        // ids de calcetines recogidos
     pairsTraded: 0,
     traded: [],       // diseños de calcetín ya cambiados a Scooby por una moneda
@@ -112,9 +113,10 @@ export const State = {
         const ids = GACHA.map((g) => g.id);
         this.d.gacha = this.d.gacha.filter((g) => ids.includes(g)); // partidas antiguas guardaban nombres
         delete this.d.lps;
+        if (!this.d.flags.cait2) { if (this.d.pos.map === 'cait') this.d.pos.y += 16; this.d.flags.cait2 = true; } // la casa de Cait creció una fila (pared con cuadros)
         if (this.d.flags.awawas && !this.d.flags.globos) this.d.flags.globos = true; // antes Kapadokya daba calcetines
         if (this.d.pairsTraded && !this.d.traded.length) this.d.traded = this.sockPairs().slice(0, this.d.pairsTraded); // partidas antiguas
-        if (this.d.flags.kai) Object.assign(this.d.flags, { m1: 0, m2: 0, m3: 2, m4: 1, m5: 0, m6: 0, m7: 2, m8: 0, m9: 0 }); // espejos en su sitio
+        if (this.d.flags.kai) Object.assign(this.d.flags, { m1: 0, m2: 2, m3: 0, m4: 0, m5: 0, m6: 0, m7: 2, m8: 2, m9: 0, m10: 0, m11: 0 }); // espejos en su sitio
         if (this.d.flags.caveOpen && this.d.party.includes('lolete')) { this.d.party = this.d.party.filter((p) => p !== 'lolete'); this.d.home.push('lolete'); }
       }
       const s = localStorage.getItem(SETTINGS);
