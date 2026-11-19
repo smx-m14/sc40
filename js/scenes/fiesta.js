@@ -16,7 +16,7 @@ const LAYER = [0xf7a8c0, 0xfff3dc, 0x9fc86a, 0x4a2c1e];
 const BULBS = [0xffe066, 0xe2574c, 0x3f8fd8, 0x82cc6a, 0xf7a8c0];
 const LINES = {
   lolete: 'He inflado todos los globos. Bueno, los que no me he comido.', fuxia: '¡Dale a la gramola! Hoy pincho yo.', peludito: 'Declaro este cumpleaños fiesta nacional del Castillo de Mazapán.',
-  heladoncio: 'La tarta ha llegado entera. Como yo de Edimburgo. Casi.', bart: 'Cuarenta años son solo cuarenta repeticiones. ¡Técnica estricta!', cuy: '¡Cui, cui! Cuca dice que felicidades. Bueno, lo dice en ruso.',
+  heladoncio: 'La tarta ha llegado entera. Y yo, que casi no llego a casa de Cait. ¡Menudo disgusto!', bart: 'Cuarenta años son solo cuarenta repeticiones. ¡Técnica estricta!', cuy: '¡Cui, cui! Cuca dice que felicidades. Bueno, lo dice en ruso.',
   owinken: 'Oink. Prometo que soy el original.', siri: '¡Awawa! Los globos los hemos inflado nosotros. Con los dientecitos no, tranquilos.', ovejoncio: 'He traído el portátil por si hay que hackear algo. Es costumbre.', tigrito: 'Y ahora, todos conmigo. Un, dos, tres…',
 };
 
@@ -38,7 +38,7 @@ export class FiestaScene extends Phaser.Scene {
 
     // Invitados, repartidos en filas a los lados; el centro queda para la tarta y Colgadín
     const sprites = [];
-    for (const c of CHARACTERS) if (d.invited.includes(c.id)) for (const s of GUESTS[c.id] || []) sprites.push(s);
+    for (const c of CHARACTERS) if (d.invited.includes(c.id)) for (const s of GUESTS[c.id] || []) sprites.push(s === 'heladoncio' && State.flag('hat') ? 'heladoncioh' : s);
     const spots = [];
     for (const y of [74, 98, 122, 146, 170]) for (const x of [22, 50, 78, 106, 214, 242, 270, 298]) spots.push([x + (y % 48 ? 0 : 8), y]);
     this.guests = sprites.slice(0, spots.length).map((s, i) => {

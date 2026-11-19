@@ -414,7 +414,9 @@ function helada() {
   }
   for (const [cx, cy, rr] of [[12, 17, 2.3], [27, 16, 2.5], [33, 12, 1.6]]) for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (Math.hypot(x - cx, y - cy) < rr && m.get(x, y) === 'S') m.set(x, y, 'I');
   const path = (x0, y0, x1, y1) => m.fill(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1), Math.max(y0, y1), 'P');
-  path(19, 7, 20, 19); path(8, 13, 30, 13); path(8, 11, 8, 13); path(30, 11, 30, 13); path(21, 7, 21, 7);
+  path(19, 7, 20, 19); path(7, 13, 30, 13); path(30, 11, 30, 13); path(21, 7, 21, 7);
+  path(7, 11, 8, 13);   // a la Casa de la Navidad: dos baldosas de ancho, centrado bajo su puerta (que cae entre la 7 y la 8)
+  path(21, 18, 23, 18); // al Fitness Bartory: rodea el edificio y llega a su puerta (baldosa 23), que está por abajo
   m.fill(19, 20, 20, 24, 'b'); // muelle
 
   m.obj('sweetfamosa', 17, 4, 6, 3);
@@ -428,13 +430,18 @@ function helada() {
   m.ent({ id: 'ovejoncio', npc: 'ovejoncio', tx: 27, ty: 11, solid: true, script: 'ovejoncio' });
 
   m.ent({ id: 'narwal', tex: 'narwal', tx: 21, ty: 23, ox: 6, oy: 6, solid: true, script: 'narwalBack', bob: true });
-  m.ent({ id: 'heladoncio', npc: 'heladoncio', tx: 22, ty: 8, solid: true, script: 'heladoncio' });
+  m.ent({ id: 'heladoncio', npc: 'heladoncio', tx: 22, ty: 8, solid: true, script: 'heladoncio', when: () => !S.flag('hat') });
+  m.ent({ id: 'heladoncio_h', npc: 'heladoncioh', tx: 22, ty: 8, solid: true, script: 'heladoncio', when: () => S.flag('hat') }); // con su sombrero
+  // Curiosidad: el sombrero de Heladoncio se voló y acabó pegado al lado izquierdo de la Casa de la Navidad, por detrás de
+  // la pared: la casa lo tapa casi entero y solo asoma la punta del ala. Se coge desde la baldosa (5, 9), mirando a la casa
+  m.ent({ id: 'straw_hat', tex: 'straw_hat', tx: 6, ty: 9, ox: -1, script: 'hatPick', when: () => !S.flag('hatGot') });
   m.ent({ id: 'sf_door', tx: 21, ty: 6, script: 'sfDoor' });
   m.ent({ id: 'tedi_door', tx: 30, ty: 10, script: 'tediDoor' });
   m.ent({ id: 'owinken', npc: 'owinken', tx: 31, ty: 11, solid: true, script: 'owinken', when: () => S.flag('tedi') });
   [[27, 13], [14, 15], [29, 12]].forEach(([tx, ty], i) => m.ent({ id: 'clon' + i, npc: 'clon', tx, ty, solid: true, script: 'clon', when: () => !S.flag('tedi') }));
-  m.ent({ id: 'navidad_door', tx: 8, ty: 10, script: 'navidad' });
-  m.ent({ id: 'owito_n', npc: 'owito_n', tx: 7, ty: 11, solid: true, script: 'navidad' });
+  m.ent({ id: 'navidad_door', tx: 7, ty: 10, script: 'navidad' }); m.ent({ id: 'navidad_door2', tx: 8, ty: 10, script: 'navidad' });
+  // Los Owitos de Navidad, uno a cada lado del camino, simétricos respecto a la puerta
+  m.ent({ id: 'owito_n', npc: 'owito_n', tx: 6, ty: 11, solid: true, script: 'navidad' });
   m.ent({ id: 'owito_r', npc: 'owito_r', tx: 9, ty: 11, solid: true, script: 'navidad' });
   sock(m, 's8', 3, 11, 6); sock(m, 's9', 34, 8, -6); sock(m, 's18', 26, 6, 6); sock(m, 's19', 10, 17, -6);
 

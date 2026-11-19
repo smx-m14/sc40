@@ -91,7 +91,7 @@ export class TediScene extends Phaser.Scene {
     const best = Math.min(...LANES.map((l) => Math.abs(l - px)));
     const near = LANES.map((l, k) => k).filter((k) => Math.abs(LANES[k] - px) === best);
     const k = near[Math.floor(Math.random() * near.length)], from = PLUGS[i][1] < 100 ? -1 : 1; // 1 = baja desde arriba
-    this.fixers.push({ i, from, x: LANES[k], y: from > 0 ? 40 : 164, spr: this.add.image(0, 0, 'clon_down_0').setOrigin(0.5, 1).setDepth(9) });
+    this.fixers.push({ i, from, x: LANES[k], y: from > 0 ? 40 : 164, spr: this.add.image(0, 0, 'clon_fix_0').setOrigin(0.5, 1).setDepth(9) });
     Sound.sfx('undo'); // aviso sonoro en vez de mensaje
   }
 
@@ -183,7 +183,7 @@ export class TediScene extends Phaser.Scene {
     const side = p.dir === 'left' || p.dir === 'right';
     this.pSpr.setTexture(`colgadin_${side ? 'side' : p.dir}_${Math.floor(p.anim / 0.15) % 2}`).setFlipX(p.dir === 'left').setPosition(Math.round(p.x), Math.round(p.y)).setDepth(10);
     for (const c of this.clones) c.spr.setPosition(Math.round(c.x), Math.round(c.y)).setTexture(`clon_down_${this.done ? 0 : Math.floor(time / 160) % 2}`).setVisible(c.y > 38 && c.y < 166);
-    for (const f of this.fixers) f.spr.setPosition(Math.round(f.x), Math.round(f.y)).setTexture(`clon_down_${Math.floor(time / 120) % 2}`);
+    for (const f of this.fixers) f.spr.setPosition(Math.round(f.x), Math.round(f.y)).setTexture(`clon_fix_${Math.floor(time / 120) % 2}`); // casco de obra y llave inglesa
     this.plugs.forEach((q, i) => { if (q.st !== 'pulled') this.plugSpr[i].setTexture(q.st === 'open' ? 'plug_o' : 'plug_c'); });
     const b = this.belt.clear().fillStyle(0x6a6f7a), off = this.done ? 0 : (time / 1000 * BELT_V) % 16;
     LANES.forEach((x, k) => { for (let y = 40 + (LANE_DIR[k] > 0 ? off : 16 - off); y < 162; y += 16) b.fillRect(x - LW / 2 + 3, y, LW - 6, 2); });
@@ -193,11 +193,6 @@ export class TediScene extends Phaser.Scene {
       if (q.st === 'open') fx.lineStyle(2, 0xffe066, 0.5 + 0.5 * Math.sin(time / 80)).strokeRect(x - 11, y - 10, 22, 20);
       if (q.st === 'pulled' && Math.floor(time / 90 + i) % 3 === 0) fx.fillStyle(0xffe066).fillRect(x - 4 + (i * 3) % 8, y - 3, 2, 2);
     });
-    for (const f of this.fixers) { // casco amarillo de obra sobre la cabeza del clon
-      const x = Math.round(f.x), y = Math.round(f.y);
-      fx.fillStyle(0x1a1412).fillRect(x - 6, y - 21, 12, 5).fillRect(x - 8, y - 17, 16, 2);
-      fx.fillStyle(0xffd23f).fillRect(x - 5, y - 20, 10, 4).fillRect(x - 7, y - 17, 14, 1).fillStyle(0xfff0a0).fillRect(x - 3, y - 19, 2, 1);
-    }
     if (this.count() >= 3 || this.done) for (let i = 0; i < 6; i++) fx.fillStyle(0x999999, 0.5).fillCircle(30 + i * 52 + Math.sin(time / 300 + i) * 6, 30 - ((time / 40 + i * 9) % 30), 4);
   }
 }

@@ -140,11 +140,13 @@ export const UI = {
     t.innerHTML = pix(esc(text)); show(t, false); void t.offsetWidth; show(t);
   },
   // Indicación corta en un cuadrito abajo (null la oculta); hot = en rojo, cuando le toca al jugador
-  cue(text, hot) {
+  // low = más pequeño y pegado al borde de abajo (para explicar botones sin tapar la fila de encima)
+  cue(text, hot, low) {
     const c = $('cue');
     if (!text) { show(c, false); return; }
     if (c.textContent !== text) c.textContent = text;
     c.classList.toggle('hot', !!hot);
+    c.classList.toggle('low', !!low);
     show(c, true);
   },
   zone(text) {

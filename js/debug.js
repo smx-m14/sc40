@@ -34,6 +34,7 @@ export const STEPS = [
   { id: 'globos', label: 'Globos (awawas de Kapadokya)', flag: 'globos', apply() { f('metSiri', 'globos'); inv('siri'); } },
   { id: 'gramola', label: 'Prueba de oído de Fucsia', flag: 'gramola', apply() { f('metFuxia', 'gramola'); inv('fuxia'); } },
   { id: 'paella', side: true, label: 'Paella de Perrunfli', flag: 'paella', apply() { f('metPerrunfli', 'paella'); gift('mocadora'); inv('perrunfli'); } },
+  { id: 'hat', side: true, label: 'Curiosidad: sombrero de Heladoncio', flag: 'hat', apply() { f('metHel', 'hatAsk', 'hatGot', 'hat'); } },
 ];
 
 // Deshacer una prueba ya superada para volver a jugarla: se borra lo que la marca como hecha (el resto de la
@@ -61,6 +62,7 @@ export const UNDO = {
   globos: { at: ['isla', 46, 35], undo() { no('globos'); } },
   gramola: { at: ['isla', 15, 31], undo() { no('gramola'); S.d.flags.fuxiaPts = 0; } },
   paella: { at: ['isla', 24, 26], undo() { no('paella'); } },
+  hat: { at: ['helada', 5, 9], undo() { no('hat', 'hatGot'); } },
 };
 export function undoStep(id) {
   const u = UNDO[id];

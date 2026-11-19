@@ -24,7 +24,7 @@ export const CHARACTERS = [
   { id: 'heladoncio', name: 'Heladoncio', where: 'Sweet Famosa' },
   { id: 'gatos', name: 'Los Gemelos bipolares', where: 'Castillo' },
   { id: 'siri', name: 'Siri y los awawas', where: 'Kapadokya' },
-  { id: 'ovejoncio', name: 'Ovejoncio', where: 'TEDI' },
+  { id: 'ovejoncio', name: 'Ovejoncia', where: 'TEDI' }, // (el id se queda: lo usan las partidas guardadas)
 ];
 
 // Regalos del gachapón (dibujados en art.js → GACHA_ART). Faltan por decidir hasta llegar a 10.

@@ -222,28 +222,39 @@ const CHARS = {
   owito_c(p, dir, o) { owito(p, o, '#f3e6c0', '#b08a50'); p.px('#e2574c', [3, 12 + o], [4, 13 + o]); },
   owito_t(p, dir, o) { owito(p, o, '#b07a44', '#f3e6c0'); p.rect(3, 4 + o, 12, 2, '#d9b040').rect(6, 2 + o, 6, 2, '#e8c860').px('#8a6a20', [5, 5 + o], [9, 5 + o], [13, 5 + o]); },
   // Heladoncio: gato helado napolitano (gris arriba, blanco en medio, rosa abajo)
-  heladoncio(p, dir, o) {
-    const G = '#a8a8b2', W = '#fbf7f2', K = '#f7b8c0';
-    p.px(G, [3, 6 + o], [4, 5 + o], [4, 6 + o], [5, 6 + o], [13, 6 + o], [14, 5 + o], [14, 6 + o], [15, 6 + o]).px(K, [4, 6 + o], [14, 6 + o]);
-    p.ell(9, 11.5 + o, 6.8, 5.6, W);
-    const R = p.raw || p, k = p.k || 1; // franjas gris/blanco/rosa sobre los píxeles reales (también a tamaño grande)
-    for (let y = 0; y < R.h; y++) for (let x = 0; x < R.w; x++) if (R.get(x, y) === W) { if (y <= (8.5 + o) * k) R.set(x, y, G); else if (y >= (14 + o) * k) R.set(x, y, K); }
-    if (dir === 'side') p.px('#5a4636', [12, 10 + o], [13, 10 + o]).px('#f08aa0', [15, 11 + o], [11, 12 + o]);
-    else if (dir !== 'up') p.px('#5a4636', [6, 10 + o], [7, 10 + o], [11, 10 + o], [12, 10 + o], [8, 12 + o], [10, 12 + o]).px('#f08aa0', [9, 11 + o], [4, 12 + o], [14, 12 + o]);
+  heladoncioh(p, dir, o) { this.heladoncio(p, dir, o); strawHat(p, 9, 4.6 + o); }, // ya con su sombrero de paja
+  heladoncio(p, dir, o) { // gato de peluche muy redondo: capucha gris con orejas, cara blanca, franja rosa abajo
+    const G = '#a9a9b3', GD = '#8e8e99', W = '#fbf7f2', K = '#f7b8c0', KD = '#e8899a', B = '#5a3a3a';
+    p.px(G, [3, 3 + o], [3, 4 + o], [4, 4 + o], [3, 5 + o], [5, 5 + o], [15, 3 + o], [15, 4 + o], [14, 4 + o], [15, 5 + o], [13, 5 + o]).px(K, [4, 5 + o], [14, 5 + o]); // orejas
+    p.ell(9, 10.8 + o, 8.2, 6, W);
+    const R = p.raw || p, k = p.k || 1; // gris por arriba y por los lados, rosa abajo (sobre los píxeles reales)
+    for (let y = 0; y < R.h; y++) for (let x = 0; x < R.w; x++) if (R.get(x, y) === W) R.set(x, y, y < (13.4 + o) * k ? G : K);
+    if (dir === 'up') { p.px(GD, [9, 6 + o], [9, 8 + o], [9, 10 + o]); }         // de espaldas: la costura de la capucha
+    else if (dir === 'side') {
+      p.ell(11.5, 11 + o, 4.4, 2.5, W).px(B, [11, 10 + o], [12, 9 + o], [13, 10 + o]).px(KD, [16, 11 + o]).px(K, [12, 12 + o]);
+    } else {
+      p.ell(9, 11 + o, 5.4, 2.6, W);                                              // cara blanca
+      p.px(B, [5, 10 + o], [6, 9 + o], [7, 10 + o], [11, 10 + o], [12, 9 + o], [13, 10 + o]); // ojos cerrados, sonrientes
+      p.px(K, [4, 12 + o], [14, 12 + o]).px(KD, [9, 11 + o]);                     // mofletes y nariz
+    }
+    p.px(W, [2, 14 + o], [15.5, 14 + o]);                                         // patitas
     p.rect(6, 16, 2, 1, '#e8e0d8').rect(10, 16, 2, 1, '#e8e0d8');
   },
-  owinken(p, dir, o) { pig(p, o, BLACK, '#e8d5c8', '#d6bcae'); },
+  owinken(p, dir, o) { pig(p, o, BLACK, '#edccc6', '#dbaeab'); }, // rosa a medio camino entre el de antes (#e8d5c8) y el de los clones (#f2c4c4)
   clon(p, dir, o) { pig(p, o, '#e2264a', '#f2c4c4', '#e0a0a8'); },
   // Owitos de Navidad
   owito_n(p, dir, o) { owito(p, o, '#f7b8c8', '#ffffff'); p.rect(7, 1 + o, 5, 4, '#3f9f4f').px('#fff', [7, 2 + o], [8, 3 + o], [11, 2 + o], [10, 3 + o]).rect(9, 1 + o, 1, 4, '#e2574c'); },
   owito_r(p, dir, o) { owito(p, o, '#c98f4e', '#8a5a2a'); p.rect(6, 3 + o, 7, 2, '#e2574c').rect(5, 5 + o, 9, 1, '#fff').px('#fff', [13, 2 + o]).px('#e2574c', [9, 12 + o]); },
-  // Ovejoncio: oveja enorme y redonda de lana blanca, con la cara beige
-  ovejoncio(p, dir, o) {
-    const W = '#f3ecdc', L = '#fbf7ee', F = '#e8dcc4', D = '#d6c8ac';
-    p.ell(2.4, 9.5 + o, 2.4, 1.5, F).ell(15.6, 9.5 + o, 2.4, 1.5, F).px('#f0c0c0', [2, 9 + o], [15, 9 + o]);
-    p.ell(9, 10.5 + o, 7.6, 6.6, W);
+  // Ovejoncia (id «ovejoncio»): oveja enorme y redonda de lana blanca, con la cara beige
+  ovejoncio(p, dir, o) { // Ovejoncia: oveja enorme de lana blanca, cara crema, orejas caídas y pestañas
+    const W = '#f3ecdc', L = '#fbf7ee', F = '#efe2c8', D = '#d6c8ac', K = '#f2a7b8';
+    p.ell(1.4, 7.6 + o, 1.6, 1.2, F).ell(16.6, 7.6 + o, 1.6, 1.2, F).px('#f0c0c0', [0.7, 7.3 + o], [16.6, 7.3 + o]); // orejas caídas, a los lados
+    p.ell(9, 10.5 + o, 7.6, 6.6, W);                                                                      // lana
     p.px(L, [4, 7 + o], [7, 5 + o], [11, 5 + o], [14, 7 + o], [3, 12 + o], [15, 12 + o], [6, 15 + o], [12, 15 + o]).px(D, [5, 6 + o], [13, 6 + o], [2, 11 + o], [16, 11 + o], [9, 4 + o]);
-    if (dir !== 'up') p.ell(9, 11.5 + o, 3.5, 3.1, F).px(BLACK, [7, 10 + o], [11, 10 + o]).px('#d98a8a', [9, 12 + o], [8, 13 + o], [10, 13 + o]);
+    if (dir !== 'up') {
+      p.ell(9, 11.8 + o, 3.4, 3, F);                                                                       // cara
+      p.px(BLACK, [7, 11 + o], [11, 11 + o]).px('#5a3a3a', [6, 10.4 + o], [12, 10.4 + o]).px(K, [6, 13 + o], [12, 13 + o]).px('#c98080', [9, 13 + o]); // ojos, pestañas hacia fuera, mofletes, boca
+    }
     p.rect(5, 17, 2, 1, F).rect(11, 17, 2, 1, F);
   },
   // Gemelos bipolares (siameses de peluche): lado feliz y lado enfurruñado
@@ -290,7 +301,7 @@ function dog(p, dir, o, f, c) {
 
 const SIZE = { perrunfli: [26, 22] };
 // Personajes un 50 % más grandes que Colgadín: se dibujan con las mismas coordenadas de 18x18 sobre un lienzo mayor
-const SCALE = { peludito: 1.5, heladoncio: 1.5, ovejoncio: 1.5 };
+const SCALE = { peludito: 1.5, heladoncio: 1.5, heladoncioh: 1.5, ovejoncio: 1.5 };
 function scaled(p, k) {
   const r = (v) => Math.round(v * k), sz = Math.max(1, Math.round(k));
   const q = {
@@ -564,6 +575,33 @@ function balloonSingle(c) { // un globo suelto con su cordel ondulado
   return p.line(6, 14, 5, 18, STRING).line(5, 18, 7, 22, STRING).line(7, 22, 6, 25, STRING);
 }
 
+// Clon reparador de TEDI: el clon de Owinken con casco de obra amarillo y una llave inglesa en la mano
+function clonFix(o) {
+  const q = new PX(18, 18), p = new PX(24, 22);
+  pig(q, o, '#e2264a', '#f2c4c4', '#e0a0a8');
+  p.blit(q, 3, 4);
+  const Y = '#ffd23f', YD = '#d9a400', YL = '#fff0a0', top = 6 + o;
+  for (let y = top; y < top + 4; y++) for (let x = 0; x < 24; x++) if (((x + 0.5 - 12) / 6) ** 2 + ((y + 0.5 - top - 4) / 4) ** 2 <= 1) p.set(x, y, Y); // cúpula del casco (mitad de arriba)
+  p.rect(4, top + 4, 16, 2, YD).rect(6, top + 4, 12, 1, Y);                         // ala del casco
+  p.rect(11, top + 1, 2, 3, YD).px(YL, [8, top + 2], [9, top + 1]);                  // nervio central y brillo
+  // Llave inglesa en la pezuña derecha: boca abierta arriba y mango en diagonal
+  const G = '#9aa0aa', GL = '#d8dde4';
+  p.px(G, [21, 9 + o], [23, 9 + o], [22, 11 + o], [21, 12 + o], [20, 13 + o]).px(GL, [21, 10 + o], [22, 10 + o], [23, 10 + o]);
+  p.px('#f2c4c4', [18, 14 + o], [19, 14 + o], [18, 15 + o]);                        // la pezuña que la sujeta
+  return p.outline(INK);
+}
+
+// Sombrero de paja de ganchillo de Heladoncio (ala ancha, cordón marrón con lacito): misión opcional de la Isla Helada
+function strawHat(p, cx, cy, s = 1) { // (cx, cy): centro de la base de la copa; s: tamaño
+  const S = '#c9955c', SL = '#ddb07a', SD = '#a8743e', B = '#7a4a2a';
+  p.ell(cx, cy + 0.6 * s, 8.6 * s, 1.9 * s, S);                                   // ala
+  p.ell(cx, cy - 0.4 * s, 4.4 * s, 2.8 * s, SL).rect(cx - 4.4 * s, cy - 0.4 * s, 8.8 * s, 1, SL); // copa
+  p.rect(cx - 4.2 * s, cy - 0.6 * s, 8.4 * s, Math.max(1, 0.7 * s), B);           // cordón
+  p.px(B, [cx + 4.4 * s, cy + 0.3 * s], [cx + 5.2 * s, cy + 1.1 * s]);            // lacito
+  for (let i = 0; i < 6; i++) p.px(SD, [cx - 7 * s + i * 2.6 * s, cy + 0.9 * s]); // calados del ganchillo
+  p.px(SD, [cx - 2 * s, cy - 2 * s], [cx + 1 * s, cy - 2.6 * s], [cx + 2.4 * s, cy - 1.6 * s]);
+}
+
 function mold(c, k) {
   const p = new PX(16, 16);
   p.rect(0, 2, 16, 12, '#8a8f9a').rect(1, 3, 14, 10, '#c9ced8').rect(0, 12, 16, 2, '#6a6f7a');
@@ -775,6 +813,9 @@ const OBJ = {
     p.line(5, 13, 10, 23, STRING).line(15, 13, 10, 23, STRING).line(10, 16, 10, 26, STRING);
     return p.px('#f06aa8', [8, 22], [9, 23], [11, 23], [12, 22], [8, 24], [12, 24], [10, 23]); // lazo
   },
+  straw_hat() { const p = new PX(20, 12); strawHat(p, 10, 7); return p.outline(INK); },
+  clon_fix_0: () => clonFix(0),
+  clon_fix_1: () => clonFix(-1),
   pballoon_r: () => balloonSingle('#e2574c'),
   pballoon_y: () => balloonSingle('#ffd23f'),
   pballoon_b: () => balloonSingle('#4a90d8'),
@@ -956,7 +997,9 @@ const OBJ = {
     for (let i = 0; i < 4; i++) { p.rect(2 + i * 14, 12, 14, 1, '#565a66'); for (let y = 0; y < 8; y++) p.rect(2 + i * 14, 12 + y, 14 - Math.round(y * 1.6), 1, '#8a8f9a'); }
     p.rect(2, 20, 76, 44, '#8a8f9a').rect(2, 20, 76, 3, '#a8adb8').rect(2, 61, 76, 3, '#565a66');
     p.ell(40, 37, 13, 13, '#111418').ell(40, 37, 11.5, 11.5, '#1f6fd0').rect(30, 33, 21, 8, '#ffe000');
-    p.px('#1f6fd0', [32, 35], [33, 35], [34, 35], [33, 36], [33, 37], [33, 38], [36, 35], [37, 35], [36, 36], [36, 37], [37, 37], [36, 38], [37, 38], [39, 35], [39, 36], [39, 37], [39, 38], [40, 35], [41, 36], [41, 37], [40, 38], [43, 35], [43, 37], [43, 38], [45, 35], [45, 36], [45, 37], [45, 38]);
+    // Rótulo «TEDi» en azul sobre la franja amarilla (letras de 3×4 y la i minúscula con su punto), centrado
+    const LOGO = ['###.###.##..#', '.#..#...#.#..', '.#..##..#.#.#', '.#..###.##..#'];
+    LOGO.forEach((row, j) => [...row].forEach((c, i) => { if (c === '#') p.set(34 + i, 35 + j, '#1f6fd0'); }));
     p.rect(32, 50, 16, 14, '#14151a'); for (let i = 0; i < 16; i += 4) p.rect(32 + i, 48, 2, 2, '#ffe000').rect(34 + i, 48, 2, 2, '#14151a');
     for (const x of [8, 62]) p.rect(x, 30, 10, 8, '#14151a').rect(x + 1, 31, 8, 6, '#e2574c');
     return p.outline(INK);
@@ -1345,8 +1388,8 @@ export function gachaIcon(id) {
   return iconCache[id];
 }
 
-export const WALKERS = ['colgadin', 'lolete', 'tigrito', 'cuy', 'patito', 'heladoncio'];
-export const NPCS = ['fuxia', 'scooby', 'cuca', 'lolete', 'perrunfli', 'bart', 'mono', 'tigrito', 'ratita_p', 'ratita_o', 'ratita_b', 'kai', 'cuy',
+export const WALKERS = ['colgadin', 'lolete', 'tigrito', 'cuy', 'patito', 'heladoncio', 'heladoncioh'];
+export const NPCS = ['heladoncioh', 'fuxia', 'scooby', 'cuca', 'lolete', 'perrunfli', 'bart', 'mono', 'tigrito', 'ratita_p', 'ratita_o', 'ratita_b', 'kai', 'cuy',
   'peludito', 'mantecas', 'manteca2', 'patito', 'capybara', 'owito_w', 'owito_k', 'owito_v', 'owito_g', 'owito_c', 'owito_t', 'heladoncio', 'owinken', 'clon', 'owito_n', 'owito_r', 'awawa', 'siri', 'ovejoncio', 'gato', 'gatot'];
 
 export function makeTextures(scene) {

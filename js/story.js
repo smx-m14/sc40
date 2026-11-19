@@ -85,12 +85,12 @@ const BART_INTRO = [
   '…luego back lever, luego bandera humana, luego plancha, y luego ya te compras un parque para ti solo.',
   'Yo el front lever lo saqué en catorce meses. Podría haber sido en doce, pero un día me resfrié. Aún me duele. El resfriado no, perder dos meses.',
   'Y no me hables del kipping. El kipping NO es una dominada. El kipping es un pez fuera del agua con cuota mensual.',
-  '¿Por dónde iba? Ah, sí. El agarre. Prono, supino, neutro. Hay gente que usa correas. Yo a esa gente no la juzgo. La miro fijamente, pero no la juzgo.',
+  '¿Por dónde iba? Ah, sí. El agarre. Prono, supino, neutro. Hay gente que usa correas. Yo a esa gente no la juzgo. La miro fijamente, pero no la juzgo. Lo que SÍ se permite son los estropajos: para el agarre no hay nada mejor. Y de paso dejas la barra reluciente.',
   'Total, que aquí mismo, en esta sala, se conocieron Cait y Mindeos. Cait estaba haciendo… bueno, estaba mirando la barra. Mindeos también. Fue precioso.',
   'Tengo un regalo guardado para Cait desde entonces. Pero no se lo doy a cualquiera: primero tienes que demostrarme que respetas la calistenia.',
 ];
 const BART_MAS = [
-  'Te cuento una cosa de la plancha. La plancha no es aguantar. La plancha es EMPUJAR EL SUELO mientras aprietas glúteo, abdomen, cuádriceps y carácter. Treinta segundos bien hechos valen más que tres minutos pensando en la cena. Yo en la cena también pienso, pero en proteína.',
+  'Te cuento una cosa de la plancha. La plancha no es aguantar. La plancha es EMPUJAR EL SUELO mientras aprietas glúteo, abdomen, cuádriceps y carácter. Treinta segundos bien hechos valen más que tres minutos pensando en la cena. Yo en la cena también pienso, pero en proteína. Sin gluten, eso sí.',
   '¿Sabías que el magnesio no es para que resbale menos? Bueno, sí es para eso. Pero también es un estado mental. Hay días que me pongo magnesio para ir a comprar el pan. La barra de pan también es una barra, piénsalo.',
   'El otro día vino uno y me dijo que hacía calistenia «en casa, con una app». Con una app. Le pregunté por su retracción escapular y se fue llorando. Aquí se viene llorado de casa.',
   'Mi rutina es sencilla: lunes empuje, martes tirón, miércoles pierna (mentira, nadie hace pierna), jueves empuje, viernes tirón, sábado skills y domingo hablarle a la gente de mi rutina.',
@@ -529,16 +529,31 @@ export const SCRIPTS = {
   // ---------------------------------------------------------- Isla Helada
   async heladoncio(scene) {
     const H = 'Heladoncio';
+    // Curiosidad (no es obligatoria ni da regalo): devolverle el sombrero que se le voló
+    if (S.flag('hatGot') && !S.flag('hat')) {
+      await UI.say(H, [
+        '¡MI SOMBRERO! Ana me lo regaló. Este viento no respeta nada. ¡Gracias, Colgadín!',
+        'Un pastelero sin sombrero es como un panettone sin relleno. Gracias, gracias, gracias. Ahora sí que voy guapo a la fiesta.',
+      ]);
+      S.set('hat');
+      return;
+    }
+    if (S.flag('metHel') && !S.flag('hatGot') && !S.flag('hatAsk')) {
+      S.set('hatAsk');
+      await UI.say(H, 'Por cierto… con el viento de esta mañana se me voló el sombrero. Si lo encuentras, me harías el pastelero más feliz del hemisferio helado.');
+    }
     if (S.flag('tarta')) { invite('heladoncio', H); return UI.say(H, 'La tarta ya va camino de casa de Cait a lomos de Narwal. Yo llevo las velas. Cuarenta. Las he contado tres veces.'); }
     if (!S.flag('metHel')) {
       await UI.say(H, [
         'Bienvenido a SWEET FAMOSA, la fábrica de pasteles más dulce del hemisferio helado. Soy Heladoncio, maestro pastelero.',
         '¿Ves las cascadas? Chocolate negro, chocolate blanco, crema de Speculoos y crema de pistacho. Los panettones se rellenan hasta que revientan. Así debe ser.',
         '¿Una tarta para Cait? Me encantaría… pero cada pastel que sale del horno se lo lleva un cerdito rosa antes de que nadie pueda probarlo.',
-        'Vienen de TEDI, la fábrica de ahí al lado. Tienen una máquina que no para de escupirlos. Mientras siga encendida, no hay tarta que dure.',
       ]);
       S.set('metHel');
-      return;
+      // Si la máquina de TEDI ya está apagada cuando se le conoce, no tiene sentido que diga que sigue encendida:
+      // sigue la conversación y ofrece la tarta en el momento
+      if (!S.flag('tedi')) return UI.say(H, 'Vienen de TEDI, la fábrica de ahí al lado. Tienen una máquina que no para de escupirlos. Mientras siga encendida, no hay tarta que dure.');
+      await UI.say(H, 'Venían de TEDI, la fábrica de al lado… pero me han dicho que alguien ha apagado su máquina. ¿Has sido tú? ¡Gracias!');
     }
     if (S.flag('tedi') && !S.flag('cali')) {
       return UI.say(H, [
@@ -550,25 +565,33 @@ export const SCRIPTS = {
     if (!S.flag('tedi')) return UI.say(H, 'Mientras esa máquina de TEDI siga escupiendo clones, aquí no llega un pastel entero ni a la puerta. Está al este, la del logo azul y amarillo.');
     await UI.say(H, ['¡La máquina se ha parado! ¡Por fin puedo hornear en paz!', 'Tengo lista una tarta de cuatro pisos para Cait. Solo falta llevarla hasta Narwal… y aún quedan clones despistados por el camino.']);
     if (await UI.choose(H, '¿La llevamos entre los dos?', ['¡Vamos!', 'Ahora no']) !== 0) return;
-    scene.startScene('tarta', 19, 20);
+    scene.startScene('tarta', 22, 9); // si se sale a medias, vuelve a la puerta; al ganar, la escena lo deja en el muelle
   },
   async tartaDone(layers) {
     const H = 'Heladoncio';
     Sound.logro();
     await UI.say(H, [
-      layers === 4 ? '¡Los cuatro pisos, intactos! Eres mejor repartidor que yo pastelero. Casi.' : `¡Hemos llegado! Con ${layers} ${layers === 1 ? 'piso' : 'pisos'}. Los clones se han dado un festín, pero una tarta es una tarta.`,
-      '¿Sabes? A mí también casi se me llevan una vez. En Edimburgo. Estaba en un escaparate y alguien dudó… pero al final me vine a casa.',
+      '¡Los cuatro pisos, intactos! ¡Eres el mejor repartidor!', // Narwal solo acepta la tarta entera
+      '¿Sabes? A mí casi me secuestran en Edimburgo... estuve a punto de no llegar nunca a casa de Cait. ¡Menudo disgusto!',
       'Narwal la lleva a casa de Cait. Y yo voy detrás: a esa fiesta no falto.',
     ]);
     S.set('tarta', layers);
     give(`{cake} Tarta de ${layers} ${layers === 1 ? 'piso' : 'pisos'}`);
     invite('heladoncio', H);
   },
-  async sfDoor() {
+  async hatPick() {
+    await UI.say('', ['Medio enterrado en la nieve, detrás de la Casa de la Navidad, hay un sombrero marrón.',
+      S.flag('hatAsk') ? '¡Es el sombrero de Heladoncio! Se lo llevo a Sweet Famosa.' : 'Seguro que alguien de la isla lo está buscando.']);
+    S.set('hatGot');
+    give(S.flag('hatAsk') ? '{straw_hat} Sombrero de Heladoncio' : '{straw_hat} Sombrero');
+  },
+  async sfDoor(scene) {
     await UI.say('', [
-      'SWEET FAMOSA — Old School. Por la fachada caen cascadas de chocolate negro, chocolate blanco, crema de Speculoos y crema de pistacho.',
+      'SWEET FAMOSA. Por la fachada caen cascadas de chocolate negro, chocolate blanco, crema de Speculoos y crema de pistacho.',
       'Por la ventana se ve cómo rellenan un panettone. Le sale crema por arriba, por los lados y por sitios que un panettone no debería tener.',
     ]);
+    // Dentro no se entra: quien atiende es Heladoncio, en la puerta. Llamar a la puerta es como hablar con él.
+    if (!S.flag('tarta')) { await UI.say('', 'Heladoncio asoma por la puerta, secándose las manos en el delantal.'); return SCRIPTS.heladoncio(scene); }
   },
   async tediDoor(scene) {
     if (S.flag('tedi')) return UI.say('', 'La fábrica TEDI está apagada. Dentro, los clones se han quedado quietos, mirando una máquina que ya no hace nada.');
@@ -589,14 +612,14 @@ export const SCRIPTS = {
     invite('owinken', 'Owinken');
   },
   async ovejoncio(scene) {
-    const O = 'Ovejoncio';
+    const O = 'Ovejoncia';
     if (S.flag('tediHack')) {
       invite('ovejoncio', O);
       return UI.say(O, S.flag('tedi') ? 'Máquina apagada, Owinken libre. Lo celebraré comiéndome un trozo de césped. Bueno, de nieve.' : 'La puerta está abierta. Yo vigilo desde aquí. Si algo sale mal, grita «¡beeee!».');
     }
     if (!S.flag('metOvejoncio')) {
       await UI.say(O, [
-        'Beee. Soy Ovejoncio. Llevo días intentando entrar en TEDI para pararles los pies a esos clones.',
+        'Beee. Soy Ovejoncia. Llevo días intentando entrar en TEDI para pararles los pies a esos clones.',
         'La puerta se abre desde un panel que está dentro. Y la única forma de llegar es ese conducto de ventilación.',
         'Yo no quepo: tengo demasiada lana.',
       ]);
@@ -621,7 +644,7 @@ export const SCRIPTS = {
     scene.startScene('robot', 27, 12); // js/scenes/robot.js; si sale a medias, recuerda la cerradura en la que iba
   },
   async tediHackDone() {
-    const O = 'Ovejoncio';
+    const O = 'Ovejoncia';
     Sound.logro();
     S.set('tediHack');
     invite('ovejoncio', O);
