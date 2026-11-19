@@ -679,12 +679,14 @@ const OBJ = {
     for (const x of [9, 54]) p.px(INK, [x, 15], [x, 16]).ell(x + 0.5, 20, 2.6, 3, '#e2574c').rect(x - 1, 23, 3, 1, Y).px(Y, [x, 24], [x, 25]);
     return p.outline(INK);
   },
-  gym() { // Fitness Fattory
+  gym() { // Fitness Bartory
     const p = new PX(64, 48), O = '#f08a24';
     p.rect(1, 2, 62, 45, '#3a3d46').rect(1, 2, 62, 3, '#565a66').rect(1, 44, 62, 3, '#2b2d34');
     p.rect(1, 8, 62, 11, O).rect(1, 8, 62, 1, '#ffb45a').rect(1, 18, 62, 1, '#c96a10');
     p.rect(26, 13, 12, 2, INK).rect(23, 10, 3, 8, INK).rect(38, 10, 3, 8, INK).rect(21, 12, 2, 4, INK).rect(41, 12, 2, 4, INK);
-    for (const x of [6, 11, 50, 55]) p.px('#fff', [x, 11], [x + 1, 11], [x + 2, 11], [x, 12], [x, 13], [x + 1, 13], [x, 14], [x, 15]);
+    // Logo «FB» (Fitness Bartory) a cada lado de la mancuerna
+    for (const x of [6, 50]) p.px('#fff', [x, 11], [x + 1, 11], [x + 2, 11], [x, 12], [x, 13], [x + 1, 13], [x, 14], [x, 15]); // F
+    for (const x of [11, 55]) p.px('#fff', [x, 11], [x + 1, 11], [x, 12], [x + 2, 12], [x, 13], [x + 1, 13], [x, 14], [x + 2, 14], [x, 15], [x + 1, 15]); // B
     p.rect(17, 25, 14, 22, '#6a7a86').rect(18, 26, 6, 21, '#a9d6ee').rect(25, 26, 5, 21, '#a9d6ee');
     p.rect(36, 25, 22, 13, '#6a7a86').rect(37, 26, 20, 11, '#a9d6ee').rect(39, 28, 16, 1, INK).px(INK, [42, 29], [42, 30], [51, 29], [51, 30]).ell(42.5, 32.5, 2, 2.4, '#d8bb82').ell(51.5, 32.5, 2, 2.4, '#f7a8c0');
     p.rect(4, 25, 9, 13, '#ffe066').rect(6, 27, 5, 1, INK).rect(6, 30, 5, 1, INK).rect(6, 33, 3, 1, '#e2574c');

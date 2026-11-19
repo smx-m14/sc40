@@ -9,7 +9,7 @@ export const CHARACTERS = [
   { id: 'cuca', name: 'Cuca', where: 'Templo de los Sabios' },
   { id: 'fuxia', name: 'Fucsia', where: 'Casa Fucsia' },
   { id: 'perrunfli', name: 'Perrunfli', where: 'Campo de nabos' },
-  { id: 'bart', name: 'Bart', where: 'Fitness Fattory' },
+  { id: 'bart', name: 'Bart', where: 'Fitness Bartory' },
   { id: 'tigrito', name: 'Tigrito', where: 'Bosque' },
   { id: 'cuy', name: 'Cuy y las ratitas', where: 'Apartamento de las Ratitas' },
   { id: 'kai', name: 'Kai', where: 'Apartamento de las Ratitas' },

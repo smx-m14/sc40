@@ -6,7 +6,6 @@ import { UI } from './ui.js';
 import { Sound } from './audio.js';
 import { gachaIcon } from './art.js';
 import { fuxiaQuiz, GOAL } from './fuxia.js';
-import { hack } from './hack.js';
 
 const S = State;
 const C = 'Colgadín';
@@ -33,9 +32,11 @@ export function hint() {
   if (!S.flag('horno')) return 'En la Pastelería Real, Mantecas necesita manos para hornear el mazapán de la muralla.';
   if (!S.flag('gateOpen')) return 'La muralla está entera, pero los andamios siguen tapando la puerta del castillo. Los Gemelos bipolares saben desmontarlos… al compás.';
   if (!S.flag('narwal')) return 'Toca en el muelle la melodía de los Owitos con el Otamatone.';
-  if (!S.flag('tediHack')) return 'En la Isla Helada, la puerta de TEDI está cerrada. Una oveja muy grande tiene un plan.';
+  if (!S.flag('tediHack')) return S.flag('cali')
+    ? 'En la Isla Helada, la puerta de TEDI está cerrada. Una oveja muy grande tiene un plan.'
+    : 'Para colarse en TEDI hay que caber por un conducto muy estrecho. Una tanda de calistenia en el Fitness Bartory no te vendría mal.';
   if (!S.flag('tedi')) return 'La puerta de TEDI está abierta: toca apagar la máquina clonadora.';
-  if (!S.flag('cali')) return 'Heladoncio no te dará la tarta hasta que entrenes en el Fitness Fattory.';
+  if (!S.flag('cali')) return 'Heladoncio no te dará la tarta hasta que entrenes en el Fitness Bartory.';
   if (!S.flag('tarta')) return 'Heladoncio tiene la tarta lista en Sweet Famosa. Hay que llevarla hasta Narwal.';
   if (!S.flag('luces')) return 'Los Owitos de Navidad, en la Isla Helada, tienen las luces para la fiesta.';
   if (!S.flag('globos')) return 'Una fiesta sin globos no es fiesta. Dicen que al sur del castillo hay unos bichitos con muchos.';
@@ -72,9 +73,10 @@ const PAELLA = [
 
 // Bart habla MUCHO. Es así.
 const BART_INTRO = [
-  '¡HOLA! ¡Bienvenido a FITNESS FATTORY! Soy Bart, monitora, y antes de que digas nada: sí, hago calistenia.',
-  'La calistenia, por si no lo sabes, que seguro que no lo sabes, viene del griego «kallos», belleza, y «sthenos», fuerza.',
-  'Belleza y fuerza. Como yo. Bueno, y como una barra bien anclada a la pared, que también tiene lo suyo.',
+  '¡HOLA! ¡Bienvenido a FITNESS BARTORY! Soy Bart, la dueña, y antes de que digas nada: sí, hago calistenia.',
+  'El gimnasio es mío. MÍO. Y esto es solo el principio: estoy pensando en abrir tres sedes más. Fitness Bartory Norte, Fitness Bartory Sur y… la tercera ya le pensaré el nombre.',
+  'La calistenia, por si no lo sabes, que seguro que no lo sabes, viene del griego «kallos» y «thenos». ¿Por qué? Porque la gente que hacía calistenia en Grecia tenía muchos callos en las manos.',
+  'Callos. Muchísimos callos. Como yo, mira qué manos. Eso no te lo da una máquina, te lo da una barra bien anclada a la pared.',
   'Mucha gente cree que la calistenia es hacer dominadas. ERROR. La calistenia es una forma de vida. Y también hacer dominadas.',
   'Yo empecé hace seis años. Antes hacía máquinas. ¿Sabes lo que te dan las máquinas? Nada. Aislamiento. Tristeza. Un bíceps sin contexto.',
   'En cambio, con el peso corporal trabajas cadenas musculares completas. COMPLETAS. Desde la escápula hasta el dedo gordo del pie.',
@@ -84,7 +86,7 @@ const BART_INTRO = [
   'Yo el front lever lo saqué en catorce meses. Podría haber sido en doce, pero un día me resfrié. Aún me duele. El resfriado no, perder dos meses.',
   'Y no me hables del kipping. El kipping NO es una dominada. El kipping es un pez fuera del agua con cuota mensual.',
   '¿Por dónde iba? Ah, sí. El agarre. Prono, supino, neutro. Hay gente que usa correas. Yo a esa gente no la juzgo. La miro fijamente, pero no la juzgo.',
-  'Total, que aquí mismo, en esta barra, se conocieron Cait y Mindeos. Cait estaba haciendo… bueno, estaba mirando la barra. Mindeos también. Fue precioso.',
+  'Total, que aquí mismo, en esta sala, se conocieron Cait y Mindeos. Cait estaba haciendo… bueno, estaba mirando la barra. Mindeos también. Fue precioso.',
   'Tengo un regalo guardado para Cait desde entonces. Pero no se lo doy a cualquiera: primero tienes que demostrarme que respetas la calistenia.',
 ];
 const BART_MAS = [
@@ -542,7 +544,7 @@ export const SCRIPTS = {
       return UI.say(H, [
         '¡La máquina se ha parado! Ya puedo hornear en paz.',
         'Pero una tarta de cuatro pisos pesa lo suyo, y por el camino quedan clones. Así, sin preparación, no te la doy: se te caería en el primer resbalón.',
-        'Ve al Fitness Fattory, aquí al lado, y que Bart te ponga en forma. Luego hablamos.',
+        'Ve al Fitness Bartory, aquí al lado, y que Bart te ponga en forma. Luego hablamos.',
       ]);
     }
     if (!S.flag('tedi')) return UI.say(H, 'Mientras esa máquina de TEDI siga escupiendo clones, aquí no llega un pastel entero ni a la puerta. Está al este, la del logo azul y amarillo.');
@@ -586,7 +588,7 @@ export const SCRIPTS = {
     S.set('tedi');
     invite('owinken', 'Owinken');
   },
-  async ovejoncio() {
+  async ovejoncio(scene) {
     const O = 'Ovejoncio';
     if (S.flag('tediHack')) {
       invite('ovejoncio', O);
@@ -596,18 +598,34 @@ export const SCRIPTS = {
       await UI.say(O, [
         'Beee. Soy Ovejoncio. Llevo días intentando entrar en TEDI para pararles los pies a esos clones.',
         'La puerta se abre desde un panel que está dentro. Y la única forma de llegar es ese conducto de ventilación.',
-        'Yo no quepo: tengo demasiada lana. Tú, en cambio, eres justo del tamaño.',
-        'El panel se programa en JavaScript. Tú escribe; yo te dicto pistas desde aquí fuera.',
+        'Yo no quepo: tengo demasiada lana.',
       ]);
       S.set('metOvejoncio');
     }
+    // El conducto es estrecho: sin la calistenia de Bart, Colgadín (lleno de mazapán) tampoco cabe
+    if (!S.flag('cali')) {
+      return UI.say(O, [
+        'Y tú… sin ofender, pero tampoco cabes por el conducto. ¿Mucho mazapán últimamente?',
+        'Prueba a hacer algo de calistenia. En el Fitness Bartory, aquí al lado, Bart te deja como una barra. Luego vuelves.',
+      ]);
+    }
+    if (!S.flag('ovejaFit')) {
+      S.set('ovejaFit');
+      await UI.say(O, [
+        '¡Beee! Se te nota que has estado haciendo calistenia. Esos hombros, esa retracción escapular… Ahora sí cabes por el conducto.',
+        'Dentro está el robot de mantenimiento de la máquina clonadora. Si lo reprogramas, irá hasta los interruptores de la puerta. Yo te ayudo desde aquí fuera.',
+      ]);
+    }
     if (await UI.choose(O, '¿Te metes por el conducto?', ['¡Me meto!', 'Ahora no']) !== 0) return;
-    await UI.say('', 'Colgadín se escurre por el conducto de ventilación. Al fondo brilla un terminal con tres cerraduras.');
-    if (!(await hack())) return UI.say(O, 'Sal cuando quieras. El terminal recuerda en qué cerradura te quedaste.');
+    await UI.say('', 'Colgadín se escurre por el conducto de ventilación. Al fondo, el robot de mantenimiento de la clonadora espera órdenes.');
+    scene.startScene('robot', 27, 12); // js/scenes/robot.js; si sale a medias, recuerda la cerradura en la que iba
+  },
+  async tediHackDone() {
+    const O = 'Ovejoncio';
     Sound.logro();
     S.set('tediHack');
     invite('ovejoncio', O);
-    await UI.say(O, ['¡CLIC! ¡La puerta de TEDI está abierta!', 'Cait lo habría hecho con los ojos cerrados, pero tú no lo has hecho nada mal.', 'Yo me quedo aquí vigilando. Ah, y a la fiesta voy. Llevo el portátil.']);
+    await UI.say(O, ['¡CLIC! ¡La puerta de TEDI está abierta!', 'Cait lo habría programado con los ojos cerrados, pero tú no lo has hecho nada mal.', 'Yo me quedo aquí vigilando. Ah, y a la fiesta voy. Llevo el portátil.']);
   },
   async owinken() { invite('owinken', 'Owinken'); await UI.say('Owinken', 'Estoy enseñando a mis clones a pedir las cosas por favor. Vamos por «oink, por favor». Es un comienzo.'); },
   async clon() { await UI.say('Clon', ['Oink. Soy Owinken. Oink. Soy Owinken. Oink. Soy Owinken.', '(Lleva un pastel debajo de cada pata y te mira sin parpadear. Tiene seis dedos en una pezuña.)']); },
@@ -806,7 +824,7 @@ export const SCRIPTS = {
     await UI.say(P, 'Y cuenta conmigo para la fiesta. Llevo la paella. Y ni un nabo.');
   },
 
-  // ---------------------------------------------------------- Fitness Fattory
+  // ---------------------------------------------------------- Fitness Bartory (el gimnasio de Bart)
   async bart(scene) {
     const B = 'Bart';
     if (!S.flag('metBart')) {
@@ -821,7 +839,8 @@ export const SCRIPTS = {
       if (again === 0) scene.startScene('cali', 26, 18);
       return;
     }
-    const c = await UI.choose(B, 'Tres series: dominadas, fondos y muscle-ups. Técnica ESTRICTA. ¿Empezamos?', ['Vale…', 'Ahora no']);
+    await UI.say(B, 'Tres series: dominadas, sprint de flexiones y plancha. Técnica ESTRICTA. Y da gracias, que por lo menos no te pido burpees. Los burpees NO son calistenia.');
+    const c = await UI.choose(B, '¿Empezamos?', ['Vale…', 'Ahora no']);
     if (c !== 0) {
       return UI.say(B, 'Eso mismo dijo Cait el primer día. «Ahora no». Y mira, volvió. Volvió porque aquí conoció a Mindeos, no por la barra, pero volvió. Te espero. Yo siempre estoy aquí. Literalmente: duermo colgada.');
     }
@@ -843,7 +862,7 @@ export const SCRIPTS = {
     await UI.say(C, '(Colgadín sale corriendo.)');
   },
   async gymDoor() {
-    await UI.say('', ['FITNESS FATTORY. «Entra como puedas, sal como una barra».', 'Dentro huele a magnesio y a sufrimiento. La monitora está fuera, hablando con alguien que ya se ha ido.']);
+    await UI.say('', ['FITNESS BARTORY. «Entra como puedas, sal como una barra».', 'Dentro huele a magnesio y a sufrimiento. La dueña está fuera, hablando con alguien que ya se ha ido.']);
   },
 
   // ---------------------------------------------------------- Kapadokya

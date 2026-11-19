@@ -442,7 +442,7 @@ function helada() {
     { name: 'Sweet Famosa', x0: 15, y0: 3, x1: 24, y1: 9, music: 'sweetfamosa' },
     { name: 'Casa de la Navidad', x0: 4, y0: 8, x1: 12, y1: 13, music: 'navidad' },
     { name: 'TEDI', x0: 26, y0: 7, x1: 34, y1: 12, music: 'tedi' },
-    { name: 'Fitness Fattory', x0: 21, y0: 14, x1: 27, y1: 18, music: 'gym' },
+    { name: 'Fitness Bartory', x0: 21, y0: 14, x1: 27, y1: 18, music: 'gym' },
     { name: 'Muelle helado', x0: 17, y0: 20, x1: 23, y1: 25 },
   ];
   return m;

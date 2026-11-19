@@ -29,7 +29,7 @@ y abrir <http://127.0.0.1:8040>.
 | `js/scenes/cali.js` | Minijuego de calistenia de Bart |
 | `js/beam.js` | Rayo de luz y espejos del Apartamento de las Ratitas |
 | `js/scenes/pato.js`, `simon.js`, `horno.js` | Pruebas del Castillo: Patito, Teatro Real y Pastelería Real |
-| `js/scenes/luces.js`, `tedi.js`, `tarta.js` | Pruebas de la Isla Helada: luces de Navidad, jefe de TEDI y escolta de la tarta |
+| `js/scenes/luces.js`, `robot.js`, `tedi.js`, `tarta.js` | Pruebas de la Isla Helada: luces de Navidad, robot del conducto (hackeo de TEDI), jefe de TEDI y escolta de la tarta |
 | `js/scenes/fiesta.js` | Escena final: la fiesta sorpresa |
 | `js/debug.js` | Modo debug: saltar pruebas y teletransporte |
 | `js/scenes/monos.js`, `js/monos-levels.js` | Minijuego del bosque de los monos |

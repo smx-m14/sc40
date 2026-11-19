@@ -1,7 +1,7 @@
-// Minijuego: las pruebas de Bart en Fitness Fattory, al estilo de unos juegos olímpicos.
+// Minijuego: las pruebas de Bart en Fitness Bartory, al estilo de unos juegos olímpicos.
 // Tres pruebas distintas:
 //   1. Dominadas    — precisión: pulsar acción cuando el marcador pasa por la zona verde.
-//   2. Sprint       — machacar el botón de acción para llenar la barra antes de que se acabe el tiempo.
+//   2. Flexiones    — sprint: machacar el botón de acción para llenar la barra antes de que se acabe el tiempo.
 //   3. Plancha      — equilibrio: mantener el marcador centrado con izquierda/derecha mientras tiembla.
 import { State } from '../state.js';
 import { Input } from '../input.js';
@@ -13,8 +13,8 @@ const X0 = 60, X1 = 260, MY = 160, MID = (X0 + X1) / 2;
 const EVENTS = [
   { k: 'pull', name: 'Dominadas', reps: 5, zone: 38, speed: 190,
     intro: 'Primera prueba: DOMINADAS. Pulsa cuando el marcador pase por la zona verde. Cinco repeticiones limpias. La zona se va haciendo pequeña, como mi paciencia.' },
-  { k: 'mash', name: 'Sprint de burpees', time: 9, gain: 4.4, decay: 15,
-    intro: 'Segunda prueba: SPRINT DE BURPEES. Aquí no hay técnica que valga: machaca el botón de acción todo lo rápido que puedas y llena la barra antes de que se acabe el tiempo. Si paras, se vacía.' },
+  { k: 'mash', name: 'Sprint de flexiones', time: 9, gain: 4.4, decay: 15,
+    intro: 'Segunda prueba: SPRINT DE FLEXIONES. Pecho al suelo y arriba, todo lo rápido que puedas: machaca el botón de acción y llena la barra antes de que se acabe el tiempo. Si paras, se vacía.' },
   { k: 'hold', name: 'Plancha', time: 12, miss: 2.5,
     intro: 'Última prueba: LA PLANCHA. Doce segundos. El cuerpo tiembla: corrige con izquierda y derecha para que el marcador no se salga de la zona verde. Si se sale demasiado tiempo, vuelta a empezar.' },
 ];
@@ -65,7 +65,7 @@ export class CaliScene extends Phaser.Scene {
   bar() {
     const e = EVENTS[this.ev];
     const detail = e.k === 'pull' ? `${this.reps}/${e.reps}` : e.k === 'mash' ? `${Math.round(this.fill)} % · ${Math.ceil(this.left)} s` : `${Math.ceil(this.left)} s`;
-    UI.minibar(`Fitness Fattory · Prueba ${this.ev + 1}/${EVENTS.length}: ${e.name} ${detail}`, { exit: () => this.exit() });
+    UI.minibar(`Fitness Bartory · Prueba ${this.ev + 1}/${EVENTS.length}: ${e.name} ${detail}`, { exit: () => this.exit() });
   }
   exit() {
     if (this.lock || UI.busy) return;
@@ -124,7 +124,7 @@ export class CaliScene extends Phaser.Scene {
         else if (this.left <= 0) this.retry(`¡Tiempo! Te has quedado en el ${Math.round(this.fill)} %. Eso no es un sprint, es un paseo. ¡Otra vez, y más rápido!`);
       } else {
         this.left -= dt;
-        if ((this.windT -= dt) <= 0) { this.windT = 0.35 + Math.random() * 0.5; this.wind = (Math.random() * 2 - 1) * (2.2 + (e.time - this.left) * 0.16); }
+        if ((this.windT -= dt) <= 0) { this.windT = 0.35 + Math.random() * 0.5; this.wind = (Math.random() * 2 - 1) * (2.2 + (e.time - this.left) * 0.16) * 0.9; } // ×0,9: un 10 % más suave
         const d = Input.dir().x;
         this.vel += (this.wind + d * 4.2) * dt;
         this.vel *= Math.exp(-1.2 * dt);

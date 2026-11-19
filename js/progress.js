@@ -2,7 +2,7 @@
 import { State, CHARACTERS, GACHA, GIFTS, TOTAL_SOCKS, SOCK_DESIGNS } from './state.js';
 
 const STORY = ['invites', 'lolete', 'tigrito', 'caveOpen', 'r1', 'r2', 'r3', 'kai', 'cuy', 'hatchOpen', 'cuyTemple',
-  'pato', 'simon', 'horno', 'andamios', 'gateOpen', 'narwal', 'tediHack', 'tedi', 'cali', 'tarta', 'luces', 'globos', 'gramola', 'fin'];
+  'pato', 'simon', 'horno', 'andamios', 'gateOpen', 'narwal', 'cali', 'tediHack', 'tedi', 'tarta', 'luces', 'globos', 'gramola', 'fin'];
 const SIDE = ['paella'];
 
 export function completion() {

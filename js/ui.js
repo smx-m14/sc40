@@ -12,7 +12,8 @@ const show = (el, on = true) => el.classList.toggle('hidden', !on);
 // También vale escribir {nombre} en un texto (p. ej. '{sock} ¡Un calcetín!').
 const EMO = {
   '🧦': 'sock', '🪙': 'coin', '💌': 'invites', '🔊': 'sound_on', '🔇': 'sound_off', '☰': 'menu', '⏭': 'skip', '↩': 'undo', '⟲': 'reset', '✕': 'close',
-  '▲': 'arrow', '▶': 'arrow r90', '▼': 'arrow r180', '◀': 'arrow r270', '👉': 'arrow r90', '🛠': 'wrench', '📖': 'book', '✓': 'check', '✅': 'check', '⬜': 'box',
+  '▲': 'arrow', '▶': 'arrow r90', '▼': 'arrow r180', '◀': 'arrow r270', '👉': 'arrow r90',
+  '↑': 'arrow', '→': 'arrow r90', '↓': 'arrow r180', '←': 'arrow r270', '🛠': 'wrench', '📖': 'book', '✓': 'check', '✅': 'check', '⬜': 'box',
   '🐾': 'paw', '❔': 'question', '🎫': 'ticket', '🪞': 'mirror', '🔒': 'lock', '📝': 'note', '🧲': 'magnet', '➕': 'plus', '💿': 'disc', '🎹': 'music',
 };
 const EMO_RE = new RegExp(Object.keys(EMO).join('|'), 'gu');
@@ -84,9 +85,11 @@ export const UI = {
   line(name, text, opts = {}) {
     return new Promise((resolve) => {
       if (this.dlg) { clearInterval(this.dlg.timer); this.dlg.resolve(); } // nunca dos diálogos a la vez
-      const d = this.dlg = { text, shown: 0, typing: true, choices: opts.choices || null, sel: 0, resolve };
+      // El texto se escribe por piezas: cada letra o cada icono ({nombre} o símbolo como ←), que se pinta en píxeles
+      const units = Array.from(text.matchAll(/\{\w+\}|./gsu), (m) => m[0]);
+      const d = this.dlg = { text, units, shown: 0, typing: true, choices: opts.choices || null, sel: 0, resolve };
       $('dialog-name').textContent = name || '';
-      $('dialog-text').textContent = '';
+      $('dialog-text').innerHTML = '';
       $('dialog-text').classList.toggle('ruso', !!opts.ruso);
       $('dialog-choices').innerHTML = '';
       $('dialog-img').src = opts.img || ''; show($('dialog-img'), !!opts.img);
@@ -94,10 +97,10 @@ export const UI = {
       show($('dialog'));
       d.timer = setInterval(() => {
         d.shown++;
-        $('dialog-text').textContent = text.slice(0, d.shown);
-        if (d.shown % 3 === 1 && text[d.shown - 1] !== ' ') Sound.sfx('talk');
+        $('dialog-text').innerHTML = pix(esc(units.slice(0, d.shown).join('')));
+        if (d.shown % 3 === 1 && units[d.shown - 1] !== ' ') Sound.sfx('talk');
         if (this.dlg !== d) return clearInterval(d.timer);
-        if (d.shown >= text.length) this.finishTyping();
+        if (d.shown >= units.length) this.finishTyping();
       }, 24);
     });
   },
@@ -106,7 +109,7 @@ export const UI = {
     if (!d) return;
     clearInterval(d.timer);
     d.typing = false;
-    $('dialog-text').textContent = d.text;
+    $('dialog-text').innerHTML = pix(esc(d.text));
     if (d.choices) this.renderChoices(); else show($('dialog-next'));
   },
   renderChoices() {

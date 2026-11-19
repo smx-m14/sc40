@@ -39,7 +39,7 @@ SONGS = {
     'navidad': ('Casa de la Navidad', 192),     # sale de music/navidad.mid (solo suena en la Casa de la Navidad)
     'sweetfamosa': ('Sweet Famosa', 192),       # sale de music/sweetfamosa.mid («Girl like me», el mismo MIDI que «andamios»)
     'logro': ('Música Logro 2', 128, dict(whole=True, search=True)),
-    'gym': ('Fitness Fattory', 0),     # solo MIDI
+    'gym': ('Fitness Fattory', 0),     # solo MIDI (music/gym.mid); el gimnasio ahora se llama Fitness Bartory
     'fuxia': ('Fuxia', 0),             # solo MIDI
 }
 # Reparto de pistas para los MIDI con arreglo completo (music/<id>.mid). Sin entrada aquí se trata como piano.
@@ -61,7 +61,7 @@ MIDI_OPTS = {
     'ratitas': dict(roles=dict(melody=[1], bass=[3], chords=[5]), melody_shift=12, start_beat=457, max_beats=56),
     # Estanque de los capybaras: 0 = el canto (notas repetidas), 3 = bajo, 1 y 4 = adornos
     'capybaras': dict(roles=dict(melody=[0], bass=[3], chords=[1, 4]), melody_shift=12),
-    # Fitness Fattory: 6 = melodía (4 entra en la segunda parte), 2 = bajo, 1 = arpegios
+    # Fitness Bartory: 6 = melodía (4 entra en la segunda parte), 2 = bajo, 1 = arpegios
     'gym': dict(roles=dict(melody=[6, 4], bass=[2], chords=[1])),
     # Fuxia: se salta la introducción y empieza en el tema principal (negra 38). 2 = tema, 7/5 = puente, 8 = bajo
     'fuxia': dict(roles=dict(melody=[2, 7, 5], bass=[8], chords=[9, 3]), melody_shift=12, start_beat=38),
