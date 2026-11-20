@@ -258,13 +258,16 @@ function cait() {
 
 // ---------------------------------------------------------------- Apartamento de las Ratitas
 // Puzle del rayo de luz (pasillo, filas 8 a 11). st: 1 = «/», 2 = «\».
-const PEDS = [['m1', 5, 9], ['m2', 5, 10], ['m3', 5, 11], ['m4', 11, 8], ['m5', 14, 9], ['m6', 14, 11], ['m7', 17, 10], ['m8', 17, 11], ['m9', 20, 8], ['m10', 9, 8], ['m11', 8, 10]];
-const FIXED = [[23, 11, 1], [19, 8, 1], [20, 10, 1]];
+// Colocación buscada por ordenador: todos los pedestales sirven (con alguna colocación el rayo rebota en cada uno y
+// llega a Kai), se le pueden mandar los 4 colores y todas las mezclas de dos salvo amarillo + verde, el lila sale con UNA
+// sola colocación (m1, m2, m10) y el pasillo queda libre tanto con Kai dormido (24,8) como despierto (23,8).
+const PEDS = [['m1', 5, 9], ['m2', 10, 9], ['m3', 14, 8], ['m4', 9, 11], ['m5', 22, 11], ['m6', 14, 9], ['m7', 7, 9], ['m8', 9, 8], ['m9', 14, 11], ['m10', 10, 11], ['m11', 7, 8]];
+const FIXED = [[23, 11, 1], [22, 9, 2], [5, 11, 2]];
 // Cristales en orden rojo, azul, amarillo y verde (amarillo y verde estropean el lila)
-const GEMS = [[12, 10], [11, 10], [21, 8], [6, 9]];
+const GEMS = [[6, 9], [12, 11], [15, 9], [16, 8]];
 const PILLARS = [];
-export const BEAM_SOLUTION = { m2: 2, m7: 2, m8: 2 };
-// Tres cuartos (uno por ratita) + el de Cuy, sobre un pasillo con el rayo de luz, Kai y la alcantarilla.
+export const BEAM_SOLUTION = { m1: 2, m2: 2, m10: 2 };
+// Tres cuartos (uno por ratita) + el de Cuy (no se le nombra hasta conocerlo), sobre un pasillo con el rayo de luz, Kai y la alcantarilla.
 function ratitas() {
   const m = base('ratitas', 'Apartamento de las Ratitas', 30, 13, 'x');
   const S = State;
@@ -299,10 +302,10 @@ function ratitas() {
   m.ent({ id: 'hatch', tx: 27, ty: 10, solid: true, texFn: () => (S.flag('hatchOpen') ? 'hatch_open' : 'hatch'), script: 'hatch' });
 
   // Cuarto 1: cocina de la ratita gris (quesos de menor a mayor) y nevera con imanes
-  m.obj('fridge', 6, 1); m.obj('table', 1, 1, 2, 1);
-  m.ent({ id: 'fridge', tx: 6, ty: 1, script: 'fridge' });
+  m.obj('fridge', 1, 5, 1, 2); m.obj('table', 1, 1, 2, 1); // nevera en la esquina de abajo a la izquierda, bien a la vista
+  m.ent({ id: 'fridge', tx: 1, ty: 6, script: 'fridge' });
   m.ent({ id: 'ratita_p', npc: 'ratita_p', tx: 2, ty: 3, solid: true, script: 'ratitaP' });
-  for (const [size, tx, ty] of [[3, 4, 2], [1, 5, 4], [5, 1, 5], [2, 5, 6], [4, 3, 4]]) m.ent({ id: 'ch' + size, tex: 'cheese_' + size, size, tx, ty, solid: true, script: 'cheese' });
+  for (const [size, tx, ty] of [[3, 4, 2], [1, 5, 4], [5, 6, 1], [2, 5, 6], [4, 3, 4]]) m.ent({ id: 'ch' + size, tex: 'cheese_' + size, size, tx, ty, solid: true, script: 'cheese' });
 
   // Cuarto 2: salón de la ratita blanca. Hay que contar cosas y operar: cojines × tazas + cuadros − plantas = 9
   m.obj('tv', 10, 1, 2, 1); m.obj('sofa', 10, 4, 2, 1); m.obj('shelf', 12, 1, 2, 1);
@@ -351,16 +354,18 @@ function castillo() {
 
   // Plaza Principal
   m.obj('fountain', 19, 14, 2, 2);
-  m.deco('banner_k', 13, 10); m.deco('banner_g', 26, 10); m.deco('banner_g', 13, 20); m.deco('banner_k', 26, 20);
+  m.deco('banner_k', 13, 10); m.deco('banner_g_r', 26, 10); m.deco('banner_g', 13, 20); m.deco('banner_k_r', 26, 20);
   m.obj('lantern', 16, 11); m.obj('lantern', 23, 11);
-  // El Rey espera sentado en su trono (detrás de él, con alfombra roja hasta la fuente)
-  m.objects.push({ tex: 'throne', x: 20 * TILE + 8, y: 11 * TILE + 14 });
+  // El Rey espera sentado en su trono (detrás de él, con alfombra roja hasta la fuente). Trono, alfombra, fuente y
+  // mosaico van alineados en el centro de la plaza (x = 20 × TILE, entre las baldosas 19 y 20)
+  m.objects.push({ tex: 'throne', x: 20 * TILE, y: 11 * TILE + 14 });
   m.block[11][19] = m.block[11][21] = true;
-  m.obj('carpet', 20, 12, 1, 2, { flat: true });
-  m.ent({ id: 'peludito', npc: 'peludito', tx: 20, ty: 11, oy: -6, solid: true, script: 'peludito' });
+  m.objects.push({ tex: 'carpet', x: 20 * TILE, y: 14 * TILE, flat: true });
+  m.ent({ id: 'peludito', npc: 'peludito', tx: 20, ty: 11, ox: -8, oy: -6, solid: true, script: 'peludito' });
+  for (const tx of [19, 21]) m.ent({ id: 'trono' + tx, tx, ty: 11, script: 'trono' }); // los lados del Trono Real
   // Vida en la plaza: estatuas del Rey, mosaico, puestos, bancos, un pintor y vecinos
-  m.obj('mosaic', 18, 17, 3, 2, { flat: true });
-  [[14, 12, 2], [25, 12, 3], [14, 18, 1], [25, 18, 1]].forEach(([tx, ty, n], i) => m.ent({ id: 'statue' + i, tex: 'statue_' + n, n, tx, ty, solid: true, script: 'statue' }));
+  m.objects.push({ tex: 'mosaic', x: 20 * TILE, y: 19 * TILE, flat: true });
+  [[14, 12, 2], [25, 12, 3], [14, 18, 4], [25, 18, 5]].forEach(([tx, ty, n], i) => m.ent({ id: 'statue' + i, tex: 'statue_' + n, n, tx, ty, solid: true, script: 'statue' }));
   m.obj('stall', 15, 15, 2, 1); m.obj('stall', 23, 15, 2, 1);
   m.obj('bench', 17, 19); m.obj('bench', 22, 19); m.obj('easel', 22, 12);
   for (const x of [15, 17, 22, 24]) m.objects.push({ tex: 'flowerbed', x: x * TILE + 8, y: 10 * TILE + 10, flat: true, top: true });

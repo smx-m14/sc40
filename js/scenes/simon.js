@@ -18,11 +18,17 @@ export const OWITOS = [
   { tex: 'owito_v', note: 'E4', col: 0xb8a0d8 }, // lila
 ];
 // La melodía es fija (luego se toca con el Otamatone en el muelle). who = qué Owito la canta.
+// at: en qué tiempo (negras) entra cada nota, sacado del estribillo de «Popular» (compás 18 del MIDI): mismo ritmo, con
+// sus tresillos («Pop-u-lar…» · silencio · «…you're gon-na be pop-u-lar»).
+const AT = [0, 1, 1.67, 5, 5.67, 6.67, 7, 8, 9, 10, 11];
 export const MELODY = ['C4', 'A3', 'C4', 'C4', 'C4', 'G4', 'E4', 'F4', 'F4', 'A4', 'C4']
-  .map((note) => ({ note, who: OWITOS.findIndex((o) => o.note === note) }));
+  .map((note, i) => ({ note, at: AT[i], who: OWITOS.findIndex((o) => o.note === note) }));
 export const PHRASES = [0, 4, 8]; // dónde empieza cada frase (el Otamatone avanza y reintenta por frases)
 const FIRST = 3;   // se empieza repitiendo tres notas y se llega a las once
 const X0 = 70, DX = 36, FEET = 128; // fila: posición del primero, separación y altura de los pies
+// Por el escenario se mueven entre 7 huecos (siempre queda alguno libre); UP = cuánto más arriba quedan los pies del que
+// se sube encima de otro.
+const SLOTS = [58, 92, 126, 160, 194, 228, 262], UP = 26;
 
 export class SimonScene extends Phaser.Scene {
   constructor() { super('simon'); }
@@ -48,16 +54,20 @@ export class SimonScene extends Phaser.Scene {
 
     // Foco del selector: un círculo de luz en el suelo y una flecha sobre la cabeza del Owito elegido
     this.spot = this.add.graphics();
-    this.owitos = OWITOS.map((o, i) => this.add.image(X0 + i * DX, FEET, o.tex + '_down_0').setOrigin(0.5, 1).setScale(2).setDepth(2));
+    // Los Owitos no se están quietos (todos en el mismo plano, mismo tamaño): cada poco uno cambia de hueco, dos se
+    // intercambian el sitio, uno se sube encima de otro o se baja de un salto. Despacio, pero hay que seguirles la pista.
+    this.owitos = OWITOS.map((o, i) => this.add.image(SLOTS[i], FEET, o.tex + '_down_0').setOrigin(0.5, 1).setScale(2).setDepth(2));
+    this.mov = OWITOS.map((o, i) => ({ slot: i, level: 0, x: SLOTS[i], y: FEET, trip: null, pop: 0 }));
+    this.danceT = 0; this.dancing = false;
     this.marker = this.add.image(0, FEET - 42, 'arrow').setAngle(180).setDepth(3);
     this.cur = 3;
 
     this.n = FIRST; this.pos = 0; this.lock = true; this.leaving = false; this.won = false;
     this.bar();
     Input.clear();
-    UI.say('Owito director', [
-      '¡Silencio en la sala! Ensayo general de «MALOWITA: la historia jamás contada de los Owitos de Oz».',
-      'Hoy ensayamos el número estrella. Mis seis Owitos cantan cada uno una nota, y los he puesto en fila a mi manera: nada de grave a agudo.',
+    UI.say('Tigrito', [
+      '¡Silencio en la sala! Ensayo general de «Owicked».',
+      'Hoy ensayamos el número estrella. Cada Owito canta una nota. Y no se están quietos: es teatro moderno.',
       'Tú repite lo que canten: muévete con ← → hasta el Owito y pulsa el botón de acción para que cante. Empezamos con tres notas y la partitura tiene once. Si fallas, retrocedemos una.',
     ]).then(() => this.show());
   }
@@ -70,20 +80,54 @@ export class SimonScene extends Phaser.Scene {
   }
   debugWin() { if (!this.leaving && !this.won) this.win(); }
 
-  flash(i, sing = true) { // el Owito i canta su nota (sing = false: fallo, no suena)
+  flash(i, sing = true, len = 0.28) { // el Owito i canta su nota durante len segundos (sing = false: fallo, no suena)
     const spr = this.owitos[i], o = OWITOS[i];
-    if (sing) Sound.seq([o.note], 0.28, 'triangle', 0.22);
+    if (sing) Sound.seq([o.note], len, 'triangle', 0.22);
     spr.setTexture(o.tex + '_down_1');
-    this.tweens.add({ targets: spr, scale: 2.6, duration: 110, yoyo: true, onComplete: () => spr.setTexture(o.tex + '_down_0').setScale(2) });
+    this.mov[i].pop = 1; // un saltito al cantar (lo suma update() a su altura, sin cambiar el tamaño)
+    this.time.delayedCall(220, () => spr.setTexture(o.tex + '_down_0'));
+  }
+
+  // ---------------------------------------------------------- Coreografía
+  goTo(i, slot, level) { // el Owito i va (andando o de un salto) al hueco slot, en el suelo (0) o encima de otro (1)
+    const m = this.mov[i], toX = SLOTS[slot], toY = FEET - level * UP;
+    const jump = level !== m.level;
+    m.slot = slot; m.level = level;
+    m.trip = { fx: m.x, fy: m.y, tx: toX, ty: toY, p: 0, dur: Math.max(jump ? 0.9 : 0.7, Math.abs(toX - m.x) / 38), arc: jump ? 18 : 0 };
+  }
+  dance() {
+    const M = this.mov, onTop = (i) => M.some((q) => q.level === 1 && q.slot === M[i].slot); // lleva a alguien encima
+    const free = (i) => !M[i].trip && !onTop(i);
+    const empty = SLOTS.map((_, k) => k).filter((k) => !M.some((q) => q.slot === k));
+    const ground = M.map((_, i) => i).filter((i) => M[i].level === 0 && free(i));
+    const top = M.findIndex((q) => q.level === 1 && !q.trip);
+    const pick = (a) => a[Math.floor(Math.random() * a.length)];
+    const acts = [];
+    if (ground.length >= 2) acts.push('swap', 'swap');
+    if (ground.length && empty.length) acts.push('walk');
+    if (top >= 0 && empty.length) acts.push('down', 'down');
+    if (top < 0 && ground.length >= 2) acts.push('climb');
+    const act = pick(acts);
+    if (act === 'swap') { // dos se intercambian el sitio, cruzándose
+      const a = pick(ground), b = pick(ground.filter((i) => i !== a)), sa = M[a].slot;
+      this.goTo(a, M[b].slot, 0); this.goTo(b, sa, 0);
+    } else if (act === 'walk') this.goTo(pick(ground), pick(empty), 0);
+    else if (act === 'down') this.goTo(top, pick(empty), 0);
+    else if (act === 'climb') { const a = pick(ground), b = pick(ground.filter((i) => i !== a)); this.goTo(a, M[b].slot, 1); }
   }
 
   async show() {
     this.lock = true;
+    this.dancing = true; // desde la primera ronda ya no se están quietos
     await new Promise((r) => this.time.delayedCall(500, r));
+    // Cantan con el ritmo de la canción (no a golpes iguales); el pulso se acelera un poco a medida que la frase crece.
+    // El silencio largo del medio se acorta para que el ensayo no se haga pesado.
+    const beat = Math.max(360, 500 - (this.n - FIRST) * 14);
     for (let i = 0; i < this.n; i++) {
       if (this.leaving) return;
-      this.flash(MELODY[i].who);
-      await new Promise((r) => this.time.delayedCall(Math.max(300, 520 - (this.n - FIRST) * 22), r)); // cada vez más deprisa
+      const gap = i + 1 < MELODY.length ? Math.min(MELODY[i + 1].at - MELODY[i].at, 2) : 1;
+      this.flash(MELODY[i].who, true, Math.min(gap, 1) * beat / 1000 * 0.85);
+      await new Promise((r) => this.time.delayedCall(gap * beat, r));
     }
     this.pos = 0; this.lock = false;
     Input.clear();
@@ -97,7 +141,7 @@ export class SimonScene extends Phaser.Scene {
       this.cameras.main.shake(150, 0.004);
       this.n = Math.max(FIRST, this.n - 1);   // un fallo hace retroceder una nota
       this.bar();
-      UI.toast('Owito director: ¡NO, NO, NO! ¡Una nota menos y desde arriba!');
+      UI.toast('Tigrito: ¡NO, NO, NO! ¡Una nota menos y desde arriba!');
       await new Promise((r) => this.time.delayedCall(900, r));
       return this.show();
     }
@@ -105,10 +149,23 @@ export class SimonScene extends Phaser.Scene {
     if (++this.pos < this.n) return;
     this.lock = true;
     await new Promise((r) => this.time.delayedCall(600, r));
-    if (this.n >= MELODY.length) return this.win();
+    if (this.n >= MELODY.length) { await this.finale(); return this.win(); }
     this.n++;
     this.bar();
     this.show();
+  }
+
+  // Melodía completa: la cantan una última vez seguida, con el ritmo exacto de «Popular» (también el silencio largo)
+  async finale() {
+    this.dancing = false;
+    await new Promise((r) => this.time.delayedCall(700, r));
+    const beat = 60000 / 104; // el tempo del original
+    for (let i = 0; i < MELODY.length; i++) {
+      if (this.leaving) return;
+      const gap = i + 1 < MELODY.length ? MELODY[i + 1].at - MELODY[i].at : 1.5;
+      this.flash(MELODY[i].who, true, Math.min(gap, 1.2) * beat / 1000 * 0.9);
+      await new Promise((r) => this.time.delayedCall(gap * beat, r));
+    }
   }
 
   async win() {
@@ -119,15 +176,31 @@ export class SimonScene extends Phaser.Scene {
     this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('world'));
   }
 
-  update(time) {
-    // El foco solo se ve cuando le toca al jugador
-    const on = !this.lock && !UI.busy && !this.leaving, x = X0 + this.cur * DX;
+  update(time, delta) {
+    const dt = Math.min(delta || 16, 50) / 1000;
+    // Coreografía: un movimiento cada pocos segundos, algo más a menudo cuanto más larga es la frase
+    if (this.dancing && !this.leaving && (this.danceT -= dt) <= 0) { this.danceT = Math.max(4.8, 9 - (this.n - FIRST) * 0.3) * (0.75 + Math.random() * 0.5); this.dance(); } // la mitad de movimientos que al principio
+    this.mov.forEach((m, i) => {
+      const t = m.trip;
+      if (t) { // andando (con un leve bote) o saltando (en arco) hasta su destino
+        t.p = Math.min(1, t.p + dt / t.dur);
+        m.x = t.fx + (t.tx - t.fx) * t.p;
+        m.y = t.fy + (t.ty - t.fy) * t.p - Math.sin(Math.PI * t.p) * t.arc - (t.arc ? 0 : Math.abs(Math.sin(t.p * Math.PI * 4)) * 3);
+        if (t.p >= 1) m.trip = null;
+      }
+      m.pop = Math.max(0, m.pop - dt * 6);
+      this.owitos[i].setPosition(Math.round(m.x), Math.round(m.y - Math.sin(m.pop * Math.PI) * 5)).setDepth(2 + m.level + (t && t.arc ? 1 : 0));
+    });
+    // El foco solo se ve cuando le toca al jugador, y sigue al Owito elegido
+    const on = !this.lock && !UI.busy && !this.leaving, sel = this.owitos[this.cur];
     this.spot.clear();
-    if (on) this.spot.fillStyle(0xffe066, 0.3).fillEllipse(x, FEET - 1, 40, 10);
-    this.marker.setVisible(on).setPosition(x, FEET - 42 + Math.round(Math.sin(time / 160) * 1.5));
+    if (on) this.spot.fillStyle(0xffe066, 0.3).fillEllipse(sel.x, FEET - 1, 40, 10);
+    this.marker.setVisible(on).setPosition(sel.x, sel.y - 36 + Math.round(Math.sin(time / 160) * 1.5)).setDepth(10);
     if (!on) { Input.clear(); return; }
-    if (Input.take('left')) this.cur = Math.max(0, this.cur - 1);
-    if (Input.take('right')) this.cur = Math.min(OWITOS.length - 1, this.cur + 1);
+    // ← →: al Owito de al lado según dónde estén ahora (pueden haberse cambiado de sitio)
+    const order = this.mov.map((m, i) => i).sort((a, b) => this.mov[a].x - this.mov[b].x || this.mov[a].level - this.mov[b].level), k = order.indexOf(this.cur);
+    if (Input.take('left')) this.cur = order[Math.max(0, k - 1)];
+    if (Input.take('right')) this.cur = order[Math.min(OWITOS.length - 1, k + 1)];
     if (Input.take('a')) return this.sing();
     if (Input.take('b')) this.exit();
   }

@@ -1,0 +1,114 @@
+/* Guía de Super Cait's 40 — manual de instrucciones al estilo de los de los 90, en A5 (148 × 210 mm).
+   En pantalla se ven las páginas una debajo de otra; al imprimir, una por hoja A5 (o dos por A4 apaisado). */
+@font-face { font-family: 'VT323'; src: url('../fonts/vt323.woff2') format('woff2'); }
+
+:root {
+  --red: #d62a2a; --red-d: #9e1b1f; --yellow: #ffd23f; --yellow-d: #e8a800;
+  --purple: #4b2a8f; --green: #2f8f4a; --ink: #1a1412; --paper: #fffdf6; --cream: #fff3d6;
+  --head: 'Press Start 2P', 'VT323', monospace;
+  --title: 'Lilita One', 'Arial Black', sans-serif;
+  --body: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: #5b5f6b; }
+body { margin: 0; padding: 10mm 0; font-family: var(--body); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+img[data-spr], img[data-icon], img[data-map], .strip img { image-rendering: pixelated; }
+
+/* ------------------------------------------------------------ página */
+.page {
+  position: relative; width: 148mm; height: 210mm; margin: 0 auto 10mm; overflow: hidden;
+  background: var(--paper); box-shadow: 0 2mm 6mm rgba(0, 0, 0, .45);
+  font-size: 12pt; line-height: 1.22;
+}
+.page > .band { position: absolute; left: 0; right: 0; top: 0; height: 21mm; background: var(--red); border-bottom: 1.2mm solid var(--red-d); }
+.page > .foot { position: absolute; left: 0; right: 0; bottom: 0; height: 13mm; background: var(--yellow); border-top: 1mm solid var(--yellow-d); }
+.page h1 {
+  position: absolute; top: 4.5mm; margin: 0; font: 25pt/1 var(--title); color: var(--yellow); letter-spacing: .6pt;
+  -webkit-text-stroke: 2.2pt var(--ink); paint-order: stroke fill; text-shadow: .7mm .7mm 0 var(--ink); white-space: nowrap;
+}
+.page h1.small { font-size: 17pt; top: 7mm; }
+.page.odd h1 { left: 9mm; } .page.even h1 { left: 25mm; }
+.content { position: absolute; top: 27mm; bottom: 18mm; }
+.page.odd .content { left: 9mm; right: 25mm; }
+.page.even .content { left: 25mm; right: 9mm; }
+
+/* tira lateral con iconos, en el borde exterior */
+.strip {
+  position: absolute; top: 0; bottom: 0; width: 16mm; display: flex; flex-direction: column; justify-content: space-evenly; align-items: center;
+  background: repeating-linear-gradient(135deg, #2f8f4a 0 7mm, #c8402c 7mm 14mm, #4b2a8f 14mm 21mm);
+  border-left: .8mm solid var(--ink); border-right: .8mm solid var(--ink); z-index: 2;
+}
+.page.odd .strip { right: 0; } .page.even .strip { left: 0; }
+.strip img { width: 9mm; filter: drop-shadow(.6mm .6mm 0 rgba(0, 0, 0, .55)); }
+.num { position: absolute; bottom: 3.5mm; font: 9pt var(--head); color: var(--red-d); z-index: 3; }
+.page.odd .num { right: 20mm; } .page.even .num { left: 20mm; }
+
+/* ------------------------------------------------------------ texto */
+h2 { break-after: avoid; font: 700 15pt/1.05 var(--body); color: var(--purple); margin: 0 0 1mm; }
+h3 { break-after: avoid; font: 700 13pt/1.1 var(--body); color: var(--ink); margin: 0 0 .6mm; }
+p { margin: 0 0 2mm; }
+p.lead { font-style: italic; }
+.cols { column-count: 2; column-gap: 5mm; }
+.cols > * { break-inside: avoid; }
+.drop::first-letter { float: left; font: 700 30pt/.8 var(--body); color: var(--purple); margin: .8mm 1.6mm 0 0; }
+.item { display: flow-root; margin-bottom: 3.2mm; }
+.item img { float: right; margin: 0 0 1mm 2mm; }
+.item.l img { float: left; margin: 0 2mm 1mm 0; }
+.box { background: var(--cream); border: .5mm solid var(--ink); border-radius: 1.5mm; padding: 2mm 2.5mm; margin-bottom: 3mm; }
+.box h3 { background: var(--purple); color: #fff; margin: -2mm -2.5mm 1.6mm; padding: 1mm 2.5mm; border-radius: 1mm 1mm 0 0; font-size: 12pt; }
+.key { display: inline-block; min-width: 5.5mm; padding: 0 1.2mm; border: .4mm solid var(--ink); border-bottom-width: 1mm; border-radius: 1mm; background: #fff; font: 9pt/1.4 'VT323', monospace; text-align: center; }
+.shot { display: block; width: 100%; border: .7mm solid var(--ink); box-shadow: 1mm 1mm 0 rgba(0, 0, 0, .35); margin-bottom: 1.5mm; }
+.place { display: flow-root; margin-bottom: 3.5mm; }
+.place .shot { float: left; width: 52%; margin: 0 2.5mm 1mm 0; }
+.place.r .shot { float: right; margin: 0 0 1mm 2.5mm; }
+.place h2 { font-size: 15pt; }
+.row { display: flex; gap: 3mm; align-items: flex-end; justify-content: center; flex-wrap: wrap; }
+.tiny { font-size: 10.5pt; line-height: 1.2; }
+.muted { color: #6b5a4a; }
+.sil { filter: brightness(0) opacity(.75); }
+
+/* índice */
+.toc { list-style: none; padding: 0; margin: 0; font: 700 15pt/1.6 var(--body); }
+.toc li { display: flex; color: var(--red); }
+.toc li::after { content: ''; order: 1; flex: 1; border-bottom: .7mm dotted var(--ink); margin: 0 1.5mm 1.6mm; }
+.toc li span { order: 2; color: var(--ink); }
+
+/* ------------------------------------------------------------ portada y contraportada */
+.cover { background: radial-gradient(ellipse at 50% 38%, #ffe8a3 0%, #f6b73c 45%, #e2574c 100%); }
+.cover .tag { position: absolute; top: 9mm; left: 0; right: 0; text-align: center; font: 8pt var(--head); color: var(--ink); letter-spacing: 1.5pt; }
+.logo { position: absolute; top: 26mm; left: 0; right: 0; text-align: center; }
+.logo .s { display: block; margin-bottom: 3mm; font: 13pt var(--head); color: #fff; -webkit-text-stroke: 1pt var(--ink); paint-order: stroke fill; text-shadow: .8mm .8mm 0 var(--ink); }
+.logo .b { font: 25pt/1.25 var(--head); color: var(--yellow); -webkit-text-stroke: 1.4pt var(--ink); paint-order: stroke fill; text-shadow: 1.3mm 1.3mm 0 var(--ink); }
+.logo .b span { color: #f06aa8; }
+.logo .sub { font: italic 700 13pt var(--body); color: var(--ink); margin-top: 2mm; }
+.cover .hero { position: absolute; left: 0; right: 0; top: 78mm; text-align: center; }
+.cover .hero img { filter: drop-shadow(1.5mm 1.5mm 0 rgba(0, 0, 0, .35)); }
+.cover .crowd { position: absolute; left: 6mm; right: 6mm; bottom: 26mm; display: flex; justify-content: space-between; align-items: flex-end; }
+.badge { position: absolute; right: 8mm; bottom: 8mm; background: #fff; border: .8mm solid var(--ink); border-radius: 2mm; padding: 1.5mm 2.5mm; font: 7pt/1.5 var(--head); text-align: center; }
+.badge b { display: block; font-size: 11pt; color: var(--red); }
+.back { background: linear-gradient(160deg, #c8402c, #7a1d1d); color: #fff; }
+.back .center { position: absolute; left: 12mm; right: 12mm; top: 60mm; text-align: center; font: 700 13pt/1.4 var(--body); }
+
+/* página de aviso */
+.legal { background: var(--cream); }
+.legal .content { left: 12mm !important; right: 12mm !important; top: 12mm; }
+.warn { font: 700 9pt/1.3 var(--body); color: var(--red); text-transform: uppercase; margin-bottom: 5mm; }
+.seal { float: right; width: 30mm; height: 30mm; margin: 0 0 2mm 3mm; border-radius: 50%; border: 1mm double var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; font: 6pt/1.4 var(--head); text-align: center; background: #fff; }
+.seal img { margin: 1mm 0; }
+.rating { display: flex; gap: 3mm; align-items: center; border: .6mm solid var(--ink); padding: 2mm; margin-top: 6mm; font-size: 9pt; }
+.rating .r { flex: none; width: 16mm; border: .8mm solid var(--ink); text-align: center; font: 13pt/1.2 var(--head); background: #fff; padding: 1mm 0; }
+.rating .r small { display: block; font: 5pt var(--head); }
+
+/* notas */
+.lines { position: absolute; inset: 0; background: repeating-linear-gradient(transparent 0 7.5mm, #c9b88a 7.5mm 7.8mm); }
+
+/* ------------------------------------------------------------ impresión: A5, una página por hoja */
+@page { size: A5 portrait; margin: 0; }
+@media print {
+  html, body { background: none; padding: 0; }
+  .page { margin: 0; box-shadow: none; break-after: page; }
+  .noprint { display: none; }
+}
+body.solo { padding: 0; } body.solo .noprint { display: none; } body.solo .page { margin: 0; box-shadow: none; }
+.noprint { width: 148mm; margin: 0 auto 6mm; color: #fff; font: 11pt/1.4 var(--body); }
+.noprint b { color: var(--yellow); }

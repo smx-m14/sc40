@@ -23,8 +23,8 @@ export function hint() {
   if (!S.flag('tigrito')) return 'En el bosque del noreste unos monos no dejan pasar a nadie. Dicen que se han llevado a Tigrito.';
   if (!S.flag('caveOpen')) return 'Pasado el bosque hay una cueva tapada por un derrumbe. Lolete cava como nadie.';
   if (!(S.flag('r1') && S.flag('r2') && S.flag('r3'))) return 'Al otro lado de la cueva está el Apartamento de las Ratitas. Cada ratita guarda un espejo y un número.';
-  if (!S.flag('kai')) return 'Kai duerme delante de la puerta de Cuy. Con los tres espejos se puede llevar el rayo de sol hasta su hocico… pero tiene que llegarle lila.';
-  if (!S.flag('cuy')) return 'Cuy está en su cuarto, al fondo del apartamento. Tiene una pregunta sobre Cuca.';
+  if (!S.flag('kai')) return 'Kai duerme delante de la puerta del último cuarto. Con los tres espejos se puede llevar el rayo de sol hasta su hocico' + ((S.d.flags.kaiCols || []).length >= 3 ? '… pero tiene que llegarle lila.' : '. Prueba a pasarlo por los cristales.');
+  if (!S.flag('cuy')) return 'Al fondo del apartamento vive el cuarto roedor. Tiene una pregunta sobre Cuca.';
   if (!S.flag('hatchOpen')) return 'El candado de la alcantarilla tiene cuatro cifras. La última está escrita en ruso: la nevera ayuda.';
   if (!S.flag('cuyTemple')) return 'Lleva a Cuy al Templo de los Sabios: por fin alguien puede traducir a Cuca.';
   if (!S.flag('pato')) return 'En el Castillo de Mazapán, los capybaras no se atreven a entrar en su estanque: algo hace «cuac» entre los juncos.';
@@ -199,13 +199,13 @@ export const SCRIPTS = {
     Sound.logro();
     await UI.say('Tigrito', [
       '¡Grrr… gracias, Colgadín! Tres horas de rama en rama. Estoy mareadísimo.',
-      'Yo solo había venido al bosque a ensayar, que los Owitos del Teatro me esperan para poner la música de su obra.',
+      'Yo solo había venido al bosque a ensayar. Soy el director de la obra de los Owitos del Teatro, y sin mí no empiezan.',
       '¿Una fiesta para Cait? ¡Me apunto! Voy contigo, que al teatro se llega por el castillo.',
     ]);
     S.set('tigrito');
     if (S.flag('simon')) S.goHome('tigrito'); else S.join('tigrito');
     invite('tigrito', 'Tigrito');
-    await UI.say('Monos', '¡Uh uh…! Vale, nos hemos pasado. Dejamos el camino libre. ¿Habrá plátanos en esa fiesta?');
+    await UI.say('Monos', '¡Uh uh…! Vale, nos hemos pasado. Dejamos el camino libre. ¿Habrá bananas en esa fiesta?');
     await UI.say('', '¡Tigrito se une a la aventura! Los monos despejan el camino hacia la cueva.');
   },
 
@@ -220,7 +220,7 @@ export const SCRIPTS = {
   async grate() { await UI.say('', ['Por la rejilla del techo se cuela un rayo de sol que cae recto hasta el suelo. Si algo lo desviara…', 'Por el pasillo hay once pedestales vacíos, tres espejos atornillados al suelo que no se pueden mover y cuatro cristales de color: rojo, azul, amarillo y verde.']); },
   async kaiSleep() {
     await UI.say('', [
-      'Kai, el gato negro, duerme atravesado delante de la puerta de Cuy. Ronca como una moto.',
+      'Kai, el gato negro, duerme atravesado delante de la puerta del último cuarto. Ronca como una moto.',
       'Le pusieron «Kai» para no confundirlo con Cait. No ha servido de nada: todo el mundo los confunde igual, porque son igual de gatos.',
       'No hay quien lo mueva. Aunque dicen que no hay gato que se resista a un puntito de luz… de cierto color.',
     ]);
@@ -249,9 +249,12 @@ export const SCRIPTS = {
     if (!b.hit) return;
     await new Promise((r) => scene.time.delayedCall(500, r));
     if (!b.solved) {
+      // Lo del lila no se cuenta hasta que le hayan llegado al menos tres colores distintos
+      const cols = f.kaiCols = f.kaiCols || [];
+      if (b.mask && !cols.includes(b.mask)) { cols.push(b.mask); S.save(); } // la luz blanca no cuenta como color
       return UI.say('', [
         b.mask ? `Un puntito de luz ${b.color} baila delante del hocico de Kai. Abre un ojo… y lo vuelve a cerrar.` : 'Un puntito de luz blanca baila delante del hocico de Kai. Ni se inmuta.',
-        'Su colorimetría solo le permite moverse con láseres LILAS. El lila sale de mezclar rojo y azul… y nada más: si se cuela otro color, ya no es lila.',
+        ...(cols.length >= 3 ? ['Su colorimetría solo le permite moverse con láseres LILAS.'] : []),
       ]);
     }
     await UI.say('', ['Un puntito lila baila justo delante del hocico de Kai…', 'Kai abre un ojo. Luego el otro. Se le dilatan las pupilas.']);
@@ -259,14 +262,14 @@ export const SCRIPTS = {
     S.set('kai');
     scene.sync();
     await UI.say('Kai', '¡¡MIAU!!');
-    await UI.say('', 'Kai se lanza a cazar el puntito y deja libre la puerta del cuarto de Cuy.');
+    await UI.say('', 'Kai se lanza a cazar el puntito y deja libre la puerta del último cuarto.');
   },
   async mirrorFixed() { await UI.say('', 'Un espejo atornillado al suelo sobre una base de piedra. No se puede girar ni quitar: habrá que contar con él.'); },
   async gem(scene, ent) { await UI.say('', `Un cristal ${ent.id === 'gem_r' ? 'rojo' : 'azul'} sobre una peana. La luz que lo atraviesa sale teñida de su color.`); },
-  // Cocina: cinco quesos. Primero los de tamaño par (2.º y 4.º), de menor a mayor; luego los impares (1.º, 3.º y 5.º)
+  // Cocina: cinco quesos. Primero los de tamaño par (2.º y 4.º), de menor a mayor; luego los impares al revés (5.º, 3.º y 1.º)
   async cheese(scene, ent) {
     if (S.flag('r1')) return UI.say('', 'Ñam. Ya no quedan más que migas.');
-    const ORDER = [2, 4, 1, 3, 5];
+    const ORDER = [2, 4, 5, 3, 1];
     if (ent.size !== ORDER[cheeseStep]) {
       const was = cheeseStep;
       cheeseStep = 0;
@@ -280,12 +283,12 @@ export const SCRIPTS = {
     await roomDone(1, 'Ratita gris', 'Así da gusto. Toma: mi espejo de mano. Y apunta: la primera cifra del candado es el 1.');
   },
   async ratitaP() {
-    if (S.flag('r1')) return UI.say('Ratita gris', 'La primera cifra es el 1. Y los quesos, primero los pares.');
+    if (S.flag('r1')) return UI.say('Ratita gris', 'La primera cifra es el 1. Y los quesos, primero los pares; los impares, al revés.');
     await UI.say('Ratita gris', [
-      '¡Iiik! Bienvenido al Apartamento de las Ratitas. Vivimos tres… bueno, cuatro con Cuy. Y un gato, pero ese no paga alquiler.',
+      '¡Iiik! Bienvenido al Apartamento de las Ratitas. Aquí vivimos cuatro roedores. Y un gato, pero ese no paga alquiler.',
       '¿El candado de la alcantarilla? Cada una sabemos una cifra. La mía te la digo si demuestras buenos modales en la mesa.',
-      'En mi cocina hay cinco quesos, todos de tamaño distinto. Ordénalos en la cabeza del más pequeño (el 1.º) al más grande (el 5.º).',
-      'Las normas de la casa: primero se muerden los que ocupan puesto PAR, de menor a mayor. Después los de puesto IMPAR, también de menor a mayor.',
+      'En mi cocina hay cinco quesos, todos de tamaño distinto. Ordénalos en la cabeza de pequeño a grande.',
+      'Las normas de la casa: primero se muerden los que ocupan puesto PAR, de menor a mayor. Después los de puesto IMPAR, pero al revés.',
       'Si te equivocas, se empieza otra vez. Y fíjate bien, que algunos se parecen mucho.',
     ]);
   },
@@ -336,7 +339,11 @@ export const SCRIPTS = {
   },
   async fridge() {
     S.set('imanes');
-    await UI.say('', ['La nevera está llena de imanes de letras raras que forman tres palabras. Debajo de cada una, alguien ha pegado una etiqueta:', '«ЖБЛ» = SOL\n«ШЮЯ» = TÍA\n«ЛДЦ» = LEY'], { ruso: true });
+    await UI.say('', [
+      'La nevera está llena de imanes de letras raras que forman tres palabras. Debajo de cada una, alguien ha pegado una etiqueta:',
+      '«ФГДЖБ» = QUESO\n«ШЯПШЯ» = TARTA\n«ЭЮЯГ» = MIAU',
+      '(La etiqueta de QUESO tiene marcas de dientecitos. La de MIAU, pelos de gato negro.)',
+    ], { ruso: true });
   },
   async note() {
     S.set('nota');
@@ -349,13 +356,14 @@ export const SCRIPTS = {
       await UI.say(Y, ['¡Cui, cui! ¿Quién ha despertado a Kai? …¡Colgadín!', 'Antes de nada, una pregunta. Es muy importante.']);
       S.set('metCuy');
     }
-    const opts = shuffle(['Cuca siempre está con nosotros', 'No, ya no está', '¿Qué Cuca?']);
-    if (opts[await UI.choose(Y, '¿Está Cuca?', opts)] !== 'Cuca siempre está con nosotros') {
+    const OK = '¡Claro! ¡Está con Scooby!';
+    const opts = shuffle([OK, '¿Qué Cuca?', 'Quieres decir ¿Беа?']);
+    if (opts[await UI.choose(Y, '¿Has visto a Cuca?', opts)] !== OK) {
       Sound.sfx('bad');
       return UI.say(Y, '…Cui. (Cuy se da la vuelta, muy serio. Quizá esperaba otra respuesta.)');
     }
     await UI.say(Y, [
-      '¡Lo sabía! ¡Cui, cui, cui! Cuca siempre está con nosotros.',
+      '¡Lo sabía! ¡Cui, cui, cui! Con Scooby, en el Templo de los Sabios.',
       'Yo era el único que la entendía, ¿sabes? Solo habla ruso. Si me llevas contigo, te hago de traductor.',
     ]);
     if (await UI.choose(Y, '¿Puedo unirme a la aventura?', ['¡Vente!', 'Ahora no']) !== 0) return UI.say(Y, 'Cui… Aquí estaré. No tengo otro apartamento.');
@@ -367,6 +375,10 @@ export const SCRIPTS = {
   },
   async hatch(scene) {
     if (S.flag('hatchOpen')) {
+      // Cuy no baja: así hay que llevarlo a ver a Cuca antes de pasar al castillo
+      if (S.d.party.includes('cuy')) {
+        return UI.say('Cuy', ['¿Por la alcantarilla? ¡Ni hablar! ¡Cui!', 'Ahí abajo me confundirían con una rata. Y yo soy un cuy peruano. Con pedigrí.', 'Primero llévame al templo a ver a Cuca. Luego ya veremos.']);
+      }
       if (await UI.choose('', 'La alcantarilla baja, oscura y pegajosa de azúcar, hasta el Castillo de Mazapán.', ['Bajar', 'Ahora no']) === 0) scene.warp('castillo', 5, 15, 'right');
       return;
     }
@@ -412,18 +424,26 @@ export const SCRIPTS = {
     }
     if (!S.flag('horno')) return UI.say(P, 'La Pastelería Real está al este de la plaza. Sin mazapán no hay muralla, y sin muralla no hay puerta.');
     invite('peludito', P);
-    await UI.say(P, 'Reinar cansa mucho. Me quedo aquí, en mi trono, esperando a que empiece la fiesta. Sentado. Como casi siempre.');
+    await UI.say(P, 'Reinar cansa mucho. Me quedo aquí, en mi Trono Real, esperando a que empiece la fiesta. Sentado. Como casi siempre.');
+  },
+  // Los lados del trono: mientras el Rey tenga algo que encargar (muralla, andamios, invitación), habla de eso; después, del trono
+  async trono(scene) {
+    if (!S.d.invited.includes('peludito')) return SCRIPTS.peludito(scene);
+    await UI.say('Rey Peludito', [
+      '¡Eh, eh! Ese es mi Trono Real. Es solo mío.',
+      'Nadie más puede sentarse en él: le quitaría su energía monárquica. Y sin energía monárquica, solo soy un gato redondo en una silla.',
+    ]);
   },
   async capybaras(scene) {
     const K = 'Capybara';
     if (!S.flag('metCapys')) {
       await UI.say(K, [
         '…',
-        'Nosotros solo queremos remojarnos en nuestro estanque. Pero entre los juncos hay ALGO.',
+        'Nosotros solo queremos hacer un xapu en nuestro estanque. Pero entre los juncos hay ALGO.',
         'Hace un ruido espantoso. «Cuac». Así, sin avisar. Dicen que es un pato feroz.',
       ]);
       S.set('metCapys');
-    } else await UI.say(K, '…Sigue ahí. Ha vuelto a hacer «cuac».');
+    } else await UI.say(K, '…Sigue ahí. Ha vuelto a hacer «cuac». Así no hay quien haga un xapu.');
     if (await UI.choose(C, '¿Me acerco a ver qué hay entre los juncos?', ['Con mucho cuidado', 'Ahora no']) !== 0) return;
     scene.startScene('pato', 27, 12);
   },
@@ -434,35 +454,36 @@ export const SCRIPTS = {
     ]);
     await UI.say(C, 'No son ratones: son capybaras. Y están aterrados… de ti.');
     await UI.say('Patito', ['¿De mí? Si yo ni siquiera soy un pato. Me llaman Patito porque soy amarillo.', 'De pequeño me tragué el altavoz de un pato de juguete. Desde entonces, cuando me pongo nervioso, me sale el «cuac».']);
-    await UI.say('Capybara', '¿Ese era el monstruo? Pero si es blandito. Anda, ven al agua, que hay sitio para todos.');
+    await UI.say('Capybara', '¿Ese era el monstruo? Pero si es blandito. Anda, ven a hacer un xapu, que hay sitio para todos.');
     Sound.logro();
     S.set('pato');
-    await UI.say('Capybara', ['Gracias, Colgadín. Te debemos un baño. Cuando quieras, hay sitio.', 'Y llévale esto a Cait de nuestra parte: un centro con las flores de loto más bonitas del estanque.']);
+    await UI.say('Capybara', ['Gracias, Colgadín. Te debemos un xapu. Cuando quieras, hay sitio.', 'Y llévale esto a Cait de nuestra parte: un centro con las flores de loto más bonitas del estanque.']);
     gift('flores');
     invite('patito', 'Patito');
     invite('capybaras', 'los capybaras');
   },
-  async capybarasHappy() { invite('capybaras', 'los capybaras'); await UI.say('Capybara', 'Glu, glu, glu. Por fin en remojo. El agua está a la temperatura exacta de no hacer nada. A la fiesta vamos, pero despacio.'); },
+  async capybarasHappy() { invite('capybaras', 'los capybaras'); await UI.say('Capybara', 'Glu, glu, glu. Por fin, un xapu. El agua está a la temperatura exacta de no hacer nada. A la fiesta vamos, pero despacio.'); },
   async patito() { invite('patito', 'Patito'); await UI.say('Patito', 'Cuac. Es broma, ya no estoy nervioso. Bueno, un poco. ¿En la fiesta habrá ratones gigantes?'); },
   async teatro(scene) {
-    const D = 'Owito director';
+    const O = 'Owitos del Teatro';
     if (S.flag('simon')) return UI.say('', 'Dentro siguen ensayando «Owicked». Ya van por el segundo acto: el de la escoba.');
     if (!S.d.party.includes('tigrito')) {
-      return UI.say(D, ['¡No se puede ensayar! ¡Nos falta Tigrito, el músico!', 'Se fue al bosque a practicar y no ha vuelto. Sin música no hay musical. Solo hay… «cal».']);
+      return UI.say(O, ['¡No se puede ensayar! ¡Nos falta el director, Tigrito!', 'Se fue al bosque a practicar y no ha vuelto. Sin director no hay musical. Solo hay… «cal».']);
     }
-    await UI.say(D, ['¡TIGRITO! ¡Por fin! ¡Estrenamos «Owicked» y no hemos ensayado ni una vez con música!', 'Tú, el de las orejas caídas: necesito a alguien que marque las entradas.']);
+    await UI.say(O, '¡DIRECTOR! ¡Por fin! ¡Estrenamos «Owicked» y no hemos ensayado ni una vez!');
+    await UI.say('Tigrito', ['¡A sus puestos, Owitos! Colgadín, tú me ayudas: necesito a alguien que marque las entradas.']);
     if (await UI.choose(C, '¿Entro al ensayo?', ['¡Arriba el telón!', 'Ahora no']) !== 0) return;
     scene.startScene('simon', 5, 8);
   },
   async simonDone() {
-    const D = 'Owito director';
+    const D = 'Tigrito';
     Sound.logro();
     await UI.say(D, ['¡Bravo! ¡Bravísimo! Ha sido… ¡popular!', 'Toma, Colgadín: un OTAMATONE, el instrumento oficial de los Owitos. Te lo has ganado.']);
     S.set('simon');
     give('{music} Otamatone', true);
     await UI.say(D, ['Y guarda bien esa melodía.', 'Dice la leyenda que esa canción puede llamar a grandes animales capaces de surcar los mares…']);
     invite('owitos_teatro', 'los Owitos del Teatro');
-    await UI.say('Tigrito', 'Yo ya he cumplido con el teatro. Me voy a casa de Cait a ensayar el «Cumpleaños feliz». ¡Nos vemos en la fiesta!');
+    await UI.say(D, 'Los Owitos ya están listos para el estreno. Me voy a casa de Cait a ensayar el «Cumpleaños feliz». ¡Nos vemos en la fiesta!');
     S.goHome('tigrito');
     await UI.say('', 'Tigrito se marcha a casa de Cait.');
   },
@@ -472,7 +493,7 @@ export const SCRIPTS = {
     if (!S.flag('horno')) return UI.say(G, ['Miau. (Está del lado enfurruñado.)', '¿Desmontar los andamios con la muralla llena de agujeros? Ni hablar. Primero, mazapán.']);
     await UI.say(G, [
       '¡Miau! Somos los Gemelos bipolares. Si algo sale bien, se nos ve contentos. Si sale mal, nos damos la vuelta.',
-      'Los andamios se desmontan a martillazos, pero al compás: yo marco el ritmo y tú lo repites.',
+      'Con la muralla entera ya podemos quitar los andamios. Eso sí: a nuestra manera.',
     ]);
     if (await UI.choose(G, '¿Le damos al martillo?', ['¡Al compás!', 'Ahora no']) !== 0) return;
     scene.startScene('ritmo', 19, 24);
@@ -491,6 +512,8 @@ export const SCRIPTS = {
       'Estatua de piedra: «Su Majestad el Rey Peludito, sentado. Como casi siempre».',
       'Estatua de piedra: «El Rey Peludito blandiendo la Espada de Mazapán en la batalla contra el hambre de media tarde».',
       'Estatua de piedra: «El Rey Peludito con cetro y capa el día de su coronación. La capa era una manta».',
+      'Estatua de piedra: «El Rey Peludito descubriendo nuevos ingredientes para el mazapán». Ninguno ha superado a la almendra.',
+      'Estatua de piedra: «El Rey Peludito echando la siesta real». Dicen que es la única estatua que posó sin quejarse.',
     ][ent.n - 1]);
   },
   async plazaVend1() { await UI.say('Vendedora', ['¡Frutas de mazapán! ¡Recién pintadas! Naranjas, fresas, peras…', 'Son las mismas que usan para tapar la muralla. Si ves un agujero con forma de pera, no he sido yo.']); },
@@ -552,9 +575,10 @@ export const SCRIPTS = {
     const M = 'Mantecas';
     if (S.flag('horno')) return UI.say(M, 'La muralla ha quedado para comérsela. Pero NO te la comas. Te estoy mirando. Bueno, no: tengo los ojos cerrados. Pero te oigo masticar.');
     if (!S.flag('metMantecas')) {
+      await UI.say(M, '¡Bienvenido a la Pastelería Real! Yo soy Mantecas y aquí tienes a Manteca2. Últimamente le ha dado muy fuerte con Drag Race.');
+      await UI.say('Manteca2', '¡Hola, hola, shiushi! ¡Bienvenido al taller! Hoy hornearemos con tacones.');
       await UI.say(M, [
-        '¡Bienvenido a la Pastelería Real! Yo soy Mantecas y aquí tienes a Manteca2. No preguntes por Manteca1.',
-        'Aquí se hornea el mazapán con el que se reconstruye la muralla del castillo. Almendra y azúcar, nada más.',
+        'Aquí se hornea el mazapán con el que se reconstruye la muralla del castillo. Almendra y azúcar, nada más. Ni purpurina.',
         'Y vamos fatal de tiempo: cada vez que tapamos un agujero, alguien se come otro.',
       ]);
       S.set('metMantecas');
@@ -564,11 +588,16 @@ export const SCRIPTS = {
   },
   async manteca2() {
     const M = 'Manteca2';
-    if (await UI.choose(M, '¿Sí? Ando a tope. Bueno, a tope de estorbar.', ['¿Vas de drag?', 'Nada, nada']) !== 0) return;
-    await UI.say(M, ['¡Pues sí! Desde que me llamaron «shiushi» estoy experimentando con esta nueva faceta… ¡y me encanta!', '¿Para cuándo un lipsync?']);
+    if (await UI.choose(M, '¿Sí, shiushi? Ando a tope. Bueno, a tope de estorbar.', ['¿Vas de drag?', 'Nada, nada']) !== 0) return;
+    await UI.say(M, [
+      '¡Pues sí, shiushi! Estoy experimentando con esta nueva faceta… ¡y me encanta!',
+      'Mis reinas son Kandy Krush y Wasabi Spice. Kandy va de kawaii, pero es malísima. Y Wasabi tiene una lengua afiladísima. ¡Por eso me encantan! ¡Harían tan buena pareja!',
+      'Peluca cardada, tiara, pestañas hasta el techo… ¿Para cuándo un lipsync?',
+    ]);
   },
   async hornoDone() {
     Sound.logro();
+    await UI.say('Manteca2', '¡Shantay, te quedas!');
     await UI.say('Mantecas', ['¡DIEZ PEDIDOS! ¡Manteca2, owitos, a tapar agujeros!', 'Tú avisa al Rey Peludito: la muralla está lista y ya puede abrir la puerta.']);
     S.set('horno');
     invite('mantecas', 'Mantecas y Manteca2');
@@ -812,7 +841,7 @@ export const SCRIPTS = {
       give(`{coin} +${pairs.length} moneda${pairs.length > 1 ? 's' : ''} de gachapón`);
     } else {
       const loose = S.d.socks.filter((s) => !S.d.traded.includes(SOCK_DESIGN[s])).length;
-      if (loose) await UI.say('Scooby', `Llevas ${loose === 1 ? 'un calcetín suelto' : loose + ' calcetines sueltos'}, pero ninguno hace pareja con otro. Tienen que ser del mismo dibujo. La pareja de cada uno suele andar lejos.`);
+      if (loose) await UI.say('Scooby', `Llevas ${loose === 1 ? 'un calcetín suelto' : loose + ' calcetines sueltos'}, pero ninguno hace pareja con otro. Tienen que ser del mismo dibujo.`);
     }
     if (S.flag('cuyTemple')) await UI.say('Scooby', 'Los consejos, ahora, pídeselos a Cuca, que por fin se la entiende. Yo me quedo con los calcetines.');
     else await UI.say('Scooby', 'Un consejo de sabio: ' + hint());
@@ -829,14 +858,14 @@ export const SCRIPTS = {
       await UI.say('Cuca', RUSO[2], { ruso: true });
       await UI.say('Cuy', [
         'Dice que lleva meses dándote consejos buenísimos y tú poniendo cara de calcetín.',
-        'Y que claro que va a la fiesta de Cait. Que ella no se ha ido nunca.',
+        'Y que claro que va a la fiesta de Cait.',
       ]);
       invite('cuca', 'Cuca');
       await UI.say('Cuy', 'Yo me quedo aquí con ella, que tenemos mucho de qué hablar. Si necesitas una pista, ven: yo traduzco.');
       S.d.party = S.d.party.filter((p) => p !== 'cuy');
       S.set('cuyTemple');
       scene.sync();
-      await UI.say('', 'Cuy se queda en el templo con Cuca. A partir de ahora, Cuca da las pistas.');
+      await UI.say('', 'Cuy se queda en el templo con Cuca. Ahora que Cuy la traduce, podremos entender sus pistas.');
       return;
     }
     invite('cuca', 'Cuca');
@@ -859,7 +888,7 @@ export const SCRIPTS = {
     Sound.sfx('biang');
     await UI.say('', [
       '(Es el ruido de la masa al golpear la mesa. De ahí el nombre.)',
-      'Te sirven un único fideo de dos metros. Colgadín lo sorbe entero sin respirar.',
+      'Le sirven a Colgadín un único fideo de dos metros. Se lo sorbe entero sin respirar.',
     ]);
   },
 
@@ -982,8 +1011,8 @@ export const SCRIPTS = {
     await UI.say('', '«Abogada soltera, lucha por su cliente, lleva minifaldas provocativas y además es autosuficiente».');
   },
   async houseLaw() { await UI.say('', 'Bufete cerrado. Horario de atención: cuando ella quiera, que para eso es autosuficiente.'); },
-  async houseA() { await UI.say('', 'Hay una nota en la puerta: «He ido al Combini, vuelvo en cinco minutos». La nota tiene telarañas.'); },
-  async houseB() { await UI.say('', 'Por la ventana se ve a alguien haciendo un puzle de 5.000 piezas de un cielo completamente azul. Mejor no molestar.'); },
+  async houseA() { await UI.say('', 'Hay una nota en la puerta: «He ido al Combini, vuelvo en cinco minutos». La nota tiene telarañas. Parece que alguien dejó a su familia atrás.'); },
+  async houseB() { await UI.say('', ['Por la ventana se ven unas estanterías medio vacías, con unos pocos peluches.', 'Parece que a Cait ya no le caben más peluches en casa y ha empezado a regalárselos a su vecina.']); },
   async houseC() { await UI.say('', 'Nadie abre. En el buzón pone: «No se admite publicidad. Calcetines, sí».'); },
 
   // ---------------------------------------------------------- Combini
@@ -1014,7 +1043,7 @@ export const SCRIPTS = {
 
   // ---------------------------------------------------------- Aeropuerto
   async aeroflot() {
-    await UI.say('Aeroflot', ['Estimado pasajero: AEROFLOT ha cesado sus operaciones.', 'Todos los vuelos han sido cancelados. Todos. Para siempre.']);
+    await UI.say('Aeroflot', ['Estimado pasajero: AEROFLOT ha cesado sus operaciones en esta isla.', 'Todos los vuelos desde aquí han sido cancelados. Todos. Para siempre.']);
     const c = await UI.choose('Aeroflot', '¿Desea presentar una reclamación?', ['Escribir reclamación', 'No, gracias']);
     if (c !== 0) return;
     const text = await UI.prompt('Hoja de reclamaciones de Aeroflot');

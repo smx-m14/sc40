@@ -55,11 +55,12 @@ MIDI_OPTS = {
     # Música de logro: pista 2 = melodía, 3 = segunda voz, 4 = bajo
     'logro': dict(roles=dict(melody=[2], bass=[4], chords=[3]), melody_shift=-12),
     # Apartamento de las ratitas: 1 = voz, 4 = guitarra solista (suena cuando la voz calla), 3 = bajo, 5 = acordes
-    # Solo el estribillo («I'll be there for you…», tres frases de 4 compases) y los 2 compases de después. Ojo: el MIDI
-    # empieza con 9 negras en 1/4 antes del 4/4, así que el compás n del 4/4 empieza en la negra 9 + 4n. Se toma el
-    # último estribillo (compases 113-126 del 4/4), que la canción repite tal cual justo después: vuelve sin costura
-    # (unos 18 s). Melodía: solo la voz (el órgano y los coros, en sus huecos, la ensuciaban).
-    'ratitas': dict(roles=dict(melody=[1], bass=[3], chords=[5]), melody_shift=12, start_beat=457, max_beats=56),
+    # Ojo: el MIDI empieza con 9 negras en 1/4 antes del 4/4, así que el compás n del 4/4 (desde 0) empieza en la negra
+    # 9 + 4n. Bucle de la segunda estrofa con su estribillo: compases 37-66 (2 de guitarra, la estrofa «So no one told you
+    # life was gonna be this way…», el «It's like you're always stuck in second gear…» y el estribillo «I'll be there for
+    # you…»). El 66 acaba como el 36 (final del primer estribillo), que en el original lleva a los mismos 2 compases de
+    # guitarra del 37: vuelve sin costura (unos 38 s). Melodía: solo la voz (el órgano y los coros la ensuciaban).
+    'ratitas': dict(roles=dict(melody=[1], bass=[3], chords=[5]), melody_shift=12, start_beat=157, max_beats=120),
     # Estanque de los capybaras: 0 = el canto (notas repetidas), 3 = bajo, 1 y 4 = adornos
     'capybaras': dict(roles=dict(melody=[0], bass=[3], chords=[1, 4]), melody_shift=12),
     # Fitness Bartory: 6 = melodía (4 entra en la segunda parte), 2 = bajo, 1 = arpegios

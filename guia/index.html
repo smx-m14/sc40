@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Super Cait's 40 — Manual de instrucciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Lilita+One&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="guia.css">
+</head>
+<body>
+
+<div class="noprint">
+  <b>Manual de instrucciones de Super Cait's 40</b> · formato A5. Para imprimir: Ctrl+P → tamaño de papel <b>A5</b>, márgenes <b>Ninguno</b> y
+  <b>Gráficos de fondo</b> activado. Los textos se editan en <code>guia/index.html</code>; los dibujos salen solos del código del juego.
+</div>
+
+<!-- ================================================================ PORTADA -->
+<section class="page bare cover" id="portada">
+  <div class="tag">MANUAL DE INSTRUCCIONES</div>
+  <div class="logo">
+    <div class="s">SUPER</div>
+    <div class="b">CAIT'S <span>40</span></div>
+    <div class="sub">Una fiesta sorpresa de peluche</div>
+  </div>
+  <div class="hero"><img data-spr="colgadin_down_0" data-x="16" alt="Colgadín"></div>
+  <div class="crowd">
+    <img data-spr="lolete_down_0" data-x="5" alt=""><img data-spr="tigrito_down_0" data-x="5" alt=""><img data-spr="manteca2_down_0" data-x="5" alt="">
+    <img data-spr="peludito_down_0" data-x="5" alt=""><img data-spr="siri_down_0" data-x="5" alt=""><img data-spr="heladoncio_down_0" data-x="5" alt="">
+  </div>
+  <div class="badge">EDICIÓN<b>40</b>ANIVERSARIO</div>
+</section>
+
+<!-- ================================================================ AVISO -->
+<section class="page bare legal" id="aviso">
+  <div class="content" style="position:absolute">
+    <div class="warn">Atención: lee con cariño la información de este manual antes de empezar la fiesta. Contiene instrucciones importantes
+      para no estropear la sorpresa.</div>
+    <div class="seal">SELLO<img data-icon="paw" data-x="10" alt="">OFICIAL<br>MIAUSIS</div>
+    <p>Este sello oficial garantiza que el juego ha sido revisado por los Miausis y cumple sus estrictos niveles de
+      mimos, siestas y diversión. Busca siempre este sello cuando elijas regalos de cumpleaños.</p>
+    <p>Gracias por elegir <b>Super Cait's 40</b>, una aventura hecha a mano para un único jugador en todo el mundo.</p>
+    <p>Lee este manual con calma para disfrutar al máximo de tu regalo. Guárdalo en un lugar seguro: dentro de cuarenta años
+      valdrá una fortuna.</p>
+    <div class="rating">
+      <div class="r">40+<small>AÑOS</small></div>
+      <div>Este juego ha sido clasificado por la Junta de Peluches para mayores de 40 años. Puede contener tartas,
+        globos, mazapán en cantidades industriales y algún cerdito rosa.</div>
+    </div>
+    <p class="tiny muted" style="margin-top:8mm">© 2026 Mindeos y los peluches de la isla. Hecho con píxeles, mazapán y mucho amor.
+      Ningún peluche resultó herido durante el desarrollo de este juego (salvo Colgadín, de tanto hornear).</p>
+  </div>
+</section>
+
+<!-- ================================================================ ÍNDICE -->
+<section class="page" id="indice">
+  <div class="band"></div><h1>ÍNDICE</h1><div class="foot"></div>
+  <div class="content">
+    <div class="row" style="margin-bottom:6mm"><img data-spr="colgadin_side_0" data-x="7" alt=""><img data-spr="tigrito_side_0" data-x="6" alt=""></div>
+    <ul class="toc">
+      <li>La historia<span data-ref="historia"></span></li>
+      <li>Los personajes<span data-ref="personajes"></span></li>
+      <li>Los controles<span data-ref="controles"></span></li>
+      <li>La pantalla y el menú<span data-ref="pantalla"></span></li>
+      <li>Cómo se juega<span data-ref="comojugar"></span></li>
+      <li>Las pruebas<span data-ref="pruebas"></span></li>
+      <li>Objetos y coleccionables<span data-ref="objetos"></span></li>
+      <li>Los lugares<span data-ref="lugares"></span></li>
+      <li>Consejos de Colgadín<span data-ref="consejos"></span></li>
+      <li>Notas<span data-ref="notas"></span></li>
+      <li>Garantía<span data-ref="garantia"></span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================================================================ HISTORIA -->
+<section class="page" id="historia">
+  <div class="band"></div><h1>LA HISTORIA</h1><div class="foot"></div>
+  <div class="content">
+    <div class="cols">
+      <p class="drop">Por fin había llegado el gran día. El sol asomaba sobre la Isla de Cait, las gaviotas bostezaban en el muelle y,
+        en una casita con tejado rojo, un peluche de orejas muy largas abría los ojos de golpe.</p>
+      <p>—¡Hoy es el día! —gritó Colgadín, saltando de la cama—. ¡Cait cumple cuarenta años!</p>
+      <p>Lo tenía todo pensado: la mejor fiesta sorpresa que se hubiera visto jamás en la isla. Harían falta invitados,
+        música, luces, globos… y una tarta enorme. Una tarta de varios pisos, a ser posible.</p>
+      <p>Encima de la mesa le esperaba un montón de invitaciones, recién hechas, con su sobre y todo. Colgadín no recordaba
+        muy bien haberlas dibujado él… pero ahí estaban, perfectas, esperando a ser repartidas.</p>
+      <p>—Qué raro —murmuró—. En el dibujo, Cait tiene siete dedos en cada mano.</p>
+      <p>No había tiempo para preguntas. Al otro lado de la puerta le esperaba una isla entera de amigos a los que invitar…
+        y cada uno de ellos, como es natural, tenía algún problemilla que resolver antes de poder ir a ninguna fiesta.</p>
+    </div>
+    <div class="row" style="margin-top:2mm"><img data-icon="invites" data-x="10" alt=""><img data-icon="cake" data-x="9" alt=""><img data-icon="gift" data-x="9" alt=""></div>
+  </div>
+</section>
+
+<section class="page" id="historia2">
+  <div class="band"></div><h1 class="small">LA HISTORIA (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="cols">
+      <p>Lolete se había quedado atrapado entre cajas de mudanza. Unos monos traviesos se pasaban a Tigrito de rama en rama.
+        En el apartamento de las ratitas, un gato negro dormía atravesado delante de una puerta. Y en el Castillo de Mazapán,
+        unos cerditos rosas, todos idénticos, se estaban comiendo la muralla a mordiscos.</p>
+      <p>Para colmo, se decía que en la lejana Isla Helada había una tienda que fabricaba cerditos sin parar, una pastelería
+        famosísima sin tartas que vender y una casa donde las luces de Navidad no querían encenderse.</p>
+      <p>—Bueno —dijo Colgadín, colocándose bien las orejas—. Nadie dijo que organizar una fiesta sorpresa fuera fácil.</p>
+      <p>Y así, con las invitaciones bajo el brazo y el corazón haciendo «tum-tum», salió a la calle.</p>
+      <p>Lo que Colgadín no sabía es que, desde algún rincón de la isla, alguien seguía cada uno de sus pasos sobre un mapa
+        lleno de figuritas…</p>
+    </div>
+    <div class="box" style="margin-top:3mm">
+      <h3>Tu misión</h3>
+      Reparte las invitaciones por toda la isla, consigue la música, las luces, los globos y la tarta, y vuelve a casa de Cait
+      para empezar la fiesta. ¡Y que no se entere!
+    </div>
+    <div class="row"><img data-spr="mono_down_0" data-x="5" alt=""><img data-spr="kai_down_0" data-x="5" alt=""><img data-spr="clon_down_0" data-x="5" alt=""><img data-spr="clon_down_1" data-x="5" alt=""></div>
+  </div>
+</section>
+
+<!-- ================================================================ PERSONAJES -->
+<section class="page" id="personajes">
+  <div class="band"></div><h1>LOS PERSONAJES</h1><div class="foot"></div>
+  <div class="content">
+    <div class="item"><img data-spr="colgadin_down_0" data-x="5" alt="">
+      <h2>Colgadín</h2>
+      <p>El protagonista. Un peluche de orejas largas y colgantes que escucha con todo el cuerpo. Organizado, cariñoso y
+        capaz de cualquier cosa por ver sonreír a Cait… incluso de hacer calistenia.</p></div>
+    <div class="item l"><img data-spr="lolete_down_0" data-x="5" alt="">
+      <h2>Lolete</h2>
+      <p>Perrito de corazón enorme y patas incansables. Si hay que cavar algo, él cava: es su especialidad. Eso sí, de
+        ordenar cajas no sabe nada.</p></div>
+    <div class="item"><img data-spr="tigrito_down_0" data-x="5" alt="">
+      <h2>Tigrito</h2>
+      <p>El director de la obra de los Owitos del Teatro. Iba a ensayar cuando unos monos decidieron que era el juguete perfecto. Se sabe el
+        «Cumpleaños feliz» en cuatro tonalidades, por si acaso.</p></div>
+    <div class="item l"><img data-spr="scooby_down_0" data-x="5" alt=""><img data-spr="cuca_down_0" data-x="5" alt="">
+      <h2>Scooby y Cuca</h2>
+      <p>Los sabios del templo. Cuidan de Cait desde allí arriba, con su aureola y todo. Scooby da buenos consejos;
+        Cuca también, pero solo habla ruso.</p></div>
+  </div>
+</section>
+
+<section class="page" id="personajes2">
+  <div class="band"></div><h1 class="small">LOS PERSONAJES (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="item l"><img data-spr="cuy_down_0" data-x="5" alt="">
+      <h2>Cuy y las ratitas</h2>
+      <p>Cuy es un cuy peruano muy listo que vive al fondo del apartamento, con tres ratitas que guardan cada una un espejo.
+        Antes de ayudarte, Cuy tiene una pregunta muy importante.</p>
+      <div class="row" style="justify-content:flex-start"><img data-spr="ratita_p_down_0" data-x="4" alt=""><img data-spr="ratita_o_down_0" data-x="4" alt=""><img data-spr="ratita_b_down_0" data-x="4" alt=""></div></div>
+    <div class="item"><img data-spr="kai_down_0" data-x="5" alt="">
+      <h2>Kai</h2>
+      <p>Gato negro, dormilón profesional. Se llama Kai, con K, para no confundirlo con Cait. No ha servido de nada.</p></div>
+    <div class="item l"><img class="sil" data-spr="patito_down_0" data-x="5" alt="">
+      <h2>¿Un pato gigante?</h2>
+      <p>En el estanque del castillo, entre los juncos, algo enorme hace «cuac». Nadie se atreve a acercarse. ¿Quién será?</p></div>
+    <div class="item"><img data-spr="capybara_down_0" data-x="5" alt="">
+      <h2>Los capybaras</h2>
+      <p>Tranquilos, redondos y con una flor siempre a mano. Solo quieren hacer un xapu en su estanque, pero le tienen tanto miedo
+        al pato gigante como tú… y te robarán el escondite a la mínima.</p></div>
+  </div>
+</section>
+
+<section class="page" id="personajes3">
+  <div class="band"></div><h1 class="small">LOS PERSONAJES (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="item"><img data-spr="peludito_down_0" data-x="5" alt="">
+      <h2>Rey Peludito</h2>
+      <p>Soberano del Castillo de Mazapán y, casualmente, también su arquitecto real. Redondo, peludo y siempre con cara
+        de querer merendar. Nadie más puede sentarse en su Trono Real: le quitaría su energía monárquica.</p></div>
+    <div class="item l"><img data-spr="mantecas_down_0" data-x="5" alt=""><img data-spr="manteca2_down_0" data-x="5" alt="">
+      <h2>Mantecas y Manteca2</h2>
+      <p>Los pasteleros reales. Mantecas lleva el obrador con mano firme; Manteca2 está descubriendo su faceta drag y
+        hornea con tacones. Shantay, se quedan.</p></div>
+    <div class="item"><img data-spr="owito_g_down_0" data-x="4" alt=""><img data-spr="owito_v_down_0" data-x="4" alt="">
+      <h2>Los Owitos del Teatro</h2>
+      <p>La compañía del Teatro Real, dirigida por Tigrito. Ensayan «Owicked»: cada uno canta una nota y juntos forman una melodía muy, muy popular.</p></div>
+    <div class="item l"><img data-spr="gato_down_0" data-x="5" alt=""><img data-spr="gatot_down_0" data-x="5" alt="">
+      <h2>Los Gemelos bipolares</h2>
+      <p>Dos gatos albañiles con dos caras: una contenta y otra enfurruñada. Desmontan andamios al compás.</p></div>
+  </div>
+</section>
+
+<section class="page" id="personajes4">
+  <div class="band"></div><h1 class="small">LOS PERSONAJES (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="item"><img data-spr="heladoncio_down_0" data-x="4" alt="">
+      <h2>Heladoncio</h2>
+      <p>Maestro pastelero de Sweet Famosa, en la Isla Helada. Sus panettones se rellenan hasta que revientan. Así debe ser.</p></div>
+    <div class="item l"><img data-spr="owinken_down_0" data-x="5" alt="">
+      <h2>Owinken</h2>
+      <p>Un cerdito rosa de TEDI con una máquina que fabrica copias de sí mismo. Los clones se lo comen todo.
+        Él promete que es el original.</p></div>
+    <div class="item"><img data-spr="ovejoncio_down_0" data-x="4" alt="">
+      <h2>Ovejoncia</h2>
+      <p>Una oveja muy grande con un portátil todavía más grande. Si hay una puerta cerrada, ella tiene un plan.</p></div>
+    <div class="item l"><img data-spr="owito_n_down_0" data-x="5" alt=""><img data-spr="owito_r_down_0" data-x="5" alt="">
+      <h2>Los Owitos de Navidad</h2>
+      <p>Viven en la Casa de la Navidad todo el año. Tienen guirnaldas, espumillón y un pequeño problema con el cableado.</p></div>
+  </div>
+</section>
+
+<section class="page" id="personajes5">
+  <div class="band"></div><h1 class="small">LOS PERSONAJES (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="cols">
+      <div class="item"><img data-spr="bart_down_0" data-x="4" alt="">
+        <h2>Bart</h2>
+        <p>Dueña de Fitness Bartory y fan de la calistenia. Piensa abrir tres sedes más.</p></div>
+      <div class="item"><img data-spr="fuxia_down_0" data-x="4" alt="">
+        <h2>Fucsia</h2>
+        <p>Tiene una gramola y un oído finísimo. ¿Reconocerás sus canciones?</p></div>
+      <div class="item"><img data-spr="perrunfli_down_0" data-x="4" alt="">
+        <h2>Perrunfli</h2>
+        <p>Cuida un campo de nabos. Sí, de nabos. Prepara una paella de escándalo, y sin guisantes.</p></div>
+      <div class="item"><img data-spr="siri_down_0" data-x="4" alt="">
+        <h2>Siri y los awawas</h2>
+        <p>Damanes de Kapadokya, siempre con sus dientecitos. No, no son conejillos de Indias.</p></div>
+      <div class="item"><img data-icon="narwal" data-x="3" alt="">
+        <h2>Narwal</h2>
+        <p>Lleva a quien haga falta hasta la Isla Helada, si sabe cómo llamarle. Agárrate a la corona.</p></div>
+      <div class="item"><img class="sil" data-spr="owi_cas_down_0" data-x="4" alt="">
+        <h2>¿?</h2>
+        <p>Hay quien dice que unos owitos muy misteriosos se reúnen en secreto… ¡Chssst!</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ CONTROLES -->
+<section class="page" id="controles">
+  <div class="band"></div><h1>LOS CONTROLES</h1><div class="foot"></div>
+  <div class="content">
+    <div class="box"><h3>Con teclado</h3>
+      <p><span class="key">↑</span><span class="key">↓</span><span class="key">←</span><span class="key">→</span> o
+        <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> — Mover a Colgadín.</p>
+      <p><span class="key">Espacio</span> <span class="key">Intro</span> <span class="key">E</span> — Botón de acción: hablar,
+        coger, empujar, elegir… Si estás delante de algo, pruébalo.</p>
+      <p><span class="key">Esc</span> <span class="key">X</span> <span class="key">M</span> — Abrir el menú (o salir de una prueba).</p>
+      <p style="margin:0"><span class="key">Z</span> deshacer y <span class="key">R</span> reiniciar — Solo en algunos puzles.</p>
+    </div>
+    <div class="box"><h3>En pantalla táctil</h3>
+      <p style="margin:0">A la izquierda aparece una cruceta para moverse y a la derecha el botón de acción. El menú y el
+        sonido están arriba a la derecha.</p>
+    </div>
+    <div class="box"><h3>Los diálogos</h3>
+      <p style="margin:0">Pulsa acción para pasar al siguiente mensaje. Cuando haya que elegir, muévete entre las opciones y
+        confirma con acción.</p>
+    </div>
+    <div class="row"><img data-spr="colgadin_side_0" data-x="5" alt=""><img data-spr="colgadin_down_1" data-x="5" alt=""><img data-spr="colgadin_up_0" data-x="5" alt=""></div>
+  </div>
+</section>
+
+<!-- ================================================================ PANTALLA Y MENÚ -->
+<section class="page" id="pantalla">
+  <div class="band"></div><h1 class="small">LA PANTALLA Y EL MENÚ</h1><div class="foot"></div>
+  <div class="content">
+    <h2>Arriba a la izquierda</h2>
+    <p><img data-icon="sock_0" data-x="2.5" alt=""> Calcetines encontrados ·
+      <img data-icon="coin" data-x="2.5" alt=""> Monedas de gachapón ·
+      <img data-icon="invites" data-x="2.5" alt=""> Invitaciones entregadas.</p>
+    <h2>Arriba a la derecha</h2>
+    <p>Sonido encendido o apagado, y el botón del menú.</p>
+    <h2>El menú</h2>
+    <div class="item"><h3>Preparativos</h3>
+      <p>Cómo va la fiesta: invitados, música, luces, globos, tarta y regalos. También verás el porcentaje de juego
+        completado y lo que te falta para llegar al 100 %.</p></div>
+    <div class="item"><h3>Amigos</h3>
+      <p>Todos los personajes a los que puedes invitar. Los que aún no conoces salen como «???».</p></div>
+    <div class="item"><h3>Cosas</h3>
+      <p>Tus calcetines, los regalos para Cait y la colección del gachapón. Algunos regalos se pueden abrir.</p></div>
+    <div class="item"><h3>Ajustes</h3>
+      <p>Pantalla completa, sonido y tiempo de juego. La partida se guarda sola en el navegador.</p></div>
+  </div>
+</section>
+
+<!-- ================================================================ CÓMO SE JUEGA -->
+<section class="page" id="comojugar">
+  <div class="band"></div><h1>CÓMO SE JUEGA</h1><div class="foot"></div>
+  <div class="content">
+    <div class="cols">
+      <h2>Explorar y hablar</h2>
+      <p>Pasea por la isla y habla con todo el mundo. Casi todos tienen algo que contar… o algo que pedirte. Acércate a
+        objetos, carteles y puertas y pulsa acción para ver qué pasa.</p>
+      <h2>Invitaciones</h2>
+      <p>Cuando ayudes a alguien, le darás su invitación y se apuntará a la fiesta. Cuantos más invitados, más
+        llena estará la casa de Cait al final.</p>
+      <h2>Acompañantes</h2>
+      <p>Algunos amigos te seguirán durante un rato porque te necesitan (o porque tú los necesitas a ellos). Cuando
+        terminen su parte, se irán a casa de Cait a preparar la fiesta.</p>
+      <h2>Los preparativos</h2>
+      <p>Una fiesta como es debido necesita cuatro cosas: <b>música</b>, <b>luces</b>, <b>globos</b> y <b>tarta</b>. Cuando
+        las tengas, vuelve a casa de Cait.</p>
+      <h2>Pistas</h2>
+      <p>¿No sabes por dónde seguir? En el Templo de los Sabios siempre hay alguien dispuesto a darte un consejo.</p>
+    </div>
+    <img class="shot" style="margin-top:3mm" data-map="isla" data-rect="5,12,18,9" data-col="11,18,down" data-flags="intro,invites" alt="">
+    <p class="tiny muted" style="text-align:center">Colgadín, listo para repartir invitaciones por la Isla de Cait.</p>
+  </div>
+</section>
+
+<!-- ================================================================ PRUEBAS -->
+<section class="page" id="pruebas">
+  <div class="band"></div><h1>LAS PRUEBAS</h1><div class="foot"></div>
+  <div class="content">
+    <p class="drop lead">Casi todos los habitantes de la isla te pondrán a prueba antes de aceptar su invitación. Cada prueba
+      es distinta: aquí tienes lo básico, el resto lo descubrirás jugando. Si te atascas, puedes salir y volver cuando quieras.</p>
+    <div class="cols">
+      <div class="item"><h3>La mudanza de Lolete</h3>
+        <p>Empuja las cajas hasta su sitio. Ojo: se empujan, no se tiran. Si te lías, deshaz o empieza de nuevo.</p></div>
+      <div class="item"><h3>El bosque de los monos</h3>
+        <p>Los monos se pasan a Tigrito siempre igual. Observa el patrón y salta a la rama correcta en el momento justo.</p></div>
+      <div class="item"><h3>El rayo de luz</h3>
+        <p>Coloca y gira los espejos en los pedestales del pasillo para llevar un rayo de sol hasta Kai. El color importa.</p></div>
+      <div class="item"><h3>El candado</h3>
+        <p>Cuatro cifras. Las pistas están repartidas por el apartamento… y una está en ruso.</p></div>
+    </div>
+    <div class="row" style="margin-top:4mm"><img data-spr="lolete_side_0" data-x="5" alt=""><img data-spr="mono_down_0" data-x="5" alt=""><img data-spr="tigrito_down_1" data-x="5" alt=""><img data-spr="mono_down_1" data-x="5" alt=""></div>
+    <div class="box" style="margin-top:4mm"><h3>Si una prueba se resiste</h3>
+      Desde la barra de arriba puedes salir de cualquier prueba sin perder nada de lo que ya hayas conseguido. En algunos
+      puzles también puedes deshacer el último movimiento o empezar de nuevo.</div>
+  </div>
+</section>
+
+<section class="page" id="pruebas2">
+  <div class="band"></div><h1 class="small">LAS PRUEBAS (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="cols">
+      <div class="item"><img data-spr="capybara_down_0" data-x="3" alt=""><h3>El estanque</h3>
+        <p>Acércate al pato gigante sin que te vea. Escóndete tras los juncos cuando tiemble… y no te fíes de los capybaras.</p></div>
+      <div class="item"><img data-spr="owito_k_down_0" data-x="3" alt=""><h3>El ensayo del teatro</h3>
+        <p>Los Owitos cantan una secuencia y tú la repites, nota a nota. Ojo: no se están quietos, se cambian de sitio y hasta se suben unos encima de otros.</p></div>
+      <div class="item"><img data-icon="it_maz_o" data-x="3" alt=""><h3>La Pastelería Real</h3>
+        <p>Atiende los pedidos de mazapán: mezcla, amasa, dale forma, hornea y entrega. ¡Sin quemar nada!</p></div>
+      <div class="item"><img data-spr="gatot_down_0" data-x="3" alt=""><h3>Los andamios</h3>
+        <p>El gato marca un ritmo con el martillo y tú lo repites. Escucha bien: es cuestión de compás.</p></div>
+      <div class="item"><img data-icon="music" data-x="3" alt=""><h3>El Otamatone</h3>
+        <p>Desliza el dedo por el mástil y toca la melodía de memoria. Si desafinas, vuelta a empezar.</p></div>
+      <div class="item"><img data-spr="bart_down_0" data-x="3" alt=""><h3>Fitness Bartory</h3>
+        <p>Dominadas, flexiones y plancha. Tres pruebas de precisión, velocidad y equilibrio. ¡Técnica estricta!</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="pruebas3">
+  <div class="band"></div><h1 class="small">LAS PRUEBAS (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="cols">
+      <div class="item"><img data-icon="wrench" data-x="3" alt=""><h3>El conducto de TEDI</h3>
+        <p>Programa un robot con bloques para que pulse todos los interruptores. Los huecos son pocos: usa repeticiones y funciones.</p></div>
+      <div class="item"><img data-icon="plug_c" data-x="3" alt=""><h3>La máquina clonadora</h3>
+        <p>Arranca los enchufes de la máquina antes de que lleguen los clones reparadores. ¡Cuidado con las cintas!</p></div>
+      <div class="item"><img data-icon="cake" data-x="3" alt=""><h3>La tarta</h3>
+        <p>Lleva la tarta hasta el muelle sin que te roben ningún piso. Si te lo quitan, recupéralo antes de que se escape.</p></div>
+      <div class="item"><img data-icon="lantern" data-x="3" alt=""><h3>Las luces de Navidad</h3>
+        <p>Tiende un único cable del enchufe a la estrella. Los números dicen cuántas casillas llevan cable en cada fila y columna.</p></div>
+      <div class="item"><img data-spr="awawa_down_0" data-x="3" alt=""><h3>Las cosquillas</h3>
+        <p>Los awawas se pasan un calcetín de madriguera en madriguera. Hazle cosquillas al que lo lleve… solo a ese.</p></div>
+      <div class="item"><img data-icon="disc" data-x="3" alt=""><h3>La prueba de oído</h3>
+        <p>Fucsia pone canciones deformadas: al revés, aceleradas, muy graves… ¿Sabrás cuáles son?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ OBJETOS -->
+<section class="page" id="objetos">
+  <div class="band"></div><h1 class="small">OBJETOS Y COLECCIONABLES</h1><div class="foot"></div>
+  <div class="content">
+    <div class="cols">
+      <div class="item"><img data-icon="invites" data-x="4" alt=""><h3>Invitaciones</h3>
+        <p>Una para cada amigo de la isla. Con todas entregadas, no faltará nadie en la fiesta.</p></div>
+      <div class="item"><img data-icon="sock_0" data-x="4" alt=""><h3>Calcetines</h3>
+        <p>Hay veinte calcetines desparejados escondidos por todas partes: diez parejas. Nunca están juntos: cada calcetín
+          está en una zona distinta de la de su pareja. Búscalos detrás de árboles, muebles y rincones.</p></div>
+      <div class="item"><img data-icon="coin" data-x="4" alt=""><h3>Monedas de gachapón</h3>
+        <p>En el Templo de los Sabios cambian cada pareja completa de calcetines por una moneda.</p></div>
+      <div class="item"><img data-icon="gachapon" data-x="2.5" alt=""><h3>El gachapón</h3>
+        <p>Junto al Combini hay una máquina llena de cápsulas. Cada moneda, un regalo para Cait. Hay diez para coleccionar.</p></div>
+      <div class="item"><img data-icon="mirror" data-x="4" alt=""><h3>Espejos de mano</h3>
+        <p>Cada ratita guarda uno. Los necesitarás para despertar a alguien muy dormilón.</p></div>
+      <div class="item"><img data-icon="gift" data-x="4" alt=""><h3>Regalos especiales</h3>
+        <p>Algunos amigos te darán un regalo especial para Cait. Uno de ellos guarda muchos recuerdos…</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="objetos2">
+  <div class="band"></div><h1 class="small">OBJETOS (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <h2>Los preparativos</h2>
+    <div class="cols">
+      <div class="item"><img data-icon="gramola" data-x="2.5" alt=""><h3>La música</h3><p>Una gramola llena de canciones. Hay que ganársela.</p></div>
+      <div class="item"><img data-icon="lantern" data-x="4" alt=""><h3>Las luces</h3><p>Guirnaldas de colores, si alguien consigue encenderlas.</p></div>
+      <div class="item"><img data-icon="pballoon_p" data-x="3" alt=""><h3>Los globos</h3><p>Bien atados, que si no salen volando… y alguien detrás.</p></div>
+      <div class="item"><img data-icon="cake" data-x="4" alt=""><h3>La tarta</h3><p>Cuantos más pisos lleguen a casa, mejor.</p></div>
+    </div>
+    <div class="box" style="margin-top:3mm"><h3>Curiosidades</h3>
+      La isla está llena de rincones raros, carteles absurdos y personajes con ganas de charla. Algunas de estas cosas no
+      sirven para nada… salvo para llegar al 100 %. ¿Las encontrarás todas?</div>
+    <div class="row"><img data-icon="sock_5" data-x="4" alt=""><img data-icon="coin" data-x="5" alt=""><img data-icon="question" data-x="5" alt=""><img data-icon="sock_0" data-x="4" alt=""></div>
+  </div>
+</section>
+
+<!-- ================================================================ LUGARES -->
+<section class="page" id="lugares">
+  <div class="band"></div><h1>LOS LUGARES</h1><div class="foot"></div>
+  <div class="content">
+    <div class="place"><img class="shot" data-map="cait" data-rect="0,0,12,10" data-col="6,6,down" alt="">
+      <h2>Casa de Cait</h2>
+      <p>Donde empieza todo. Aquí están las invitaciones, la cama, el sofá azul… y aquí acabará la fiesta. Que no
+        se te olvide volver.</p></div>
+    <div class="place r"><img class="shot" data-map="isla" data-rect="14,5,16,10" data-col="22,11,down" data-flags="intro,invites" alt="">
+      <h2>La Isla de Cait</h2>
+      <p>Una isla soleada con playa, templo, aeropuerto, un campo de nabos y una tienda que nunca abre. Recórrela de punta a
+        punta: hay amigos (y calcetines) en cada esquina.</p></div>
+  </div>
+</section>
+
+<section class="page" id="lugares2">
+  <div class="band"></div><h1 class="small">LOS LUGARES (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="place"><img class="shot" data-map="isla" data-rect="23,8,16,10" alt="">
+      <h2>Templo de los Sabios</h2>
+      <p>Un templo de estilo chino donde viven Scooby y Cuca. Si buscas consejo, monedas o alguien que hable ruso, este es tu sitio.</p></div>
+    <div class="place r"><img class="shot" data-map="isla" data-rect="41,30,17,10" alt="">
+      <h2>Kapadokya</h2>
+      <p>Al sur del castillo, entre chimeneas de piedra y globos, viven los awawas. Siempre hay alguno asomado a algo.</p></div>
+    <div class="place"><img class="shot" data-map="isla" data-rect="5,30,17,9" alt="">
+      <h2>El aeropuerto</h2>
+      <p>Aviones con telarañas y un quiosco muy ruso: Aeroflot ha cesado sus operaciones en esta isla. Si tienes una queja, aquí te la recogen. Más o menos.</p></div>
+  </div>
+</section>
+
+<section class="page" id="lugares3">
+  <div class="band"></div><h1 class="small">LOS LUGARES (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="place"><img class="shot" data-map="ratitas" data-rect="0,0,20,13" alt="">
+      <h2>Apartamento de las Ratitas</h2>
+      <p>Tres cuartos, un pasillo, mucho queso y un gato que ronca como una moto. Al fondo vive Cuy.</p></div>
+    <div class="place r"><img class="shot" data-map="castillo" data-rect="12,8,16,10" data-col="19,19,up" alt="">
+      <h2>Castillo de Mazapán</h2>
+      <p>Murallas de mazapán, una plaza con fuente, el Teatro Real, la Pastelería Real y un estanque con un inquilino
+        muy grande. Se entra por… bueno, ya lo verás.</p></div>
+  </div>
+</section>
+
+<section class="page" id="lugares4">
+  <div class="band"></div><h1 class="small">LOS LUGARES (CONTINUACIÓN)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="place"><img class="shot" data-map="helada" data-rect="12,2,16,10" alt="">
+      <h2>La Isla Helada</h2>
+      <p>Al otro lado del mar, solo se llega a lomos de Narwal. Nieve, pinos, Sweet Famosa, la Casa de la Navidad y el
+        gimnasio más exigente del hemisferio.</p></div>
+    <div class="place r"><img class="shot" data-map="helada" data-rect="23,5,16,10" alt="">
+      <h2>TEDI</h2>
+      <p>Una tienda donde todo cuesta poco… y de donde salen cerditos rosas sin parar. La puerta está cerrada a cal y canto.</p></div>
+    <h2 style="color:var(--red)">Y además…</h2>
+    <p>Si superas todas las pruebas y llegas a la fiesta, descubrirás que alguien llevaba mucho tiempo preparando una
+      sorpresa. ¡Pero no te lo vamos a contar aquí!</p>
+  </div>
+</section>
+
+<!-- ================================================================ CONSEJOS -->
+<section class="page" id="consejos">
+  <div class="band"></div><h1 class="small">CONSEJOS DE COLGADÍN</h1><div class="foot"></div>
+  <div class="content">
+    <div class="item"><img data-spr="colgadin_down_0" data-x="4" alt=""><p><b>Habla dos veces.</b> Muchos personajes
+      dicen cosas nuevas cuando vuelves a hablarles, sobre todo después de una prueba.</p></div>
+    <div class="item l"><img data-spr="scooby_down_0" data-x="4" alt=""><p><b>Pide pistas.</b> Si te pierdes, pasa por el
+      templo. No hay vergüenza en pedir ayuda a un sabio.</p></div>
+    <div class="item"><img data-icon="sock_5" data-x="3" alt=""><p><b>Mira detrás de todo.</b> Los calcetines asoman por
+      un ladito: detrás de árboles, camas, sofás…</p></div>
+    <div class="item l"><img data-spr="manteca2_down_0" data-x="4" alt=""><p><b>No te rindas.</b> Si una prueba se te
+      atraganta, sal y vuelve más tarde. Ninguna te hará perder lo conseguido.</p></div>
+    <div class="item"><img data-spr="peludito_down_0" data-x="4" alt=""><p><b>Llega al 100 %.</b> En el menú verás qué te
+      falta. Cait es completista. Tú también puedes serlo.</p></div>
+  </div>
+</section>
+
+<!-- ================================================================ NOTAS -->
+<section class="page" id="notas">
+  <div class="band"></div><h1>NOTAS</h1><div class="foot"></div>
+  <div class="content"><div class="lines"></div></div>
+</section>
+
+<section class="page" id="notas2">
+  <div class="band"></div><h1>NOTAS</h1><div class="foot"></div>
+  <div class="content"><div class="lines"></div></div>
+</section>
+<section class="page" id="notas3">
+  <div class="band"></div><h1>NOTAS</h1><div class="foot"></div>
+  <div class="content"><div class="lines"></div></div>
+</section>
+
+<!-- ================================================================ GARANTÍA -->
+<section class="page" id="garantia">
+  <div class="band"></div><h1>GARANTÍA</h1><div class="foot"></div>
+  <div class="content tiny">
+    <h2>Garantía de cariño</h2>
+    <p>Mindeos garantiza al propietario original de este juego que el cariño contenido en él está libre de defectos de
+      fabricación durante un periodo de <b>cuarenta (40) años</b> a partir de la fecha de su cumpleaños, prorrogable
+      automáticamente por periodos iguales.</p>
+    <h3>Qué cubre esta garantía</h3>
+    <p>Abrazos, mimos, siestas compartidas, viajes, fotos para el Libro de los Miausis y una cantidad razonable de
+      mazapán.</p>
+    <h3>Qué no cubre esta garantía</h3>
+    <p>Daños causados por cerditos rosas, calcetines desparejados, monos traviesos, capybaras que roban escondites ni
+      gatos que se duermen delante de las puertas.</p>
+    <h3>Servicio técnico</h3>
+    <p>Si tu juego deja de funcionar, no lo envíes a ningún sitio: basta con un abrazo. El servicio técnico atiende las
+      24 horas, los 365 días del año (366 en bisiesto).</p>
+    <div class="row" style="margin-top:4mm"><img data-icon="paw" data-x="6" alt=""></div>
+  </div>
+</section>
+
+<!-- ================================================================ CONTRAPORTADA -->
+<section class="page bare back" id="contra">
+  <div class="center">
+    <img data-spr="colgadin_down_0" data-x="8" alt=""><br><br>
+    <span style="font:13pt/2 var(--head); color:var(--yellow)">¡FELIZ CUMPLEAÑOS, CAIT!</span><br>
+    <span style="font-weight:400">Muchas gracias por dejarnos formar parte de tu universo.</span>
+  </div>
+  <div class="crowd" style="position:absolute;left:8mm;right:8mm;bottom:14mm;display:flex;flex-wrap:wrap;justify-content:center;gap:2mm;align-items:flex-end">
+    <img data-spr="lolete_down_0" data-x="3" alt=""><img data-spr="tigrito_down_0" data-x="3" alt=""><img data-spr="scooby_down_0" data-x="3" alt=""><img data-spr="cuca_down_0" data-x="3" alt="">
+    <img data-spr="cuy_down_0" data-x="3" alt=""><img data-spr="kai_down_0" data-x="3" alt=""><img data-spr="patito_down_0" data-x="3" alt=""><img data-spr="capybara_down_0" data-x="3" alt="">
+    <img data-spr="owito_g_down_0" data-x="3" alt=""><img data-spr="mantecas_down_0" data-x="3" alt=""><img data-spr="manteca2_down_0" data-x="3" alt=""><img data-spr="peludito_down_0" data-x="3" alt="">
+    <img data-spr="gato_down_0" data-x="3" alt=""><img data-spr="heladoncio_down_0" data-x="2" alt=""><img data-spr="owinken_down_0" data-x="3" alt=""><img data-spr="ovejoncio_down_0" data-x="2" alt="">
+    <img data-spr="owito_n_down_0" data-x="3" alt=""><img data-spr="bart_down_0" data-x="3" alt=""><img data-spr="fuxia_down_0" data-x="3" alt=""><img data-spr="perrunfli_down_0" data-x="3" alt=""><img data-spr="siri_down_0" data-x="3" alt="">
+  </div>
+</section>
+
+<script type="module" src="guia.js"></script>
+</body>
+</html>

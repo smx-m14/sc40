@@ -7,7 +7,8 @@
 const R = 1, B = 2, Y = 4, G = 8;
 const MIX = {
   0: ['blanca', 0xfff9d0], [R]: ['roja', 0xff6a5a], [B]: ['azul', 0x5a8af0], [Y]: ['amarilla', 0xffe040], [G]: ['verde', 0x5ac85a],
-  [R | B]: ['lila', 0xc07af0], [R | Y]: ['naranja', 0xffa040], [B | Y]: ['verde', 0x5ac85a], [B | G]: ['turquesa', 0x40c0c0],
+  [R | B]: ['lila', 0xc07af0], [R | Y]: ['naranja', 0xffa040], [B | Y]: ['verde botella', 0x2f8f6a], [B | G]: ['turquesa', 0x40c0c0],
+  [R | G]: ['ocre', 0xc08a30], [Y | G]: ['lima', 0xb8e040],
 };
 export const beamColor = (mask) => MIX[mask] || ['marrón', 0x9a6a40];
 export const LILA = R | B;

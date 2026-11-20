@@ -40,9 +40,10 @@ export class MonosScene extends Phaser.Scene {
     g.fillStyle(0x2a5f3a); for (let i = 0; i < 9; i++) g.fillEllipse(20 + i * 38, 8 + (i % 3) * 5, 64, 34);
     g.fillStyle(0x4a321c); for (const x of [16, 300]) g.fillRect(x - 6, 0, 12, 180);
     g.fillStyle(0x0f2a18).fillRect(0, 170, 320, 10);
-    g.lineStyle(1, 0x3f7f4f, 1);
-    for (let r = 0; r < ROWS; r++) g.lineBetween(nx(0), ny(r), nx(COLS - 1), ny(r));
-    for (let c = 0; c < COLS; c++) g.lineBetween(nx(c), ny(0), nx(c), ny(ROWS - 1));
+    // Lianas como rectángulos de 2 px en píxeles enteros: las líneas de 1 px, al escalar, salían dobles o desaparecían
+    g.fillStyle(0x3f7f4f);
+    for (let r = 0; r < ROWS; r++) g.fillRect(nx(0), ny(r) - 1, nx(COLS - 1) - nx(0), 2);
+    for (let c = 0; c < COLS; c++) g.fillRect(nx(c) - 1, ny(0), 2, ny(ROWS - 1) - ny(0));
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) this.add.image(nx(c), ny(r), 'knot');
 
     // Monos (encima de su rama) con su letra

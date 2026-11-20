@@ -1,7 +1,7 @@
 // Minijuego: llamar a Narwal tocando con el Otamatone la melodía de los Owitos del Teatro (11 notas).
 // El dedo se desliza por el mástil con arriba/abajo y se «imanta» a seis marcas, una por Owito (de su color); el
 // botón de acción toca la nota donde esté el dedo. Si está entre dos marcas, desafina. No hay partitura: se toca de
-// memoria (es la del ensayo en el teatro) y, si el jugador se pierde, el director le da una pista.
+// memoria (es la del ensayo en el teatro) y, si el jugador se pierde, Colgadín recuerda lo que dijo Tigrito (pista).
 // Arriba se va escribiendo en un pentagrama lo que se ha tocado bien. Cada frase (4, 4 y 3 notas) agita más el mar;
 // un fallo borra la partitura y se vuelve a empezar desde la primera nota.
 import { Input } from '../input.js';
@@ -56,9 +56,9 @@ export class OtamaScene extends Phaser.Scene {
   async intro() {
     // Pocas indicaciones: el jugador prueba el Otamatone y descubre por sí mismo dónde está cada nota.
     // No se tararea la melodía: ya la conoce del ensayo en el teatro.
-    await UI.say('Owito director', [
-      '¡Colgadín! Para llamar a Narwal hay que tocar con el Otamatone la melodía que ensayamos en el teatro.',
-      'Arriba y abajo para mover el dedo, botón de acción para tocar. ¡Prueba!',
+    await UI.say('Colgadín', [
+      'Para llamar a Narwal tengo que tocar con el Otamatone la melodía que ensayamos en el teatro.',
+      'Arriba y abajo para mover el dedo, botón de acción para tocar. ¡A probar!',
     ]);
     this.lock = false;
     Input.clear();
@@ -107,10 +107,10 @@ export class OtamaScene extends Phaser.Scene {
     UI.toast(near < 0 ? '¡Desafinado! El dedo estaba entre dos marcas. El mar se calma… ¡Desde el principio!' : 'Esa no era. El mar se calma… ¡Desde el principio!');
   }
 
-  // Si el jugador parece perdido (tres fallos o un buen rato sin acertar), el director le da una pista, una sola vez
+  // Si el jugador parece perdido (tres fallos), Colgadín recuerda una pista de Tigrito, una sola vez
   async hint() {
     this.hinted = true; this.lock = true;
-    await UI.say('Owito director', ['¿Perdido? Te doy una pista: es una melodía muy, muy… POPULAR.', 'Seguro que la has tarareado alguna vez.']);
+    await UI.say('Colgadín', ['Mmm… ¿cómo era? Tigrito dijo que era una melodía muy, muy… POPULAR.', 'Seguro que la he tarareado alguna vez.']);
     this.lock = false;
     Input.clear();
   }
@@ -139,7 +139,7 @@ export class OtamaScene extends Phaser.Scene {
       if (Input.take('a')) this.play();
       if (Input.take('b')) return this.exit();
       this.idle += dt;
-      if (!this.hinted && (this.misses >= 3 || this.idle > 25)) this.hint();
+      if (!this.hinted && this.misses >= 3) this.hint(); // solo tras tres fallos
     } else Input.clear();
     this.mouth = Math.max(0, this.mouth - dt * 3);
 

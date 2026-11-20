@@ -12,7 +12,7 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body {
   margin: 0; height: 100%; background: var(--night); overflow: hidden;
-  font-family: 'Pixelify', 'Courier New', monospace; color: var(--ink);
+  font-family: 'Pixelify', 'PixelRu', 'Courier New', monospace; color: var(--ink);
   touch-action: none; user-select: none; -webkit-user-select: none; font-variant-ligatures: none;
   overscroll-behavior: none;
 }

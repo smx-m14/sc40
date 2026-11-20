@@ -17,7 +17,7 @@ export const STEPS = [
   { id: 'tigrito', label: 'Bosque de los monos', flag: 'tigrito', apply() { f('metMonos', 'tigrito'); inv('tigrito'); if (!S.flag('simon')) join('tigrito'); } },
   { id: 'cueva', label: 'Cavar la cueva', flag: 'caveOpen', apply() { f('caveOpen'); home('lolete'); } },
   { id: 'ratitas', label: 'Los tres cuartos de las ratitas', flag: 'r3', apply() { f('r1', 'r2', 'r3', 'metRatitaO'); S.d.flags.lamps = [1, 1, 1, 1, 1]; } },
-  { id: 'kai', label: 'Espejos y Kai', flag: 'kai', apply() { Object.assign(S.d.flags, { m1: 0, m2: 2, m3: 0, m4: 0, m5: 0, m6: 0, m7: 2, m8: 2, m9: 0, m10: 0, m11: 0 }); f('kai'); inv('kai'); } },
+  { id: 'kai', label: 'Espejos y Kai', flag: 'kai', apply() { Object.assign(S.d.flags, { m1: 2, m2: 2, m3: 0, m4: 0, m5: 0, m6: 0, m7: 0, m8: 0, m9: 0, m10: 2, m11: 0 }); f('kai'); inv('kai'); } },
   { id: 'cuy', label: 'Cuy se une', flag: 'cuy', apply() { f('metCuy', 'cuy', 'nota', 'imanes'); inv('cuy'); if (!S.flag('cuyTemple')) join('cuy'); } },
   { id: 'candado', label: 'Candado de la alcantarilla', flag: 'hatchOpen', apply() { f('hatchOpen'); } },
   { id: 'cuca', label: 'Cuy traduce a Cuca', flag: 'cuyTemple', apply() { f('metScooby', 'cuyTemple'); out('cuy'); inv('scooby', 'cuca'); } },
@@ -48,12 +48,16 @@ export const UNDO = {
   tigrito: { at: ['isla', 41, 12], undo() { no('tigrito'); free('tigrito'); } },
   cueva: { at: ['isla', 46, 11], undo() { no('caveOpen'); } },
   ratitas: { at: ['ratitas', 2, 11], undo() { no('r1', 'r2', 'r3', 'metRatitaB'); S.d.flags.lamps = [0, 0, 0, 0, 0]; if (!S.flag('kai')) MIRRORS.forEach((m) => { S.d.flags[m] = 0; }); } },
-  kai: { at: ['ratitas', 2, 11], undo() { no('kai'); MIRRORS.forEach((m) => { S.d.flags[m] = 0; }); } },
+  kai: { at: ['ratitas', 2, 11], undo() { no('kai', 'kaiCols'); MIRRORS.forEach((m) => { S.d.flags[m] = 0; }); } },
+  // Cuy vuelve a su cuarto, como si no se le hubiera conocido (y, si ya estaba en el templo, sale de allí)
+  cuy: { at: ['ratitas', 25, 6], undo() { no('metCuy', 'cuy', 'cuyTemple'); out('cuy'); } },
   candado: { at: ['ratitas', 27, 11], undo() { no('hatchOpen'); } },
+  // Cuy vuelve a acompañar a Colgadín, antes de hablar con Cuca
+  cuca: { at: ['isla', 31, 18], undo() { no('cuyTemple'); join('cuy'); } },
   pato: { at: ['castillo', 26, 12], undo() { no('pato'); } },
   simon: { at: ['castillo', 5, 8], undo() { no('simon'); free('tigrito'); join('tigrito'); } },
-  horno: { at: ['castillo', 32, 19], undo() { no('horno'); } },
-  gate: { at: ['castillo', 19, 24], undo() { no('andamios', 'gateOpen'); } },
+  horno: { at: ['castillo', 32, 19], undo() { no('horno', 'metMantecas'); } }, // también la presentación de Mantecas
+  gate: { at: ['castillo', 19, 24], undo() { no('andamios', 'gateOpen', 'metPeludito'); } }, // también la presentación del Rey
   narwal: { at: ['isla', 9, 11], undo() { no('narwal'); } },
   hack: { at: ['helada', 27, 12], undo() { no('tediHack'); S.d.flags.hackLevel = 0; } },
   tedi: { at: ['helada', 30, 11], undo() { no('tedi'); } },

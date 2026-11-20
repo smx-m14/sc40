@@ -76,7 +76,6 @@ export class RitmoScene extends Phaser.Scene {
     await UI.say('Gemelo bipolar', again
       ? ['Así no. ¡Escucha primero mi compás y luego repítelo en el siguiente, igualito!', 'Volvemos a empezar con la cuenta: un, dos, tres, cuatro…']
       : [
-        '¡Miau! Somos los Gemelos bipolares: si algo sale bien, se nos ve contentos; si sale mal, nos damos la vuelta y ponemos esta cara.',
         'Los andamios se desmontan a martillazos, pero AL COMPÁS. Yo toco un ritmo en un compás y tú lo repites en el siguiente, igualito, con el botón de acción.',
         'Antes de mi ritmo cuento cuatro, y antes de tu turno vuelvo a contar cuatro: el primer golpe va justo después del «4».',
         'Cada ritmo que clavas tira un tablón; si fallas, lo repetimos hasta que salga. Son ocho tablones.',

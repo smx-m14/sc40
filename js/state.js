@@ -117,7 +117,7 @@ export const State = {
         if (!this.d.flags.cait2) { if (this.d.pos.map === 'cait') this.d.pos.y += 16; this.d.flags.cait2 = true; } // la casa de Cait creció una fila (pared con cuadros)
         if (this.d.flags.awawas && !this.d.flags.globos) this.d.flags.globos = true; // antes Kapadokya daba calcetines
         if (this.d.pairsTraded && !this.d.traded.length) this.d.traded = this.sockPairs().slice(0, this.d.pairsTraded); // partidas antiguas
-        if (this.d.flags.kai) Object.assign(this.d.flags, { m1: 0, m2: 2, m3: 0, m4: 0, m5: 0, m6: 0, m7: 2, m8: 2, m9: 0, m10: 0, m11: 0 }); // espejos en su sitio
+        if (this.d.flags.kai) Object.assign(this.d.flags, { m1: 2, m2: 2, m3: 0, m4: 0, m5: 0, m6: 0, m7: 0, m8: 0, m9: 0, m10: 2, m11: 0 }); // espejos en su sitio
         if (this.d.flags.caveOpen && this.d.party.includes('lolete')) { this.d.party = this.d.party.filter((p) => p !== 'lolete'); this.d.home.push('lolete'); }
       }
       const s = localStorage.getItem(SETTINGS);

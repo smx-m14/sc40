@@ -39,7 +39,8 @@ export class WorldScene extends Phaser.Scene {
     this.pSpr = this.add.image(0, 0, 'colgadin_down_0').setOrigin(0.5, 1);
     this.trail = Array.from({ length: 80 }, () => ({ x: pos.x, y: pos.y, dir: this.p.dir }));
     this.followers = [];
-    this.bubble = this.add.image(0, 0, 'bubble').setOrigin(0.5, 1).setDepth(1e6).setVisible(false);
+    // Origen en un píxel entero (4 de 9) y posición redondeada: con 0,5 la columna del «!» caía entre dos píxeles y a veces no se pintaba
+    this.bubble = this.add.image(0, 0, 'bubble').setOrigin(4 / 9, 1).setDepth(1e6).setVisible(false);
     this.lastTile = this.tileOf();
 
     // Cámara
@@ -229,7 +230,7 @@ export class WorldScene extends Phaser.Scene {
 
       const target = this.findTarget();
       this.bubble.setVisible(!!target);
-      if (target) this.bubble.setPosition(target.cx, (target.spr ? target.spr.y - target.spr.height : target.cy - 6) - 1 + Math.sin(time / 200));
+      if (target) this.bubble.setPosition(Math.round(target.cx), Math.round((target.spr ? target.spr.y - target.spr.height : target.cy - 6) - 1 + Math.sin(time / 200)));
       if (Input.take('a') && target && !this.running) { Sound.sfx('ok'); this.run(target.e.script, target); }
       if (Input.take('b')) UI.toggleMenu(true);
 

@@ -381,6 +381,7 @@ export const UI = {
       }
       h += '</ul><h3>Ir a…</h3><ul><li><span class="grow">' + PLACES.map((p, i) => `<button class="btn" data-tp="${i}">${esc(p[0])}</button>`).join(' ') + '</span></li>';
       h += '<li><span class="grow">Monedas de gachapón</span><button class="btn" data-act="coins">+5 🪙</button></li>';
+      if (State.d.invited.length) h += '<li><span class="grow">Quitar una invitación <small>(para repetir su diálogo)</small><br>' + CHARACTERS.filter((c) => State.d.invited.includes(c.id)).map((c) => `<button class="btn" data-uninv="${c.id}">${esc(c.name)}</button>`).join(' ') + '</span></li>';
       h += `<li><span class="grow">Fiesta final <small>(con lo que haya en la partida: ${State.d.invited.length}/${CHARACTERS.length} invitados)</small></span><button class="btn" data-act="invall">Invitar a todos</button> <button class="btn" data-act="party">Ver la fiesta</button></li>`;
       h += '<li><span class="grow"><small>Mayús+D activa o desactiva este modo. Dentro de una prueba, Mayús+W (o el botón «Ganar») la supera.</small></span></li></ul>';
     } else {
@@ -397,6 +398,7 @@ export const UI = {
     const b = e.target.closest('button');
     if (!b) return;
     if (b.dataset.act === 'album') this.album();
+    if (b.dataset.uninv) { State.d.invited = State.d.invited.filter((id) => id !== b.dataset.uninv); State.save(); this.updateHud(); this.toggleMenu(false); reloadWorld(); }
     if (b.dataset.act === 'invall') { inviteAll(); this.updateHud(); this.renderMenu(); }
     if (b.dataset.act === 'party') { this.toggleMenu(false); startParty(); }
     if (b.dataset.act === 'coins') { State.d.coins += 5; State.save(); this.updateHud(); this.renderMenu(); }

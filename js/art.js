@@ -190,7 +190,17 @@ const CHARS = {
     p.rect(6, 3 + o, 7, 2, Y).px(Y, [6, 2 + o], [9, 1 + o], [9, 2 + o], [12, 2 + o]).px('#e2574c', [9, 3 + o]);
   },
   mantecas(p, dir, o) { manteca(p, o); p.rect(6, 1 + o, 6, 4, '#fff').rect(5, 1 + o, 8, 2, '#fff').rect(6, 5 + o, 6, 1, '#d0d0c8'); },
-  manteca2(p, dir, o) { manteca(p, o); p.px('#f06aa8', [7, 5 + o], [8, 6 + o], [9, 6 + o], [10, 6 + o], [11, 5 + o], [7, 6 + o], [11, 6 + o]); },
+  manteca2(p, dir, o) { // en plena fase drag: peluca rosa cardada con tiara, sombra de ojos, pestañas, colorete, labios rojos y pendientes
+    manteca(p, o);
+    p.ell(9, 5.6 + o, 5.6, 3, '#f06aa8').ell(6.5, 7 + o, 2, 1.6, '#f06aa8').ell(11.5, 7 + o, 2, 1.6, '#f06aa8').ell(8, 4.6 + o, 2.4, 1.1, '#ff9ccf');
+    p.px('#ffd23f', [7, 2 + o], [9, 1 + o], [11, 2 + o], [8, 2 + o], [10, 2 + o]).px('#6fd0e8', [9, 2 + o]);         // tiara
+    p.px('#8a4ad8', [6, 9 + o], [7, 9 + o], [11, 9 + o], [12, 9 + o]).px('#c48af0', [6, 8 + o], [12, 8 + o]);      // sombra de ojos
+    p.px(BLACK, [6, 10 + o], [7, 10 + o], [11, 10 + o], [12, 10 + o], [5, 9 + o], [13, 9 + o]).px('#ffffff', [7, 10 + o], [12, 10 + o]); // ojos con pestañas
+    p.px('#ff8fb0', [5, 12 + o], [13, 12 + o], [4, 12 + o], [14, 12 + o]);                                          // colorete
+    p.px('#e2264a', [8, 14 + o], [9, 14 + o], [10, 14 + o], [9, 15 + o]).px('#ff6b8a', [9, 14 + o]);              // labios
+    p.px(BLACK, [12, 13 + o]);                                                                                      // lunar
+    p.px('#ffd23f', [2, 12 + o], [16, 12 + o], [2, 13 + o], [16, 13 + o]);                                          // pendientes
+  },
   // Patito: peluche amarillo SIN brazos. Una bola peluda con dos orejas de interior naranja, ojitos muy separados,
   // sonrisa ondulada bordada y un rabito en forma de tubo abajo (down: de frente · up: de espaldas)
   patito(p, dir, o) {
@@ -543,7 +553,17 @@ function statue(kind) {
   p.blit(q, 1, 5);
   if (kind === 2) p.line(17, 14, 17, 2, '#c9ced8').rect(15, 13, 5, 1, '#8a8a80');
   if (kind === 3) p.rect(2, 6, 1, 16, '#b0aa98').ell(2.5, 4.5, 1.6, 1.6, '#e8b820');
-  return p.outline(INK);
+  // 4: descubriendo nuevos ingredientes para el mazapán (lupa en una pata, matraz en la otra), todo de piedra
+  if (kind === 4) {
+    p.ell(17, 15, 2.6, 2.6, '#6e6e66').ell(17, 15, 1.6, 1.6, '#d8dce4').px('#ffffff', [16, 14]).line(15, 17, 14, 19, '#6e6e66');
+    p.ell(2.5, 19.5, 2.4, 2.2, '#c9ced8').rect(2, 14, 2, 4, '#c9ced8').rect(1, 13, 4, 1, '#8a8a80').px('#eef0f4', [2, 19], [3, 18]);
+  }
+  // 5: la siesta real (ojos cerrados)
+  if (kind === 5) p.px('#9a9a92', [7, 15], [13, 15]).px('#3a3a36', [6, 15], [7, 16], [8, 15], [12, 15], [13, 16], [14, 15]);
+  p.outline(INK);
+  // …y una zeta tallada encima, sin contorno para que se lea
+  if (kind === 5) for (const [x, y] of [[14, 0], [15, 0], [16, 0], [17, 0], [16, 1], [15, 2], [14, 3], [15, 3], [16, 3], [17, 3]]) p.set(x, y, '#4a4a44');
+  return p;
 }
 function sofa(back, seat, arm) {
   const p = new PX(32, 20);
@@ -608,6 +628,18 @@ function shape(k, c) { // o naranja · f fresa · p pera · b plátano
   return p.outline(INK);
 }
 // Globo de fiesta (de los normales, no aerostático): cuerpo ovalado con brillo y nudito; (x, y) = centro
+function banner(c, dark, flip) {
+  const p = new PX(15, 24);
+  p.rect(2, 2, 2, 22, '#6e4520').rect(3, 2, 1, 22, '#8a5a2a').rect(1, 0, 4, 2, '#ffd23f');           // mástil y remate
+  p.rect(4, 3, 10, 11, c).rect(4, 12, 10, 2, dark);                                                   // bandera
+  for (const [x, y] of [[13, 7], [13, 8], [13, 9], [12, 8]]) p.set(x, y, null);                      // cola de golondrina
+  p.px('#ffd23f', [7, 7], [9, 6], [11, 7], [7, 8], [8, 8], [9, 8], [10, 8], [11, 8]);                  // corona
+  p.outline(INK);
+  if (!flip) return p;
+  const q = new PX(15, 24);
+  for (let y = 0; y < 24; y++) for (let x = 0; x < 15; x++) q.set(14 - x, y, p.get(x, y));
+  return q;
+}
 function partyBalloon(p, x, y, c) {
   const X = Math.round(x), Y = Math.round(y);
   return p.ell(x, y, 4.3, 5.5, c).px('#ffffff', [X - 3, Y - 2], [X - 3, Y - 1], [X - 2, Y - 3]).px(c, [X - 1, Y + 5], [X, Y + 5], [X, Y + 6]);
@@ -887,7 +919,7 @@ const OBJ = {
     return p.outline(INK);
   },
   // ---- Castillo de Mazapán
-  statue_1: () => statue(1), statue_2: () => statue(2), statue_3: () => statue(3),
+  statue_1: () => statue(1), statue_2: () => statue(2), statue_3: () => statue(3), statue_4: () => statue(4), statue_5: () => statue(5),
   stall() {
     const p = new PX(34, 30);
     p.rect(2, 12, 2, 17, '#8a5a2a').rect(30, 12, 2, 17, '#8a5a2a').rect(1, 18, 32, 9, '#c98f4e').rect(1, 25, 32, 2, '#8a5a2a');
@@ -1003,8 +1035,10 @@ const OBJ = {
     for (let y = 0; y < 16; y++) for (let x = 0; x < 18; x++) if (y < 1) p.set(x, y, null);
     return p;
   },
-  banner_k: () => new PX(10, 22).rect(4, 0, 1, 22, '#6e4520').rect(5, 2, 5, 9, '#f06aa8').px(null, [9, 6]).outline(INK),
-  banner_g: () => new PX(10, 22).rect(4, 0, 1, 22, '#6e4520').rect(5, 2, 5, 9, '#2f8f5a').px(null, [9, 6]).outline(INK),
+  // Banderines de las esquinas de la plaza: mástil con remate dorado y bandera de cola de golondrina con una corona.
+  // Los de la derecha (_r) van al revés, para que todas las banderas apunten hacia dentro de la plaza.
+  banner_k: () => banner('#f06aa8', '#c2457f'), banner_g: () => banner('#2f8f5a', '#1f6a40'),
+  banner_k_r: () => banner('#f06aa8', '#c2457f', true), banner_g_r: () => banner('#2f8f5a', '#1f6a40', true),
   narwal() { // peluche de dinosaurio menta con corona… que todo el mundo toma por un narval (sin cuerno)
     const p = new PX(46, 32), W = '#bfeee0', B = '#e8faf4', T = '#7fd6c4', Y = '#ffd84a';
     p.ell(6, 17, 4, 4.6, T);

@@ -66,13 +66,19 @@ export class HornoScene extends Phaser.Scene {
     this.reset_();
     Input.clear();
     this.lock = true;
-    UI.say('Mantecas', [
-      '¡A los fogones! Arriba irán llegando PEDIDOS: cada uno pide un mazapán con forma de naranja, de fresa o de pera, y caduca si tardas.',
-      'Siempre son cinco pasos, de izquierda a derecha: 1) lleva almendra y azúcar a la mesa; 2) amasa pulsando tres veces; 3) coge la masa y dale forma en el molde que toque…',
-      '…los moldes están en la encimera de ABAJO. 4) Mete la figura en un horno, en la pared de la DERECHA: tarda 4 segundos, y si la dejas mucho más se quema; 5) tráemela a la ventanilla, donde estoy yo.',
-      `La barra de arriba te dice siempre qué hace el botón de acción en lo que tienes delante. Necesito ${GOAL} pedidos bien servidos.`,
-      '¡Y cuidado con Manteca2 y los owitos pinches, que se pasean por en medio y no se apartan!',
-    ]).then(() => { this.lock = false; });
+    (async () => {
+      await UI.say('Manteca2', '¡Que gane la mejor drag queen!');
+      await UI.say('Mantecas', [
+        '…¿Y esto qué tiene que ver con los mazapanes?',
+        '¡A los fogones! Arriba irán llegando PEDIDOS: cada uno pide un mazapán con forma de fruta, y caduca si tardas.',
+        'Siempre son cinco pasos, de izquierda a derecha: 1) lleva almendra y azúcar a la mesa; 2) amasa pulsando tres veces; 3) coge la masa y dale forma en el molde que toque…',
+        '…los moldes están en la encimera de ABAJO. 4) Mete la figura en un horno de la DERECHA, pero cuidado, ¡si la dejas de más se quema!; 5) tráemela a la ventanilla, donde estoy yo.',
+        `La barra de arriba te dice siempre qué hace el botón de acción en lo que tienes delante. Necesito ${GOAL} pedidos bien servidos.`,
+        '¡Y cuidado con Manteca2 y los owitos pinches, que se pasean por en medio y no se apartan!',
+        'Buena suerte, y no la caguéis. …Ay, no. Se me está pegando.',
+      ]);
+      this.lock = false;
+    })();
   }
 
   reset_() {
@@ -175,7 +181,8 @@ export class HornoScene extends Phaser.Scene {
   async timeout() {
     this.lock = true;
     Sound.sfx('bad');
-    await UI.say('Mantecas', `¡Se acabó el turno! ${this.done} de ${GOAL} pedidos. La muralla sigue con agujeros. Venga, otra hornada desde el principio.`);
+    await UI.say('Manteca2', 'Sashay, te vas…');
+    await UI.say('Mantecas', `¡Se acabó el turno! ${this.done} de ${GOAL} pedidos. La muralla sigue con agujeros. Nadie se va a ningún sitio: otra hornada desde el principio.`);
     this.reset_();
     this.lock = false;
   }
