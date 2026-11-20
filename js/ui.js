@@ -2,7 +2,7 @@
 import { State, CHARACTERS, GACHA, GIFTS, ALBUM, TOTAL_SOCKS, SOCK_DESIGNS, SOCK_DESIGN } from './state.js';
 import { Input } from './input.js';
 import { Sound } from './audio.js';
-import { STEPS, PLACES, UNDO, skipTo, undoStep, teleport, reloadWorld } from './debug.js';
+import { STEPS, PLACES, UNDO, skipTo, undoStep, teleport, reloadWorld, startParty, inviteAll } from './debug.js';
 import { completion } from './progress.js';
 import { gachaIcon, icon } from './art.js';
 
@@ -89,6 +89,7 @@ export const UI = {
       const units = Array.from(text.matchAll(/\{\w+\}|./gsu), (m) => m[0]);
       const d = this.dlg = { text, units, shown: 0, typing: true, choices: opts.choices || null, sel: 0, resolve };
       $('dialog-name').textContent = name || '';
+      $('dialog').classList.toggle('top', opts.pos === 'top'); // arriba, para no tapar lo que pasa abajo
       $('dialog-text').innerHTML = '';
       $('dialog-text').classList.toggle('ruso', !!opts.ruso);
       $('dialog-choices').innerHTML = '';
@@ -380,6 +381,7 @@ export const UI = {
       }
       h += '</ul><h3>Ir a…</h3><ul><li><span class="grow">' + PLACES.map((p, i) => `<button class="btn" data-tp="${i}">${esc(p[0])}</button>`).join(' ') + '</span></li>';
       h += '<li><span class="grow">Monedas de gachapón</span><button class="btn" data-act="coins">+5 🪙</button></li>';
+      h += `<li><span class="grow">Fiesta final <small>(con lo que haya en la partida: ${State.d.invited.length}/${CHARACTERS.length} invitados)</small></span><button class="btn" data-act="invall">Invitar a todos</button> <button class="btn" data-act="party">Ver la fiesta</button></li>`;
       h += '<li><span class="grow"><small>Mayús+D activa o desactiva este modo. Dentro de una prueba, Mayús+W (o el botón «Ganar») la supera.</small></span></li></ul>';
     } else {
       const m = Math.floor(d.time / 60);
@@ -395,6 +397,8 @@ export const UI = {
     const b = e.target.closest('button');
     if (!b) return;
     if (b.dataset.act === 'album') this.album();
+    if (b.dataset.act === 'invall') { inviteAll(); this.updateHud(); this.renderMenu(); }
+    if (b.dataset.act === 'party') { this.toggleMenu(false); startParty(); }
     if (b.dataset.act === 'coins') { State.d.coins += 5; State.save(); this.updateHud(); this.renderMenu(); }
     if (b.dataset.undo) { undoStep(b.dataset.undo); this.toggleMenu(false); reloadWorld(); }
     if (b.dataset.skip) { skipTo(b.dataset.skip); this.toggleMenu(false); reloadWorld(); }

@@ -83,6 +83,7 @@ body { display: flex; flex-direction: column; align-items: center; justify-conte
   padding: calc(2.4 * var(--u)) calc(3 * var(--u)) calc(2 * var(--u)); box-shadow: 0 calc(0.8 * var(--u)) 0 rgba(0, 0, 0, .35); cursor: pointer;
   line-height: 1.25;
 }
+#dialog.top { top: calc(4 * var(--u)); bottom: auto; }
 #dialog-name {
   position: absolute; top: calc(-2.6 * var(--u)); left: calc(2.5 * var(--u)); background: var(--accent); color: #fff;
   border: calc(0.4 * var(--u)) solid var(--ink); border-radius: calc(1.2 * var(--u)); padding: 0 calc(1.8 * var(--u)); font-weight: 700;

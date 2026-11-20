@@ -239,7 +239,14 @@ function cait() {
   m.ent({ id: 'sofa', tx: 9, ty: 8, script: 'sofa' });
   m.ent({ id: 'shelf', tx: 8, ty: 2, script: 'shelf' });
   m.ent({ id: 'exit', kind: 'step', tx: 6, ty: 9, script: 'exitCait' });
-  m.ent({ id: 'party', tx: 4, ty: 3, script: 'fiestaTable' });
+  m.ent({ id: 'party', tx: 4, ty: 3, script: 'fiestaTable', when: () => !State.flag('fin') });
+  // Después del final: los restos de la fiesta. Acercarse a cualquiera deja repetirla, sin más indicaciones.
+  const fin = () => State.flag('fin');
+  for (const [x, y] of [[3, 5], [7, 4], [4, 7], [8, 6], [6, 8], [2, 4], [10, 5], [5, 6]]) m.obj('confetti_floor', x, y, 1, 1, { flat: true, when: fin });
+  m.ent({ id: 'rest_cake', tex: 'cake_rest', tx: 4, ty: 3, ox: 8, oy: -8, script: 'fiestaRest', when: fin });
+  m.ent({ id: 'rest_cake2', tx: 5, ty: 3, script: 'fiestaRest', when: fin });
+  m.ent({ id: 'rest_balloons', tex: 'balloons_rest', tx: 10, ty: 3, solid: true, script: 'fiestaRest', when: fin });
+  m.ent({ id: 'rest_wrap', tex: 'wrap_rest', tx: 8, ty: 7, solid: true, script: 'fiestaRest', when: fin });
   sock(m, 's10', 3, 3, -8); // asoma por debajo de la cama
   // Invitados que ya han cumplido y están preparando la fiesta
   const SPOTS = [[2, 6], [9, 5], [3, 7], [9, 7], [1, 5], [10, 6], [7, 4], [2, 8]];
@@ -368,7 +375,16 @@ function castillo() {
   m.ent({ id: 'gate_in2', tx: 20, ty: 26, solid: true, script: 'gateIn', when: () => !S.flag('gateOpen') });
   m.ent({ id: 'exit_l', kind: 'step', tx: 19, ty: 27, script: 'exitCastle' });
   m.ent({ id: 'exit_r', kind: 'step', tx: 20, ty: 27, script: 'exitCastle' });
-  m.ent({ id: 'sewer', kind: 'step', tex: 'hatch_open', tx: 4, ty: 20, script: 'sewerDown' });
+  m.ent({ id: 'sewer', kind: 'step', tex: 'hatch_open', tx: 4, ty: 15, script: 'sewerDown' }); // en el cruce de arriba: desde aquí no se ve la mesa de guerra
+  // Cameo (curiosidad): los Owitos de la Inquisición planean en secreto la fiesta de su comandante alrededor de una mesa
+  // de guerra. Hablar con cualquiera (o con la mesa) lanza la escena la primera vez; Coleowe no está: aparece en la escena.
+  m.obj('war_table', 4, 22, 3, 2);
+  m.ent({ id: 'owq_table', tx: 5, ty: 22, script: 'owiquis' });
+  m.ent({ id: 'owq_jos', npc: 'owi_jos', tx: 3, ty: 22, solid: true, script: 'owiquis' });
+  m.ent({ id: 'owq_lel', npc: 'owi_lel', tx: 4, ty: 24, solid: true, script: 'owiquis' });
+  m.ent({ id: 'owq_cas', npc: 'owi_cas', tx: 7, ty: 22, solid: true, script: 'owiquis' });
+  m.ent({ id: 'owq_dor', npc: 'owi_dor', tx: 6, ty: 24, solid: true, script: 'owiquis' });
+  m.ent({ id: 'owq_mor', npc: 'owi_mor', tx: 1, ty: 25, solid: true, script: 'owiquis' }); // en su rincón, aparte
   sock(m, 's6', 36, 22, 6); sock(m, 's7', 16, 4, -6); sock(m, 's16', 2, 11, 6); sock(m, 's17', 38, 7, -5);
 
   // Teatro Real
@@ -396,6 +412,7 @@ function castillo() {
 
   m.regions = [
     { name: 'Plaza Principal', x0: 13, y0: 10, x1: 26, y1: 20 },
+    { name: 'Mesa de guerra', x0: 1, y0: 21, x1: 8, y1: 25, music: 'inquisicion' },
     { name: 'Estanque de los Capybaras', x0: 23, y0: 3, x1: 38, y1: 12, music: 'capybaras' },
     { name: 'Teatro Real', x0: 1, y0: 3, x1: 10, y1: 10, music: 'teatro' },
     { name: 'Pastelería Real', x0: 28, y0: 14, x1: 36, y1: 19, music: 'horno' },

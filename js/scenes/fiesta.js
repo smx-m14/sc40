@@ -11,6 +11,8 @@ const GUESTS = {
   owitos_teatro: ['owito_g', 'owito_k', 'owito_w', 'owito_v'], mantecas: ['mantecas', 'manteca2'], peludito: ['peludito'],
   owitos_navidad: ['owito_n', 'owito_r'], owinken: ['owinken'], heladoncio: ['heladoncio'],
   gatos: ['gato', 'gatot'], siri: ['siri', 'awawa', 'awawa'], ovejoncio: ['ovejoncio'],
+  // Los Owitos de la Inquisición (mesa de guerra del castillo), con su atuendo; entre ellos, el cosplay de Cullen de Cait
+  inquisicion: ['owi_jos', 'owi_lel', 'owi_cas', 'owi_cul', 'owi_dor', 'owi_mor', 'owi_col'],
 };
 const LAYER = [0xf7a8c0, 0xfff3dc, 0x9fc86a, 0x4a2c1e];
 const BULBS = [0xffe066, 0xe2574c, 0x3f8fd8, 0x82cc6a, 0xf7a8c0];
@@ -37,13 +39,13 @@ export class FiestaScene extends Phaser.Scene {
     this.deco = this.add.graphics().setDepth(120);
 
     // Invitados, repartidos en filas a los lados; el centro queda para la tarta y Colgadín
-    const sprites = [];
-    for (const c of CHARACTERS) if (d.invited.includes(c.id)) for (const s of GUESTS[c.id] || []) sprites.push(s === 'heladoncio' && State.flag('hat') ? 'heladoncioh' : s);
+    const sprites = [], owner = [];
+    for (const c of CHARACTERS) if (d.invited.includes(c.id)) for (const s of GUESTS[c.id] || []) { sprites.push(s === 'heladoncio' && State.flag('hat') ? 'heladoncioh' : s); owner.push(c.id); }
     const spots = [];
     for (const y of [74, 98, 122, 146, 170]) for (const x of [22, 50, 78, 106, 214, 242, 270, 298]) spots.push([x + (y % 48 ? 0 : 8), y]);
     this.guests = sprites.slice(0, spots.length).map((s, i) => {
       const [x, y] = spots[i];
-      return { spr: this.add.image(x, y, s + '_down_0').setOrigin(0.5, 1).setDepth(y), tex: s, y, ph: i * 0.7 };
+      return { spr: this.add.image(x, y, s + '_down_0').setOrigin(0.5, 1).setDepth(y), tex: s, id: owner[i], y, ph: i * 0.7 };
     });
     if (d.invited.includes('narwal')) this.add.image(160, 50, 'narwal').setOrigin(0.5, 1).setDepth(50);
     // Globos de fiesta de los awawas (normales, de colores)
@@ -59,21 +61,45 @@ export class FiestaScene extends Phaser.Scene {
     this.sequence();
   }
 
+  // Dónde poner el cuadro de diálogo: el de abajo tapa las tres filas de abajo y el de arriba solo la primera, así que
+  // va arriba salvo que quien habla esté en la parte de arriba (la primera o la segunda fila, o Narwal).
+  // `id`: invitado que habla; `tex`: un sprite concreto; sin nada (narrador o todos): arriba.
+  at({ id, tex } = {}) {
+    if (id === 'narwal') return { pos: 'bottom' };
+    const ys = this.guests.filter((g) => (id && g.id === id) || (tex && g.tex === tex)).map((g) => g.y);
+    return { pos: ys.length && ys.reduce((a, b) => a + b) / ys.length < 110 ? 'bottom' : 'top' };
+  }
+  wait(ms) { return new Promise((r) => this.time.delayedCall(ms, r)); }
+
   async sequence() {
-    const d = State.d, n = d.invited.length;
-    await new Promise((r) => this.time.delayedCall(900, r));
-    await UI.say('Colgadín', ['Luces… tarta… música… y todos escondidos. Ya está todo.', 'Chsss… ¡que viene, que viene!']);
+    const d = State.d, n = d.invited.length, top = { pos: 'top' };
+    await this.wait(2200); // un rato sin mensajes para ver a todos escondidos
+    await UI.say('Colgadín', ['Luces… tarta… música… y todos escondidos. Ya está todo.', 'Chsss… ¡que viene, que viene!'], top);
     this.party = true;
     Sound.logro();
     this.cameras.main.flash(500, 255, 255, 255);
-    await UI.say('TODOS', '¡¡¡SORPRESA!!!');
-    Sound.music('fiesta', true);
+    // El «Cumpleaños feliz» empieza cuando acaba la música de logro, no encima
+    Sound.music('fiesta', true, Sound.ctx ? Math.max(Sound.ctx.currentTime + 0.08, (Sound.jingleEnd || 0) + 0.15) : undefined);
+    await this.wait(1000);
+    await UI.say('TODOS', '¡¡¡SORPRESA!!!', top);
+    await this.wait(2500); // y otro rato para ver la fiesta antes de que empiecen a hablar
     const who = CHARACTERS.filter((c) => d.invited.includes(c.id) && LINES[c.id]);
-    for (const c of who) await UI.say(c.name, LINES[c.id]);
+    for (const c of who) await UI.say(c.name, LINES[c.id], this.at({ id: c.id }));
+    if (d.invited.includes('inquisicion')) {
+      await UI.say('Owitos de la Inquisición', ['Operación «Fiesta sorpresa»: completada con éxito.', 'Buen trabajo, Colgadín. Sabíamos que eras el indicado.', '¡Feliz cumpleaños, comandante!'], this.at({ id: 'inquisicion' }));
+      await UI.say('', '(Entre ellos hay un Owito con capa de piel granate, pelo rubio y armadura plateada. Se parece muchísimo a alguien…)', this.at({ tex: 'owi_cul' }));
+    }
     await UI.say('', [
       `Han venido ${n} de ${CHARACTERS.length} invitados, la tarta tiene ${this.layers} ${this.layers === 1 ? 'piso' : 'pisos'} y hay ${this.gifts} ${this.gifts === 1 ? 'regalo' : 'regalos'} esperando.`,
       '«Cumpleaños feliz, cumpleaños feliz, te deseamos todos…»',
-    ]);
+    ], top);
+    // Sin mensajes: se puede mirar la fiesta todo lo que se quiera; acción (o «Terminar») cierra
+    Input.clear();
+    await new Promise((resolve) => {
+      const done = () => { if (this.stay) { this.stay = null; UI.minibar(null); resolve(); } };
+      this.stay = done; this.stayT = this.time.now + 600; // que la pulsación que cierra el último mensaje no cuente
+      UI.minibar('¡Que siga la fiesta!', { exit: done, labels: { exit: 'Terminar' } });
+    });
     State.set('fin');
     await UI.ending({ guests: n, total: CHARACTERS.length, layers: this.layers, gifts: this.gifts, gachaTotal: GACHA.length });
     State.d.pos = { map: 'cait', x: 6 * 16 + 8, y: 7 * 16 + 12, dir: 'down' };
@@ -109,6 +135,7 @@ export class FiestaScene extends Phaser.Scene {
     }
     const f = this.fx.clear();
     if (on) for (const c of this.confetti) { c.y += c.v * dt; if (c.y > 184) c.y = -6; f.fillStyle(c.c).fillRect(c.x + Math.sin(time / 300 + c.w) * 6, c.y, 3, 2); }
+    if (this.stay && !UI.busy && time > this.stayT && (Input.take('a') || Input.take('b'))) this.stay();
     if (!UI.busy) Input.clear();
   }
 }

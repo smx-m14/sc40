@@ -10,7 +10,7 @@ export function completion() {
   const count = (list) => list.filter((k) => f[k]).length;
   // Curiosidades: un vale de Aeroflot, un cuenco de Biang Biang y devolverle el sombrero a Heladoncio. (La tarta entera ya
   // no cuenta aquí: desde que Narwal solo acepta la tarta completa, entregarla es parte de la historia.)
-  const extras = [d.vales > 0, !!f.biang, !!f.hat];
+  const extras = [d.vales > 0, !!f.biang, !!f.hat]; // la mesa de guerra de los Owitos ya cuenta como invitación
   const parts = [
     { name: 'Historia', done: count(STORY), total: STORY.length },
     { name: 'Pruebas opcionales', done: count(SIDE), total: SIDE.length },

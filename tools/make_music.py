@@ -41,6 +41,7 @@ SONGS = {
     'logro': ('Música Logro 2', 128, dict(whole=True, search=True)),
     'gym': ('Fitness Fattory', 0),     # solo MIDI (music/gym.mid); el gimnasio ahora se llama Fitness Bartory
     'fuxia': ('Fuxia', 0),             # solo MIDI
+    'inquisicion': ('Dragon Age', 0),  # solo MIDI (music/inquisicion.mid): la mesa de guerra de los Owitos del castillo
 }
 # Reparto de pistas para los MIDI con arreglo completo (music/<id>.mid). Sin entrada aquí se trata como piano.
 MIDI_OPTS = {
@@ -117,6 +118,12 @@ MIDI_OPTS = {
     # remates del violín (6) cuando calla; 3 = bajo; guitarra de jazz (7) y acústica (8) de acompañamiento; baterías
     # fuera. En si menor a 128. El 42 acaba en si y vuelve al si del 23 sin costura (unos 38 s).
     'aeroflot': dict(roles=dict(melody=[9, 6], bass=[3], chords=[7, 8]), start_beat=88, max_beats=80),
+    # Mesa de guerra de los Owitos de la Inquisición (music/inquisicion.mid, «Dragon Age.mid»): 0 = caja de música
+    # (melodía; lleva acordes, se toma la nota aguda), 1 = guitarra clásica (bajo y arpegios); el clavecín (2) solo
+    # repite re en el ostinato, fuera. En re menor a 100. Se salta la intro, el ostinato y la parte en si♭: compases
+    # 41-56, el tema principal entero (fa-re-la | la-si-do-si-la | re…) con su subida al re agudo. El 56 se queda en
+    # si♭ y vuelve al re menor del 41 sin costura (unos 38 s).
+    'inquisicion': dict(roles=dict(melody=[0], bass=[1], chords=[1]), start_beat=160, max_beats=64),
     # Teatro de los Owitos: 2 = melodía en octavas, 0 = bajo, 1 = piano
     # Sin la intro de piano (compases 1-5): bucle de los compases 6-30, el tema del violín entero (A y B). El 30 acaba
     # resolviendo en re♭, que es justo donde arranca el tema en el 6, así que vuelve sin costura (unos 46 s).

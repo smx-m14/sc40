@@ -1,6 +1,6 @@
 // Modo debug: permite dar por superadas las pruebas ya probadas y teletransportarse.
 // Se activa con Mayús+D (o añadiendo ?dev a la dirección). Dentro de un minijuego, Mayús+W lo gana al instante.
-import { State } from './state.js';
+import { State, CHARACTERS } from './state.js';
 
 const S = State;
 const f = (...k) => k.forEach((x) => { S.d.flags[x] = true; });
@@ -34,6 +34,7 @@ export const STEPS = [
   { id: 'globos', label: 'Globos (awawas de Kapadokya)', flag: 'globos', apply() { f('metSiri', 'globos'); inv('siri'); } },
   { id: 'gramola', label: 'Prueba de oído de Fucsia', flag: 'gramola', apply() { f('metFuxia', 'gramola'); inv('fuxia'); } },
   { id: 'paella', side: true, label: 'Paella de Perrunfli', flag: 'paella', apply() { f('metPerrunfli', 'paella'); gift('mocadora'); inv('perrunfli'); } },
+  { id: 'owiquis', side: true, label: 'Mesa de guerra: Owitos de la Inquisición', flag: 'owiquis', apply() { f('owiquis'); inv('inquisicion'); } },
   { id: 'hat', side: true, label: 'Curiosidad: sombrero de Heladoncio', flag: 'hat', apply() { f('metHel', 'hatAsk', 'hatGot', 'hat'); } },
 ];
 
@@ -62,6 +63,7 @@ export const UNDO = {
   globos: { at: ['isla', 46, 35], undo() { no('globos'); } },
   gramola: { at: ['isla', 15, 31], undo() { no('gramola'); S.d.flags.fuxiaPts = 0; } },
   paella: { at: ['isla', 24, 26], undo() { no('paella'); } },
+  owiquis: { at: ['castillo', 5, 20], undo() { no('owiquis'); } },
   hat: { at: ['helada', 5, 9], undo() { no('hat', 'hatGot'); } },
 };
 export function undoStep(id) {
@@ -82,11 +84,25 @@ export function skipTo(id) {
 
 export const PLACES = [
   ['Casa de Cait', 'cait', 6, 7], ['Templo', 'isla', 31, 18], ['Gimnasio', 'helada', 24, 19], ['Bosque', 'isla', 40, 12],
-  ['Muelle', 'isla', 9, 10], ['Kapadokya', 'isla', 46, 33], ['Apartamento', 'ratitas', 2, 11], ['Castillo', 'castillo', 5, 20], ['Isla Helada', 'helada', 19, 21],
+  ['Muelle', 'isla', 9, 10], ['Kapadokya', 'isla', 46, 33], ['Apartamento', 'ratitas', 2, 11], ['Castillo', 'castillo', 5, 15], ['Isla Helada', 'helada', 19, 21],
 ];
 export function teleport(i) {
   const [, map, tx, ty] = PLACES[i];
   S.d.pos = { map, x: tx * 16 + 8, y: ty * 16 + 12, dir: 'down' };
+  S.save();
+}
+
+// Lanza la fiesta final con lo que haya en la partida (al acabar se vuelve a casa de Cait, como en el juego)
+export function startParty() {
+  const sm = window.SC40.game.scene;
+  S.d.pos = { map: 'cait', x: 6 * 16 + 8, y: 7 * 16 + 12, dir: 'down' };
+  S.save();
+  for (const s of sm.getScenes(true)) s.scene.stop();
+  sm.start('fiesta');
+}
+// Entrega todas las invitaciones (para ver la fiesta llena)
+export function inviteAll() {
+  for (const c of CHARACTERS) if (!S.d.invited.includes(c.id)) S.d.invited.push(c.id);
   S.save();
 }
 

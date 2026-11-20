@@ -242,6 +242,50 @@ const CHARS = {
   },
   owinken(p, dir, o) { pig(p, o, BLACK, '#edccc6', '#dbaeab'); }, // rosa a medio camino entre el de antes (#e8d5c8) y el de los clones (#f2c4c4)
   clon(p, dir, o) { pig(p, o, '#e2264a', '#f2c4c4', '#e0a0a8'); },
+  // Owitos de la Inquisición (cameo en el Castillo): Owitos disfrazados de Dragon Age Inquisition
+  owi_jos(p, dir, o) { // Owephine (Josephine): moño oscuro, vestido morado con mangas amarillas, tablilla y pluma
+    owito(p, o, '#f3d9b8', '#c9a06a');
+    p.px('#3a2418', [7, 5 + o], [8, 5 + o], [9, 5 + o], [10, 5 + o], [11, 5 + o], [8, 4 + o], [9, 4 + o], [10, 4 + o], [9, 3 + o]);
+    p.rect(4, 14 + o, 10, 3, '#7a4fb0').rect(5, 14 + o, 8, 1, '#f2c230').px('#f2c230', [2, 10 + o], [3, 10 + o], [2, 11 + o], [3, 11 + o], [15, 10 + o], [15, 11 + o]);
+    p.rect(14, 12 + o, 3, 4, '#8a5a2a').rect(14, 12 + o, 2, 3, '#ffffff').px('#e2574c', [16, 10 + o], [17, 9 + o]);
+  },
+  owi_lel(p, dir, o) { // Lowiana (Leliana): capucha morada, mechones pelirrojos, broche plateado
+    owito(p, o, '#f4f4f0', '#d6c8ec');
+    p.ell(9, 6.6 + o, 7, 3.2, '#6e3f96').px('#6e3f96', [2, 9 + o], [2, 10 + o], [3, 11 + o], [16, 9 + o], [16, 10 + o], [15, 11 + o]).px('#8a5fb8', [7, 4 + o], [8, 4 + o]);
+    p.px('#e2662a', [4, 9 + o], [5, 9 + o], [13, 9 + o], [14, 9 + o]);
+    p.rect(5, 15 + o, 9, 2, '#7a4a2a').px('#c9ced8', [8, 14 + o], [9, 14 + o], [10, 14 + o]).px('#1a1412', [9, 14 + o]);
+  },
+  owi_cas(p, dir, o) { // Cassandrowa (Cassandra): pelo negro corto, hombreras de plata, pechera granate con el ojo
+    owito(p, o, '#e8d8c8', '#8a7a6a');
+    p.ell(9, 6.4 + o, 5.4, 1.9, '#1a1412').px('#1a1412', [5, 7 + o], [4, 8 + o], [13, 7 + o], [14, 8 + o]);
+    p.rect(2, 9 + o, 3, 3, '#c9ced8').rect(14, 9 + o, 3, 3, '#c9ced8').px('#eef1f5', [2, 9 + o], [14, 9 + o]);
+    p.rect(5, 14 + o, 9, 3, '#7a1f2a').px('#e8b820', [8, 15 + o], [9, 15 + o], [10, 15 + o], [9, 14 + o]);
+  },
+  owi_dor(p, dir, o) { // Dowian (Dorian): pelo engominado, bigote, traje claro con correas y bastón con calavera
+    owito(p, o, '#d8b890', '#8a6a4a');
+    p.rect(5, 5 + o, 9, 2, '#1a1412').px('#1a1412', [11, 4 + o], [12, 4 + o], [13, 5 + o]);
+    p.px('#1a1412', [7, 12 + o], [8, 12 + o], [10, 12 + o], [11, 12 + o]);
+    p.rect(4, 14 + o, 10, 3, '#f0ead8').px('#7a4a2a', [5, 14 + o], [6, 15 + o], [7, 16 + o], [13, 14 + o], [12, 15 + o], [11, 16 + o]);
+    p.rect(16, 5 + o, 1, 12, '#8a5a2a').px('#f4f4ee', [15, 3 + o], [16, 3 + o], [17, 3 + o], [16, 4 + o]).px('#1a1412', [16, 3 + o]);
+  },
+  owi_mor(p, dir, o) { // Mowigan (Morrigan): melena negra con flequillo, vestido granate y gran collar dorado
+    owito(p, o, '#ece0ec', '#a890a8');
+    p.ell(9, 6.8 + o, 6.6, 2.6, '#1a1412').px('#1a1412', [2, 9 + o], [2, 10 + o], [3, 11 + o], [16, 9 + o], [16, 10 + o], [15, 11 + o]);
+    p.px('#8a2a5a', [5, 9 + o], [13, 9 + o]);
+    p.rect(3, 15 + o, 12, 2, '#5a1a2a').px('#e8b820', [6, 13 + o], [7, 14 + o], [8, 14 + o], [10, 14 + o], [11, 14 + o], [12, 13 + o]).px('#3f9f4f', [9, 15 + o]);
+  },
+  owi_col(p, dir, o) { // Coleowe (Cole): sombrero de ala enorme, pelo claro despeinado, pañuelo rojo
+    owito(p, o, '#f0eee8', '#c8c0b0');
+    p.rect(1, 6 + o, 16, 2, '#6e4520').ell(9, 4.6 + o, 4, 2.2, '#8a5a3a').px('#c9ced8', [8, 3 + o], [9, 3 + o], [10, 3 + o]);
+    p.px('#e8e0c8', [5, 8 + o], [6, 8 + o], [12, 8 + o], [13, 8 + o], [11, 9 + o]);
+    p.rect(5, 13 + o, 9, 1, '#a83a2a').rect(4, 14 + o, 10, 2, '#6e4520');
+  },
+  owi_cul(p, dir, o) { // el cosplay de Cait: el comandante Cullen (pelo rubio, capa de piel granate, armadura plateada)
+    owito(p, o, '#f3e6c0', '#d9b878');
+    p.ell(9, 6.3 + o, 5.2, 1.8, '#e8c860').px('#f4dc80', [7, 5 + o], [10, 5 + o]).px('#c9a040', [12, 6 + o]);
+    p.rect(1, 11 + o, 3, 3, '#7a2a2a').rect(14, 11 + o, 3, 3, '#7a2a2a').rect(2, 14 + o, 14, 1, '#7a2a2a').px('#a04545', [1, 11 + o], [3, 12 + o], [15, 11 + o], [16, 13 + o]);
+    p.rect(5, 15 + o, 8, 2, '#c9ced8').px('#e8b820', [9, 15 + o]).px('#8a1f2a', [5, 16 + o], [12, 16 + o]);
+  },
   // Owitos de Navidad
   owito_n(p, dir, o) { owito(p, o, '#f7b8c8', '#ffffff'); p.rect(7, 1 + o, 5, 4, '#3f9f4f').px('#fff', [7, 2 + o], [8, 3 + o], [11, 2 + o], [10, 3 + o]).rect(9, 1 + o, 1, 4, '#e2574c'); },
   owito_r(p, dir, o) { owito(p, o, '#c98f4e', '#8a5a2a'); p.rect(6, 3 + o, 7, 2, '#e2574c').rect(5, 5 + o, 9, 1, '#fff').px('#fff', [13, 2 + o]).px('#e2574c', [9, 12 + o]); },
@@ -813,6 +857,14 @@ const OBJ = {
     p.line(5, 13, 10, 23, STRING).line(15, 13, 10, 23, STRING).line(10, 16, 10, 26, STRING);
     return p.px('#f06aa8', [8, 22], [9, 23], [11, 23], [12, 22], [8, 24], [12, 24], [10, 23]); // lazo
   },
+  war_table() { // mesa de guerra de los Owitos de la Inquisición: mapa, figuritas y velas
+    const p = new PX(48, 32), W = '#8a5a2a', WD = '#6e4520';
+    p.rect(3, 22, 3, 10, WD).rect(42, 22, 3, 10, WD).rect(1, 6, 46, 17, W).rect(1, 20, 46, 3, WD).rect(1, 6, 46, 1, '#a8743c');
+    p.rect(5, 8, 38, 12, '#e8d5a0').ell(16, 13, 9, 4, '#9fc86a').ell(31, 12, 8, 4, '#c9a86a').ell(36, 16, 5, 2.4, '#9fc86a').rect(23, 9, 2, 10, '#6fb4ee');
+    p.px('#3a2a20', [12, 11], [18, 15], [29, 10], [34, 14], [20, 10]).px('#e2574c', [12, 10], [29, 9]).px('#3f6fd0', [18, 14], [34, 13]).px('#e8b820', [20, 9]);
+    for (const x of [2, 44]) p.rect(x, 2, 2, 5, '#fff3dc').px('#ffd23f', [x, 1], [x + 1, 0]);
+    return p.outline(INK);
+  },
   straw_hat() { const p = new PX(20, 12); strawHat(p, 10, 7); return p.outline(INK); },
   clon_fix_0: () => clonFix(0),
   clon_fix_1: () => clonFix(-1),
@@ -1187,6 +1239,37 @@ const OBJ = {
     p.rect(1, 3, 9, 6, '#fff6dc').rect(4, 1, 9, 6, '#fff').line(4, 1, 8, 4, '#c9b88a').line(12, 1, 8, 4, '#c9b88a').px('#e2574c', [8, 5]);
     return p.outline(INK);
   },
+  // ---- Restos de la fiesta en casa de Cait (después del final)
+  cake_rest() { // en un plato: lo que queda de la tarta (una porción con sus pisos de colores), la vela y migas
+    const p = new PX(20, 13);
+    p.ell(10, 10, 9, 2.6, '#e8e4dc').ell(10, 9.6, 7, 1.8, '#fbfaf6');
+    p.rect(5, 4, 9, 2, '#f7a8c0').rect(5, 6, 9, 1, '#fff3dc').rect(5, 7, 9, 1, '#9fc86a').rect(5, 8, 9, 1, '#4a2c1e'); // porción
+    p.rect(5, 4, 1, 5, '#e3c9a8').px('#ffffff', [6, 4], [7, 4]);                                                     // el corte
+    p.rect(11, 1, 1, 3, '#f4f4ee').px('#4a3a30', [11, 0]);                                                       // vela apagada
+    p.px('#4a2c1e', [15, 9], [16, 10], [4, 10]).px('#f7a8c0', [14, 10], [3, 9]);                                    // migas
+    return p.outline(INK);
+  },
+  balloons_rest() { // tres globos medio desinflados, ya sin fuerza, atados a un peso
+    const p = new PX(20, 24), cols = ['#e2574c', '#ffd23f', '#4a90d8'];
+    p.ell(5, 7, 4.4, 3.4, cols[0]).ell(15, 9, 4.2, 3.2, cols[2]).ell(10, 11, 3.8, 3, cols[1]);
+    p.px('#ffffff', [3, 6], [13, 8], [8, 10]);
+    p.rect(8, 20, 5, 3, '#8a8f9a').rect(8, 20, 5, 1, '#b8bcc6').outline(INK);
+    return p.line(5, 11, 10, 19, STRING).line(15, 13, 10, 19, STRING).line(10, 15, 10, 19, STRING); // cordeles, sin contorno
+  },
+  wrap_rest() { // papel de regalo arrugado, un lazo suelto y un gorrito de fiesta caído
+    const p = new PX(22, 14), r = rng(77);
+    p.ell(6, 9, 5, 3.6, '#f06aa8').ell(13, 10, 5, 3.2, '#4a90d8').ell(18, 9, 3.4, 3, '#ffd23f');
+    p.speck(r, 18, '#ffffff', '#c8402c', '#82cc6a');
+    p.px('#e2574c', [9, 5], [10, 6], [11, 5], [10, 7], [10, 8]);                         // lazo
+    for (let y = 0; y < 8; y++) p.rect(14 - Math.floor(y / 2), 1 + y, 1 + Math.floor(y / 1.3), 1, y % 3 ? '#82cc6a' : '#ffd23f'); // gorrito
+    p.px('#ffffff', [14, 0]);
+    return p.outline(INK);
+  },
+  confetti_floor() { // confeti por el suelo (plano, se pisa)
+    const p = new PX(16, 16), r = rng(91), C = ['#ffe066', '#e2574c', '#3f8fd8', '#82cc6a', '#f7a8c0'];
+    for (let i = 0; i < 9; i++) { const x = 1 + ((r() * 13) | 0), y = 2 + ((r() * 12) | 0), c = C[i % 5]; p.set(x, y, c); if (i % 2) p.set(x + 1, y, c); else p.set(x, y + 1, c); }
+    return p;
+  },
   rug() {
     const p = new PX(48, 30);
     p.ell(24, 15, 23, 14, '#e2574c').ell(24, 15, 19, 10.5, '#f6c56b').ell(24, 15, 14, 7, '#e2574c');
@@ -1389,7 +1472,7 @@ export function gachaIcon(id) {
 }
 
 export const WALKERS = ['colgadin', 'lolete', 'tigrito', 'cuy', 'patito', 'heladoncio', 'heladoncioh'];
-export const NPCS = ['heladoncioh', 'fuxia', 'scooby', 'cuca', 'lolete', 'perrunfli', 'bart', 'mono', 'tigrito', 'ratita_p', 'ratita_o', 'ratita_b', 'kai', 'cuy',
+export const NPCS = ['owi_jos', 'owi_lel', 'owi_cas', 'owi_dor', 'owi_mor', 'owi_col', 'owi_cul', 'heladoncioh', 'fuxia', 'scooby', 'cuca', 'lolete', 'perrunfli', 'bart', 'mono', 'tigrito', 'ratita_p', 'ratita_o', 'ratita_b', 'kai', 'cuy',
   'peludito', 'mantecas', 'manteca2', 'patito', 'capybara', 'owito_w', 'owito_k', 'owito_v', 'owito_g', 'owito_c', 'owito_t', 'heladoncio', 'owinken', 'clon', 'owito_n', 'owito_r', 'awawa', 'siri', 'ovejoncio', 'gato', 'gatot'];
 
 export function makeTextures(scene) {

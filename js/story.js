@@ -42,7 +42,7 @@ export function hint() {
   if (!S.flag('globos')) return 'Una fiesta sin globos no es fiesta. Dicen que al sur del castillo hay unos bichitos con muchos.';
   if (!S.flag('gramola')) return 'Falta la música: Fucsia, al suroeste de la Isla de Cait, quiere ponerte a prueba.';
   if (!S.flag('fin')) return '¡Todo listo! Vuelve a casa de Cait para empezar la fiesta.';
-  return 'La fiesta ha sido un éxito. Puedes seguir paseando, buscar calcetines o repetirla desde la mesa de casa de Cait.';
+  return 'La fiesta ha sido un éxito. Puedes seguir paseando y buscar lo que te falte.';
 }
 UI.hintFn = hint;
 
@@ -367,7 +367,7 @@ export const SCRIPTS = {
   },
   async hatch(scene) {
     if (S.flag('hatchOpen')) {
-      if (await UI.choose('', 'La alcantarilla baja, oscura y pegajosa de azúcar, hasta el Castillo de Mazapán.', ['Bajar', 'Ahora no']) === 0) scene.warp('castillo', 5, 20, 'right');
+      if (await UI.choose('', 'La alcantarilla baja, oscura y pegajosa de azúcar, hasta el Castillo de Mazapán.', ['Bajar', 'Ahora no']) === 0) scene.warp('castillo', 5, 15, 'right');
       return;
     }
     await UI.say('', 'La tapa de la alcantarilla que lleva al Castillo de Mazapán. Tiene un candado de cuatro cifras.');
@@ -497,6 +497,55 @@ export const SCRIPTS = {
   async plazaVend2() { await UI.say('Vendedor', ['Vendo recuerdos del castillo: muralla en porciones individuales.', 'Bueno, vendía. El Rey dice que eso es «comerse el patrimonio».']); },
   async plazaPintor() { await UI.say('Owito pintor', ['Chsss. Estoy retratando a Su Majestad. Es el retrato número cuarenta y uno.', 'Siempre sale igual: redondo, peludo y con cara de querer merendar.']); },
   async plazaGuardia() { await UI.say('Guardia real', S.flag('gateOpen') ? 'Puerta abierta, muralla entera y ni un cerdito a la vista. Hoy es un buen día para ser guardia.' : 'La puerta principal no se abre hasta que acaben las obras. Órdenes del Rey. Y del arquitecto. Que es el Rey.'); },
+  // ---------------------------------------------------------- Cameo: la mesa de guerra de los Owitos de la Inquisición
+  // Escena de unos 40 segundos: planean la fiesta sorpresa de su comandante, Cullen (Cait), y reciben su invitación.
+  // Sin decirlo nunca, se intuye que son ellos quienes le encargaron la misión a Colgadín y le dejaron las invitaciones
+  // en casa de Cait: las figuritas del mapa, la lista de invitados, «he hecho las invitaciones», el dibujo…
+  async owiquis(scene, e) {
+    const T = 'Owitos', SH = '¡¡CHSSST!! ¡Que no se entere el comandante!';
+    const LINES = {
+      owq_jos: ['Owephine', '¡Protocolo! La lista de invitados está revisada tres veces y sellada. Nadie entra en esta fiesta sin invitación.'],
+      owq_lel: ['Lowiana', 'Mis espías ya me han dicho dónde está cada invitado. Todos. Tú también, Colgadín: llevas un buen rato dando vueltas por el patio.'],
+      owq_cas: ['Cassandrowa', ['Uf. Fiestas, guirnaldas, sorpresas… Esto no es lo mío.', '…Aunque he repasado el plan catorce veces. Y he hecho los carteles. Y las invitaciones. ¡Pero no es lo mío!']],
+      owq_dor: ['Dowian', 'La decoración la llevo yo, evidentemente. Velas, terciopelo y mucho dorado. Va a ser la fiesta más elegante de la historia. Como todo lo que toco.'],
+      owq_mor: ['Mowigan', ['Todo esto me parece innecesario. Una fiesta… qué costumbre tan curiosa.', '(No se va.)']],
+    };
+    // La invitación: nadie se sorprende demasiado
+    const invitation = async () => {
+      await UI.say(C, 'Bueno… yo venía a daros esto. Una invitación para la fiesta sorpresa de Cait.');
+      await UI.say('Owephine', '¿Una invitación? ¡Oh! Qué… sorpresa. Papel noble, sello bien centrado, letra pequeña en su sitio. Un trabajo impecable. Lo haya hecho quien lo haya hecho.');
+      await UI.say('Dowian', '¿Que Cait sale con siete dedos? Eso no es un error, es estilo. Se llama expresionismo.');
+      await UI.say('Lowiana', 'Y la has traído justo a tiempo. Como estaba previsto. …Como era de esperar, quiero decir.');
+      await UI.say('', '(Cassandrowa tacha algo en una lista muy larga. Ya casi no quedan casillas sin tachar.)');
+      invite('inquisicion', 'los Owitos de la Inquisición');
+    };
+    // Ya visto y con la invitación entregada: cada uno dice lo suyo, y todos piden silencio. (Si la escena se vio antes
+    // de que existiera la invitación, se repite entera, con Coleowe incluido.)
+    if (S.flag('owiquis') && S.d.invited.includes('inquisicion')) {
+      const [who, line] = LINES[e && e.id] || [T, 'Siguen cuchicheando alrededor de la mesa de guerra, moviendo figuritas por el mapa.'];
+      return UI.say(who, [...[].concat(line), SH]);
+    }
+    await UI.say('', [
+      'En la esquina del patio, un grupo de Owitos cuchichea alrededor de una gran mesa con un mapa lleno de figuritas.',
+      '(Hay figuritas repartidas por toda la isla: un perro con aureola, una cobaya, un pato enorme… y una con las orejas muy largas, colgando, justo encima del castillo.)',
+    ]);
+    await UI.say(C, '¿Qué estáis…?');
+    await UI.say(T, SH);
+    for (const id of ['owq_jos', 'owq_lel', 'owq_cas', 'owq_dor', 'owq_mor']) await UI.say(LINES[id][0], LINES[id][1]);
+    // Coleowe aparece de golpe junto a Colgadín, dice algo extrañamente tierno y desaparece
+    const p = scene.p, cole = scene.add.image(p.x + 18, p.y, 'owi_col_down_0').setOrigin(0.5, 1).setDepth(p.y + 1).setAlpha(0);
+    scene.tweens.add({ targets: cole, alpha: 1, duration: 120 });
+    Sound.sfx('rep');
+    await new Promise((r) => scene.time.delayedCall(700, r)); // un instante sin diálogo, para que se le vea aparecer
+    await UI.say('', '(De repente, junto a Colgadín, hay un Owito con un sombrero enorme. Nadie lo ha visto llegar.)');
+    await UI.say('Coleowe', 'Las orejas de Colgadín cuelgan porque escucha con todo el cuerpo. Por eso, cuando Cait le habla, se queda tan quieto. Le gusta guardar lo que oye.');
+    scene.tweens.add({ targets: cole, alpha: 0, duration: 200, onComplete: () => cole.destroy() });
+    await UI.say('', '(Y ya no está. Nadie lo ha visto irse.)');
+    await invitation();
+    await UI.say(C, 'Oye, ¿y quién es ese comandante…?');
+    await UI.say(T, '¡¡CHSSST!! ¡QUE NO SE ENTERE EL COMANDANTE!');
+    S.set('owiquis');
+  },
   async owitoT() { await UI.say('Owito tanuki', 'Yo hago de mono volador. Llevo sombrero porque el presupuesto no daba para alas.'); },
   async owitoC() { await UI.say('Owito de la suerte', 'El rosa combina bien con el verde. Lo dice el libreto, lo dice el telón y lo digo yo.'); },
   async mantecas(scene) {
@@ -683,6 +732,16 @@ export const SCRIPTS = {
     scene.startScene('fiesta', 6, 7);
   },
   async fiestaTable(scene, ent) { return SCRIPTS.fiestaCheck(scene, ent, true); },
+  // Restos de la fiesta en casa de Cait, después del final: al acercarse, se puede volver a celebrar
+  async fiestaRest(scene, ent) {
+    const what = ent && ent.id || '';
+    const line = what.startsWith('rest_cake') ? 'Lo que queda de la tarta. Una porción, la vela apagada… y migas por todas partes.'
+      : what === 'rest_balloons' ? 'Los globos de los awawas, ya medio desinflados. Aún se resisten a tocar el suelo.'
+      : 'Papel de regalo arrugado, un lazo suelto y un gorrito de fiesta. Y confeti. Mucho confeti.';
+    await UI.say(C, line);
+    if (await UI.choose(C, '¿Y si lo celebramos otra vez?', ['¡Otra fiesta!', 'Ahora no']) !== 0) return;
+    scene.startScene('fiesta', 6, 7);
+  },
 
   // ---------------------------------------------------------- Invitados en casa de Cait
   async homeGuest(scene, ent) {
