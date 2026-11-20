@@ -62,6 +62,6 @@ export const Input = {
     };
     touch.querySelectorAll('[data-dir]').forEach((el) => bind(el, el.dataset.dir));
     bind(document.getElementById('tb-a'), 'a');
-    bind(document.getElementById('tb-b'), 'b');
+    // (En táctil no hay botón B: el menú, cerrar y «Salir» ya tienen su botón en pantalla. En teclado: Esc o X.)
   },
 };

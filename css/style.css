@@ -154,10 +154,10 @@ body { display: flex; flex-direction: column; align-items: center; justify-conte
 #dpad .d { width: 52px; height: 52px; }
 #dpad .up { left: 52px; top: 0; } #dpad .down { left: 52px; top: 104px; }
 #dpad .left { left: 0; top: 52px; } #dpad .right { left: 104px; top: 52px; }
-#abtns { position: absolute; right: max(14px, env(safe-area-inset-right)); bottom: max(18px, env(safe-area-inset-bottom)); width: 150px; height: 130px; }
-#abtns .ab { width: 68px; height: 68px; border-radius: 50%; font-size: 24px; }
+/* Un solo botón de acción (A), grande y a la altura del centro de la cruceta */
+#abtns { position: absolute; right: max(18px, env(safe-area-inset-right)); bottom: calc(max(18px, env(safe-area-inset-bottom)) + 36px); width: 84px; height: 84px; }
+#abtns .ab { width: 84px; height: 84px; border-radius: 50%; font-size: 28px; }
 #abtns .a { right: 0; top: 0; background: rgba(226, 87, 76, .6); }
-#abtns .b { left: 0; bottom: 0; }
 
 /* En vertical el juego va arriba y los mandos debajo */
 @media (orientation: portrait) {
