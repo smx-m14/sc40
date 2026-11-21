@@ -6,7 +6,7 @@ import { rng } from './art.js';
 import { State, SOCK_DESIGN } from './state.js';
 
 export const TILE = 16;
-const SOLID_TILES = '~rCicWVxqL';
+const SOLID_TILES = '~rCicWVxqLYZ';
 
 function base(id, name, w, h, fill) {
   const m = {
@@ -161,7 +161,7 @@ function isla() {
   // Cada calcetín está justo detrás de un árbol, roca o chimenea (que lo tapa casi entero). Los árboles se reparten
   // al azar según lo construido: si se cambia el mapa, comprobar que siguen teniendo algo delante.
   sock(m, 's1', 9, 25, 6); sock(m, 's2', 40, 5, -6); sock(m, 's3', 55, 14, 6); sock(m, 's4', 39, 35, -6);
-  sock(m, 's11', 7, 12, 6); sock(m, 's12', 54, 36, -7); sock(m, 's13', 19, 7, 6); sock(m, 's20', 57, 30, -6);
+  sock(m, 's11', 7, 12, 6); sock(m, 's18', 54, 36, -7); /* la pareja del calcetín de los awawas (s12, que dan ellos) */ sock(m, 's20', 57, 30, -6);
 
   // Árboles: bosque denso al noreste y sueltos por el resto, sin tapar caminos ni entidades
   const keep = new Set();
@@ -222,27 +222,36 @@ function isla() {
 
 // ---------------------------------------------------------------- Casa de Cait (interior)
 function cait() {
-  const m = base('cait', 'Casa de Cait', 12, 10, 'o');
+  const m = base('cait', 'Casa de Cait', 12, 10, 'O'); // tarima de roble claro y paredes blancas, como el piso real
   m.music = 'casa';
-  m.fill(0, 0, 11, 0, 'V'); m.fill(0, 1, 11, 1, 'W'); m.fill(0, 9, 11, 9, 'x'); m.set(6, 9, 'o');
+  m.fill(0, 0, 11, 0, 'Y'); m.fill(0, 1, 11, 1, 'Z'); m.fill(0, 9, 11, 9, 'x'); m.set(6, 9, 'O');
   // Los tres cuadros de Cait colgados en la pared, en su orden
-  [62, 86, 110].forEach((x, i) => m.objects.push({ tex: 'cuadro' + (i + 1), x, y: 26, flat: true, top: true }));
-  m.ent({ id: 'cuadros', tx: 5, ty: 1, script: 'cuadros' });
-  m.obj('rug', 5, 5, 3, 2, { flat: true });
+  [46, 70, 94].forEach((x, i) => m.objects.push({ tex: 'cuadro' + (i + 1), x, y: 26, flat: true, top: true }));
+  m.ent({ id: 'cuadros', tx: 4, ty: 1, script: 'cuadros' });
   m.obj('bed2', 1, 2, 2, 2);
-  m.obj('shelf', 8, 2, 2, 1);
-  m.obj('plant', 11, 2); m.obj('plant', 0, 8);
+  // Rincón de la tele, según las fotos: ventanal a la terraza, mueble blanco con la tele, estantería de cubos con
+  // peluches y lámpara de pie
+  m.objects.push({ tex: 'window_cait', x: 11 * TILE, y: 2 * TILE - 2, flat: true, top: true });
+  m.obj('kallax_cait', 7, 2);
+  m.obj('tvunit_cait', 8, 2, 2, 1);
+  // La lámpara de pie se puede apagar y encender (al apagarla, la casa se oscurece)
+  m.ent({ id: 'lampCait', tx: 11, ty: 2, solid: true, texFn: () => (State.flag('lampOff') ? 'floorlamp_cait_off' : 'floorlamp_cait'), script: 'lampCait' });
+  m.obj('plant', 0, 8);
   m.obj('table', 4, 3, 2, 1);
-  m.obj('sofa_cait', 9, 8, 2, 1);
+  m.obj('sofa_cait2', 8, 8, 3, 1);
+  m.obj('coffee_cait', 8, 6, 2, 1);
   m.ent({ id: 'invites', tex: 'invites', tx: 5, ty: 3, oy: -7, script: 'invites', when: () => !State.flag('invites') });
   m.ent({ id: 'bed', tx: 1, ty: 3, script: 'bed' });
-  m.ent({ id: 'sofa', tx: 9, ty: 8, script: 'sofa' });
-  m.ent({ id: 'shelf', tx: 8, ty: 2, script: 'shelf' });
+  m.ent({ id: 'sofa', tx: 9, ty: 8, script: 'sofa' }); m.ent({ id: 'sofa2', tx: 8, ty: 8, script: 'sofa' }); m.ent({ id: 'sofa3', tx: 10, ty: 8, script: 'sofa' });
+  m.ent({ id: 'coffee', tx: 8, ty: 6, script: 'coffeeCait' }); m.ent({ id: 'coffee2', tx: 9, ty: 6, script: 'coffeeCait' });
+  m.ent({ id: 'tvCait', tx: 8, ty: 2, script: 'tvCait' }); m.ent({ id: 'tvCait2', tx: 9, ty: 2, script: 'tvCait' });
+  m.ent({ id: 'shelf', tx: 7, ty: 2, script: 'shelf' });
+  for (const tx of [10, 11]) m.ent({ id: 'ventana' + tx, tx, ty: 1, script: 'ventanaCait' });
   m.ent({ id: 'exit', kind: 'step', tx: 6, ty: 9, script: 'exitCait' });
   m.ent({ id: 'party', tx: 4, ty: 3, script: 'fiestaTable', when: () => !State.flag('fin') });
   // Después del final: los restos de la fiesta. Acercarse a cualquiera deja repetirla, sin más indicaciones.
   const fin = () => State.flag('fin');
-  for (const [x, y] of [[3, 5], [7, 4], [4, 7], [8, 6], [6, 8], [2, 4], [10, 5], [5, 6]]) m.obj('confetti_floor', x, y, 1, 1, { flat: true, when: fin });
+  for (const [x, y] of [[3, 5], [7, 4], [4, 7], [7, 6], [6, 8], [2, 4], [10, 5], [5, 6]]) m.obj('confetti_floor', x, y, 1, 1, { flat: true, when: fin });
   m.ent({ id: 'rest_cake', tex: 'cake_rest', tx: 4, ty: 3, ox: 8, oy: -8, script: 'fiestaRest', when: fin });
   m.ent({ id: 'rest_cake2', tx: 5, ty: 3, script: 'fiestaRest', when: fin });
   m.ent({ id: 'rest_balloons', tex: 'balloons_rest', tx: 10, ty: 3, solid: true, script: 'fiestaRest', when: fin });
@@ -279,12 +288,12 @@ function ratitas() {
   m.set(2, 12, 'o');
 
   // Pasillo
-  m.obj('grate', 5, 7, 1, 1, { flat: true });
   m.obj('plant', 28, 8); m.obj('plant', 1, 8); m.obj('rug', 8, 9, 3, 2, { flat: true });
   m.ent({ id: 'exit', kind: 'step', tx: 2, ty: 12, script: 'exitRatitas' });
   sock(m, 's5', 10, 3, -5); sock(m, 's14', 19, 1, 6); sock(m, 's15', 13, 5, 5);
   m.ent({ id: 'sign', tex: 'sign', tx: 4, ty: 11, solid: true, script: 'signRatitas' });
-  m.ent({ id: 'grate', tx: 5, ty: 7, script: 'grate' });
+  // La rejilla del techo empieza cerrada: hasta que se abre no entra el rayo de sol
+  m.ent({ id: 'grate', tx: 5, ty: 7, texFn: () => (S.flag('grateOpen') ? 'grate' : 'grate_shut'), script: 'grate' });
   const mirrorTex = (id) => () => ['stand', 'mirror_a', 'mirror_b'][S.d.flags[id] || 0];
   // Rayo de luz: tres espejos fijos atornillados al suelo, once pedestales para los tres espejos de mano
   // y cuatro cristales de color. Solo una colocación lleva hasta Kai un rayo lila (rojo + azul, sin amarillo ni verde);
@@ -308,18 +317,22 @@ function ratitas() {
   for (const [size, tx, ty] of [[3, 4, 2], [1, 5, 4], [5, 6, 1], [2, 5, 6], [4, 3, 4]]) m.ent({ id: 'ch' + size, tex: 'cheese_' + size, size, tx, ty, solid: true, script: 'cheese' });
 
   // Cuarto 2: salón de la ratita blanca. Hay que contar cosas y operar: cojines × tazas + cuadros − plantas = 9
-  m.obj('tv', 10, 1, 2, 1); m.obj('sofa', 10, 4, 2, 1); m.obj('shelf', 12, 1, 2, 1);
-  m.obj('plant', 8, 1); m.obj('plant', 13, 6); m.obj('plant', 8, 6);
+  m.obj('tv', 10, 1, 2, 1); m.obj('sofa', 10, 4, 2, 1); // (sin librería: ahí cuelga uno de los cuadros de Ratencio)
+  m.obj('flowerpot_r', 13, 1); m.obj('flowerpot_y', 13, 6); m.obj('flowerpot_p', 8, 6); // tres tiestos con flores: cuentan como plantas en la cuenta de la ratita
   const small = (tex, x, y, dx = 0, dy = 0) => m.objects.push({ tex, x: x * TILE + 8 + dx, y: y * TILE + 12 + dy, flat: true, top: true });
   for (const [x, y] of [[8, 3], [12, 3], [13, 4], [9, 6], [12, 5]]) small('cup', x, y, (x * 3) % 5 - 2, (y * 5) % 4 - 2);
   for (const [x, y] of [[9, 2], [11, 6]]) small('cushion', x, y);
-  for (const x of [8, 9]) small('frame', x, 0, 0, 1);
+  // Los dos cuadros (cuentan para la cuenta de la ratita blanca) son de Ratencio the Rat; al mirarlos se ven en grande
+  // uno a cada lado de la tele, más grandes y a la altura de la pantalla
+  [9, 12].forEach((x, i) => { small('ratencio_' + (i + 1), x, 0, 0, 14); m.ent({ id: 'ratencio' + (i + 1), n: i + 1, tx: x, ty: 0, script: 'ratencio' }); });
   m.ent({ id: 'tv', tx: 10, ty: 1, script: 'tv' });
   m.ent({ id: 'ratita_o', npc: 'ratita_o', tx: 9, ty: 4, solid: true, script: 'ratitaO' });
 
   // Cuarto 3: dormitorio de la ratita parda. Cinco lámparas: cada interruptor cambia también otras
   m.obj('bed', 15, 1, 1, 2); m.obj('table', 19, 2, 2, 1); m.obj('plant', 21, 1); m.obj('rug', 17, 4, 3, 2, { flat: true });
-  [[15, 4], [16, 6], [20, 6], [21, 4], [19, 4]].forEach(([tx, ty], i) => m.ent({
+  // Colocación de las lámparas (roja, verde, azul, amarilla, rosa) elegida por ordenador: recorrerlas en orden por la
+  // habitación (de izquierda a derecha, en círculo o desde la puerta) y encender las apagadas no funciona
+  [[15, 4], [21, 4], [20, 6], [19, 4], [16, 6]].forEach(([tx, ty], i) => m.ent({
     id: 'lamp' + i, n: i, tx, ty, solid: true, script: 'lamp',
     texFn: () => `lamp_${i}_${S.flag('r3') || (S.d.flags.lamps || [])[i] ? 'on' : 'off'}`,
   }));
@@ -465,7 +478,7 @@ function helada() {
   // Los Owitos de Navidad, uno a cada lado del camino, simétricos respecto a la puerta
   m.ent({ id: 'owito_n', npc: 'owito_n', tx: 6, ty: 11, solid: true, script: 'navidad' });
   m.ent({ id: 'owito_r', npc: 'owito_r', tx: 9, ty: 11, solid: true, script: 'navidad' });
-  sock(m, 's8', 3, 11, 6); sock(m, 's9', 34, 8, -6); sock(m, 's18', 26, 6, 6); sock(m, 's19', 10, 17, -6);
+  sock(m, 's8', 3, 11, 6); sock(m, 's9', 34, 8, -6); sock(m, 's13', 26, 6, 6); sock(m, 's19', 10, 17, -6);
 
   m.regions = [
     { name: 'Sweet Famosa', x0: 15, y0: 3, x1: 24, y1: 9, music: 'sweetfamosa' },

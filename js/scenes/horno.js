@@ -67,9 +67,7 @@ export class HornoScene extends Phaser.Scene {
     Input.clear();
     this.lock = true;
     (async () => {
-      await UI.say('Manteca2', '¡Que gane la mejor drag queen!');
       await UI.say('Mantecas', [
-        '…¿Y esto qué tiene que ver con los mazapanes?',
         '¡A los fogones! Arriba irán llegando PEDIDOS: cada uno pide un mazapán con forma de fruta, y caduca si tardas.',
         'Siempre son cinco pasos, de izquierda a derecha: 1) lleva almendra y azúcar a la mesa; 2) amasa pulsando tres veces; 3) coge la masa y dale forma en el molde que toque…',
         '…los moldes están en la encimera de ABAJO. 4) Mete la figura en un horno de la DERECHA, pero cuidado, ¡si la dejas de más se quema!; 5) tráemela a la ventanilla, donde estoy yo.',
@@ -77,6 +75,8 @@ export class HornoScene extends Phaser.Scene {
         '¡Y cuidado con Manteca2 y los owitos pinches, que se pasean por en medio y no se apartan!',
         'Buena suerte, y no la caguéis. …Ay, no. Se me está pegando.',
       ]);
+      await UI.say('Manteca2', '¡Que gane la mejor drag queen!');
+      await UI.say('Mantecas', '…¿Y esto qué tiene que ver con los mazapanes?');
       this.lock = false;
     })();
   }

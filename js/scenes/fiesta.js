@@ -30,11 +30,11 @@ export class FiestaScene extends Phaser.Scene {
     cam.setBackgroundColor('#1a1412').fadeIn(600);
     UI.hud(false); UI.minibar(null);
     Sound.music(null);
-    for (let y = 0; y < 12; y++) for (let x = 0; x < 20; x++) this.add.image(x * 16, y * 16, y === 0 ? 'tile_V' : y === 1 ? 'tile_W' : 'tile_o').setOrigin(0);
+    for (let y = 0; y < 12; y++) for (let x = 0; x < 20; x++) this.add.image(x * 16, y * 16, y === 0 ? 'tile_Y' : y === 1 ? 'tile_Z' : 'tile_O').setOrigin(0);
     this.add.image(160, 150, 'rug').setScale(2);
-    this.add.image(40, 44, 'shelf').setOrigin(0.5, 1); this.add.image(290, 44, 'plant').setOrigin(0.5, 1); this.add.image(26, 66, 'bed2').setOrigin(0.5, 1);
+    this.add.image(40, 48, 'kallax_cait').setOrigin(0.5, 1); this.add.image(290, 46, 'floorlamp_cait').setOrigin(0.5, 1); this.add.image(26, 66, 'bed2').setOrigin(0.5, 1);
     [120, 160, 200].forEach((x, i) => this.add.image(x, 26, 'cuadro' + (i + 1)).setOrigin(0.5, 1));
-    this.add.image(250, 52, 'sofa_cait').setOrigin(0.5, 1);
+    this.add.image(250, 54, 'sofa_cait2').setOrigin(0.5, 1);
     this.fx = this.add.graphics().setDepth(900);
     this.deco = this.add.graphics().setDepth(120);
 

@@ -1,6 +1,6 @@
 """Genera las imágenes pixel art a partir de las fotos de "Material Insipiración".
 Uso (desde la raíz del proyecto):  python tools/make_assets.py
-Crea assets/album/*.png (Libro de los Miausis). Los regalos del gachapón se dibujan por código en js/art.js.
+Crea assets/album/*.png (Libro de los Miausis) y assets/cuadros/*.png (los cuadros de Ratencio the Rat del salón de las ratitas). Los regalos del gachapón se dibujan por código en js/art.js.
 """
 import os
 from PIL import Image, ImageOps, ImageEnhance
@@ -43,6 +43,13 @@ def main():
             W, H = im.size
             im = im.crop((int(crop[0] * W), int(crop[1] * H), int(crop[2] * W), int(crop[3] * H)))
         pixelate(im, 144, 108, 40).save(f'assets/album/{out}.png', optimize=True)
+    # Cuadros de Ratencio the Rat (salón de la ratita blanca): se ven en grande al mirarlos
+    os.makedirs('assets/cuadros', exist_ok=True)
+    for n in (1, 2):
+        # Ilustración plana: sin realzar colores y con cuantización por octree, que respeta los detalles pequeños
+        # (el ojo, el limón, la cola rosa)
+        im = ImageOps.fit(Image.open(f'{M}Cuadros ratencio the rat/ratencio{n}.jpg').convert('RGB'), (72, 72), Image.LANCZOS)
+        im.quantize(colors=24, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE).save(f'assets/cuadros/ratencio{n}.png', optimize=True)
     print('ok')
 
 

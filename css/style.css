@@ -164,6 +164,15 @@ body { display: flex; flex-direction: column; align-items: center; justify-conte
 @media (orientation: portrait) {
   body { justify-content: flex-start; }
   #touch button { background: rgba(255, 255, 255, .12); }
+  /* El juego ocupa arriba 9/16 del ancho; los mandos crecen para llenar el hueco de debajo (--dp: tamaño de la cruceta) */
+  #touch { --dp: min(58vw, calc((100dvh - 56.25vw) * 0.78), 320px); --low: max(18px, env(safe-area-inset-bottom), calc((100dvh - 56.25vw - var(--dp)) / 2)); }
+  #dpad { width: var(--dp); height: var(--dp); left: max(14px, 5vw); bottom: var(--low); }
+  #dpad .d { width: calc(var(--dp) / 3); height: calc(var(--dp) / 3); font-size: calc(var(--dp) * 0.12); border-radius: calc(var(--dp) * 0.07); }
+  #dpad .up { left: calc(var(--dp) / 3); top: 0; } #dpad .down { left: calc(var(--dp) / 3); top: calc(var(--dp) * 2 / 3); }
+  #dpad .left { left: 0; top: calc(var(--dp) / 3); } #dpad .right { left: calc(var(--dp) * 2 / 3); top: calc(var(--dp) / 3); }
+  #abtns { width: calc(var(--dp) * 0.5); height: calc(var(--dp) * 0.5); right: max(18px, 6vw); bottom: calc(var(--low) + var(--dp) * 0.25); }
+  #abtns .ab { width: calc(var(--dp) * 0.5); height: calc(var(--dp) * 0.5); font-size: calc(var(--dp) * 0.16); }
+  #touch .ico { height: calc(var(--dp) * 0.12); }
 }
 
 /* Gachapón en el menú */
@@ -208,6 +217,7 @@ body { display: flex; flex-direction: column; align-items: center; justify-conte
 #dialog-text.ruso, .ruso { font-family: 'Courier New', monospace; font-weight: 700; }
 
 #dialog-img { float: right; width: calc(13 * var(--u)); image-rendering: pixelated; margin: calc(-1 * var(--u)) 0 0 calc(2 * var(--u)); }
+#dialog-img.big { width: calc(30 * var(--u)); border: calc(0.8 * var(--u)) solid #8a5a2a; outline: calc(0.4 * var(--u)) solid var(--ink); margin-top: calc(-18 * var(--u)); }
 
 /* Pantalla final */
 #ending {

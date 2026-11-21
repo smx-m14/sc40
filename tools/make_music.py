@@ -65,8 +65,12 @@ MIDI_OPTS = {
     'capybaras': dict(roles=dict(melody=[0], bass=[3], chords=[1, 4]), melody_shift=12),
     # Fitness Bartory: 6 = melodía (4 entra en la segunda parte), 2 = bajo, 1 = arpegios
     'gym': dict(roles=dict(melody=[6, 4], bass=[2], chords=[1])),
-    # Fuxia: se salta la introducción y empieza en el tema principal (negra 38). 2 = tema, 7/5 = puente, 8 = bajo
-    'fuxia': dict(roles=dict(melody=[2, 7, 5], bass=[8], chords=[9, 3]), melody_shift=12, start_beat=38),
+    # Fuxia (music/fuxia.mid, «Moonlight Densetsu»): solo el estribillo, de «Nakitaku naru you na moonlight» a «…hato wa
+    # mangekyou»: 8 compases, desde la anacrusa sol-do-mi♭ del compás 34 (tiempo 2,5) hasta el do largo del 41. Lo de
+    # delante y la coda de después (42-45) fuera. Melodía: 5 y, cuando calla, 2 (la voz), una octava arriba. La 7 (notas
+    # largas muy agudas) va como acordes arpegiados una octava más abajo: como melodía sonaban estridentes. 8 = bajo.
+    # Acaba en do y vuelve a la anacrusa sin costura (unos 13 s).
+    'fuxia': dict(roles=dict(melody=[5, 2], bass=[8], chords=[7]), melody_shift=12, shift_all=True, chord_shift=-12, start_beat=134.5, max_beats=32),
     # Pastelería Real: 1 = melodía, 2 = contracanto, 4 = bajo, 3 = acordes
     # Castillo de Mazapán (id «pasteleria» por historia; music/pasteleria.mid). Sin la intro (compases 1-6): bucle de los
     # compases 7-52, que es justo lo que la canción repite a partir del 53 (mismo arranque), así que no tiene costura.
@@ -114,11 +118,12 @@ MIDI_OPTS = {
     # «andamios» (compases 6-21: groove y coro), pero a su tempo original (137) y con volumen normal: la de los
     # Andamios va más lenta y bajita porque acompaña al juego de ritmo (unos 28 s).
     'sweetfamosa': dict(roles=dict(melody=[1], bass=[3], chords=[0]), melody_shift=12, start_beat=20, max_beats=64, chord_shift=12),
-    # Aeroflot (music/aeroflot.mid): una versión de «Rasputin». Solo el estribillo, compases 23-42: el gancho del
-    # violín (si-si-si…) y el «Ra-ra-Rasputin, lover of the Russian queen…», que aquí lleva el piano (9), con los
-    # remates del violín (6) cuando calla; 3 = bajo; guitarra de jazz (7) y acústica (8) de acompañamiento; baterías
-    # fuera. En si menor a 128. El 42 acaba en si y vuelve al si del 23 sin costura (unos 38 s).
-    'aeroflot': dict(roles=dict(melody=[9, 6], bass=[3], chords=[7, 8]), start_beat=88, max_beats=80),
+    # Aeroflot (music/aeroflot.mid): una versión de «Rasputin». Solo el gancho del violín (compases 23-26: si-si-si…)
+    # y el estribillo «Ra-ra-Rasputin, lover of the Russian queen…» (43-50), sin las estrofas: dos trozos seguidos
+    # (segments: negra de inicio y número de negras de cada uno). Melodía: piano (9) y, cuando calla, violín (6);
+    # 3 = bajo; guitarra de jazz (7) y piano (8) de acompañamiento; baterías fuera. En si menor a 128. El estribillo acaba
+    # y vuelve al gancho, como en la canción (unos 22 s).
+    'aeroflot': dict(roles=dict(melody=[9, 6], bass=[3], chords=[7, 8]), segments=[(88, 16), (168, 32)]),
     # Mesa de guerra de los Owitos de la Inquisición (music/inquisicion.mid, «Dragon Age.mid»): 0 = caja de música
     # (melodía; lleva acordes, se toma la nota aguda), 1 = guitarra clásica (bajo y arpegios); el clavecín (2) solo
     # repite re en el ostinato, fuera. En re menor a 100. Se salta la intro, el ostinato y la parte en si♭: compases
@@ -314,6 +319,20 @@ def transcribe(file, max_steps, voice=0.30, frac=0.45, whole=False, div=2, jump=
     return song, dict(bpm=bpm, div=div, jump=jump, mlo=mlo, mid=mid, pasos=n, croma=round(sim, 3), melodia=round(voiced, 2), notas=len(mel))
 
 
+def midi_song(path, opts):
+    """MIDI → canción. Con segments=[(negra de inicio, negras), …] encadena varios trozos (para saltarse partes)."""
+    from midi_score import midi_to_song
+    opts = dict(opts)
+    segs = opts.pop('segments', None)
+    if not segs: return midi_to_song(path, **opts)
+    parts = [midi_to_song(path, start_beat=a, max_beats=n, **opts) for a, n in segs]
+    song = parts[0][0]
+    for other, _ in parts[1:]:
+        for t, o in zip(song['tracks'], other['tracks']): t['notes'] = t['notes'].rstrip() + ' ' + o['notes'].strip()
+    info = dict(parts[0][1]); info['trozos'] = len(segs); info['compases'] = sum(n for _, n in segs) / 4
+    return song, info
+
+
 def main():
     out = {}
     # Lo ya generado: si falta el audio de origen de una canción, se conserva su versión actual
@@ -325,8 +344,7 @@ def main():
     from abc_score import abc_to_song  # tools/abc_score.py
     for sid, (file, steps, *opts) in SONGS.items():
         if os.path.exists(f'music/{sid}.mid'):  # hay MIDI: conversión exacta
-            from midi_score import midi_to_song
-            song, info = midi_to_song(f'music/{sid}.mid', **MIDI_OPTS.get(sid, {}))
+            song, info = midi_song(f'music/{sid}.mid', MIDI_OPTS.get(sid, {}))
             out[sid] = song
             print(f'{sid:12s}', 'MIDI', info)
             continue

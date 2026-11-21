@@ -30,6 +30,7 @@ class BootScene extends Phaser.Scene {
 
     State.load();
     Input.init();
+    for (const ev of ['touchstart', 'pointerdown', 'keydown']) window.addEventListener(ev, () => Sound.init(), { capture: true, passive: true });
     UI.init();
     // Los textos dibujados dentro del lienzo necesitan la fuente ya cargada (si no, salen con una de sistema)
     try { await document.fonts.load('16px Pixelify'); await document.fonts.ready; } catch {}

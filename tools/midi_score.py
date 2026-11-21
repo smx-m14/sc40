@@ -110,13 +110,14 @@ def bass_from(chord_sounding, total):
     return out
 
 
-def midi_to_song(path, max_beats=None, drums_channel=9, roles=None, melody_shift=0, start_beat=None, bass_from_chords=False, bpm=None, vol=1.0, chord_shift=0, by_channel=False, beat=1):
+def midi_to_song(path, max_beats=None, drums_channel=9, roles=None, melody_shift=0, start_beat=None, bass_from_chords=False, bpm=None, vol=1.0, chord_shift=0, by_channel=False, beat=1, shift_all=False):
     """roles (opcional, para arreglos con varias pistas): dict con listas de nº de pista
          melody: pistas de melodía por orden de prioridad (si la primera calla, suena la siguiente)
          bass:   pistas del bajo
          chords: pistas de acordes; se tocan arpegiados, una nota por semicorchea
        Sin roles se reparte como un piano: pista aguda = melodía, pista grave = bajo.
-       melody_shift: semitonos que se sube o baja la melodía (p. ej. -12 si queda demasiado aguda).
+       melody_shift: semitonos que se sube o baja la melodía (p. ej. -12 si queda demasiado aguda). Solo la pista principal,
+             salvo con shift_all=True (todas las de melodía).
        bass_from_chords: el arreglo no tiene bajo; se inventa uno a partir de las pistas de acordes (ver bass_from).
        bpm: tempo al que se tocará (por defecto, el del MIDI). vol: escala el volumen de todas las voces.
        chord_shift: semitonos que se suben o bajan los acordes (p. ej. 12 si van tan graves que se pisan con el bajo).
@@ -146,7 +147,7 @@ def midi_to_song(path, max_beats=None, drums_channel=9, roles=None, melody_shift
         for s in range(total):
             top, att = None, False
             for k, (snd, sta) in enumerate(mel):
-                if snd[s]: top, att = snd[s][-1] + (melody_shift if k == 0 else 0), snd[s][-1] in sta[s]; break   # solo se transporta la pista principal
+                if snd[s]: top, att = snd[s][-1] + (melody_shift if k == 0 or shift_all else 0), snd[s][-1] in sta[s]; break   # se transporta la pista principal (o todas)
             hi.append((top, att))
             b = bas[0][s][0] if bas[0][s] else None
             lo.append((b + 12 if b is not None and b < 40 else b, b in bas[1][s]))

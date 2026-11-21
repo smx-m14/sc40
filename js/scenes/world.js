@@ -17,7 +17,7 @@ export class WorldScene extends Phaser.Scene {
 
   create() {
     const pos = State.d.pos;
-    this.beamG = null; this.gone = false; // la escena se reutiliza: nada de referencias de la visita anterior
+    this.beamG = null; this.darkR = null; this.nudgeTo = null; this.gone = false; // la escena se reutiliza: nada de referencias de la visita anterior
     const m = this.map = buildMap(pos.map);
     this.cameras.main.setBackgroundColor(m.id === 'isla' ? '#3f8fd8' : '#1a1412');
     this.drawGround();
@@ -99,6 +99,10 @@ export class WorldScene extends Phaser.Scene {
       if (o.spr && o.e.texFn) o.spr.setTexture(o.e.texFn());
       if (o.on && o.e.solid) this.solidEnts.add(o.e.tx + ',' + o.e.ty);
     }
+    // Casa de Cait con la lámpara apagada: la escena se oscurece
+    const dark = this.map.id === 'cait' && State.flag('lampOff');
+    if (dark && !this.darkR) this.darkR = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x0a0c24, 0.45).setOrigin(0).setScrollFactor(0).setDepth(9e5);
+    if (this.darkR) this.darkR.setVisible(dark);
     const party = State.d.party;
     if (this.followers.some((f, i) => f.name !== party[i])) { this.followers.forEach((f) => f.spr.destroy()); this.followers = []; }
     while (this.followers.length < party.length) {
@@ -113,6 +117,7 @@ export class WorldScene extends Phaser.Scene {
   drawBeam() {
     if (!this.map.beam) return;
     const g = this.beamG = this.beamG || this.add.graphics().setDepth(2);
+    if (this.map.id === 'ratitas' && !State.flag('grateOpen')) { g.clear(); return; } // rejilla cerrada: no hay rayo
     const { cells } = traceBeam(this.map, State.d.flags);
     const col = (mask) => beamColor(mask)[1]; // el rayo se tiñe con la mezcla de cristales atravesados
     g.clear();
@@ -198,9 +203,23 @@ export class WorldScene extends Phaser.Scene {
 
     const free = !UI.busy && !this.running && !this.gone;
     p.moving = false;
+    if (!free) { Input.nudge = null; this.nudgeTo = null; } // un toque durante un diálogo no se convierte en paso luego
     if (free) {
       State.d.time += dt;
-      const d = Input.dir();
+      let d = Input.dir();
+      // Toque corto en la cruceta táctil: un paso de una baldosa justa, hasta el centro de la siguiente
+      if (Input.nudge) {
+        const v = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[Input.nudge], t0 = this.tileOf();
+        this.nudgeTo = { x: (t0.x + v[0]) * TILE + 8, y: (t0.y + v[1]) * TILE + 12, v };
+        Input.nudge = null;
+      }
+      if (d.x || d.y) this.nudgeTo = null;
+      else if (this.nudgeTo) {
+        const g = this.nudgeTo, rx = g.x - p.x, ry = g.y - p.y;
+        if (Math.abs(rx) + Math.abs(ry) < 1 || this.blocked(p.x + g.v[0] * 2, p.y + g.v[1] * 2)) this.nudgeTo = null;
+        else d = { x: Math.sign(Math.round(rx)) || 0, y: Math.sign(Math.round(ry)) || 0 };
+        if (this.nudgeTo && Math.hypot(rx, ry) < SPEED * dt) { p.x = g.x; p.y = g.y; this.nudgeTo = null; d = { x: 0, y: 0 }; }
+      }
       if (d.x || d.y) {
         const n = Math.hypot(d.x, d.y), vx = (d.x / n) * SPEED * dt, vy = (d.y / n) * SPEED * dt;
         if (d.y) p.dir = d.y < 0 ? 'up' : 'down';
@@ -230,7 +249,18 @@ export class WorldScene extends Phaser.Scene {
 
       const target = this.findTarget();
       this.bubble.setVisible(!!target);
-      if (target) this.bubble.setPosition(Math.round(target.cx), Math.round((target.spr ? target.spr.y - target.spr.height : target.cy - 6) - 1 + Math.sin(time / 200)));
+      if (target) {
+        // Normalmente encima de lo que se puede usar; si ahí quedaría tapada por el borde de arriba o por el marcador
+        // (cosas colgadas en la pared de arriba, como cuadros), sale a un lado, a media altura (derecha, o izquierda si no cabe)
+        const bob = Math.sin(time / 200), top = (target.spr ? target.spr.y - target.spr.height : target.cy - 6) - 1;
+        const view = this.cameras.main.worldView;
+        if (top - 12 >= view.y + 16) this.bubble.setPosition(Math.round(target.cx), Math.round(top + bob));
+        else {
+          const half = target.spr ? target.spr.width / 2 : 8, midY = target.spr ? target.spr.y - target.spr.height / 2 : target.cy;
+          const right = target.cx + half + 14 < view.right;
+          this.bubble.setPosition(Math.round(target.cx + (right ? half + 6 : -half - 6)), Math.round(midY + 6 + bob));
+        }
+      }
       if (Input.take('a') && target && !this.running) { Sound.sfx('ok'); this.run(target.e.script, target); }
       if (Input.take('b')) UI.toggleMenu(true);
 

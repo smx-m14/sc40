@@ -93,7 +93,7 @@ export class RitmoScene extends Phaser.Scene {
     return { kind: CYCLE[b % CYCLE.length], b, start: this.t0 + b * BAR };
   }
   // Retraso de la salida de audio: el jugador pulsa con lo que OYE, que suena un poco después de lo programado
-  latency() { const c = Sound.ctx; return c ? ((c.baseLatency || 0) + (c.outputLatency || 0)) * 1000 : 0; }
+  latency() { const c = Sound.ctx; return c ? Math.min(90, ((c.baseLatency || 0) + (c.outputLatency || 0)) * 1000) : 0; } // tope: en móvil a veces informa de cientos de ms
 
   // Fundamental (0–11) del acorde que suena en la canción en el instante ms (la canción arranca en t0 y se repite)
   rootAt(ms) {
@@ -182,7 +182,7 @@ export class RitmoScene extends Phaser.Scene {
       if (Input.take('a')) {
         const t = (Input.t.a || now) - this.latency();
         // se admite el primer golpe un pelín adelantado (al final de la cuenta) y el último algo tarde
-        const early = ph.kind === 'count2' && ph.start + BAR - t <= WIN;
+        const early = ph.kind === 'count2' && ph.start + BAR - t <= WIN + 60; // el primer golpe, con algo más de margen
         if (ph.kind === 'resp' || early || (ph.kind === 'rest' && now - ph.start < WIN)) {
           const start = ph.kind === 'resp' ? ph.start : early ? ph.start + BAR : ph.start - BAR;
           this.presses.push(t);

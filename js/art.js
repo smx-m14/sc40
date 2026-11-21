@@ -479,6 +479,14 @@ export function makeTiles() {
   mk('W', 14, '#e8d5b0', (p) => { p.rect(0, 12, 16, 4, '#8a5a2a').rect(0, 11, 16, 1, '#6e4520'); for (let x = 3; x < 16; x += 6) p.rect(x, 2, 1, 7, '#decaa0'); });
   mk('V', 26, '#e8d5b0', (p) => { for (let x = 3; x < 16; x += 6) p.rect(x, 5, 1, 9, '#decaa0'); p.rect(0, 0, 16, 2, '#d6c098'); }); // pared alta (sin zócalo)
   mk('x', 15, '#1a1412');
+  // Casa de Cait (según las fotos del piso real): tarima de roble claro y paredes blancas con zócalo blanco
+  mk('O', 31, '#dcc29a', (p) => {
+    for (let y = 3; y < 16; y += 4) p.rect(0, y, 16, 1, '#c9ab80');
+    p.rect(4, 0, 1, 3, '#c9ab80').rect(11, 4, 1, 3, '#c9ab80').rect(7, 8, 1, 3, '#c9ab80').rect(14, 12, 1, 3, '#c9ab80');
+    p.px('#e6d0ad', [1, 1], [9, 5], [3, 9], [12, 13]);
+  });
+  mk('Y', 32, '#f2ede2', (p) => { p.rect(0, 0, 16, 2, '#e4ddcd'); });                                   // pared alta
+  mk('Z', 33, '#f2ede2', (p) => { p.rect(0, 12, 16, 4, '#ffffff').rect(0, 11, 16, 1, '#d8d0bf').rect(0, 15, 16, 1, '#d8d0bf'); }); // zócalo blanco
   mk('k', 16, '#cdb38a', (p, r) => { p.speck(r, 8, '#c2a77c'); p.rect(0, 15, 16, 1, '#bfa377').rect(15, 0, 1, 16, '#bfa377'); });
   mk('K', 17, '#7d6a5c', (p) => {
     p.rect(0, 0, 16, 2, '#96826f');
@@ -628,6 +636,16 @@ function shape(k, c) { // o naranja · f fresa · p pera · b plátano
   return p.outline(INK);
 }
 // Globo de fiesta (de los normales, no aerostático): cuerpo ovalado con brillo y nudito; (x, y) = centro
+function flowerpot(c) {
+  const p = new PX(11, 13);
+  p.rect(2, 8, 7, 4, '#c96a10').rect(1, 7, 9, 2, '#f08a24').rect(3, 12, 5, 1, '#a8560c');        // tiesto
+  p.ell(5.5, 6, 4.2, 2.2, '#3f9f4f').px('#5ec46a', [2, 6], [8, 6]);                               // hojas
+  for (const [x, y] of [[3, 3], [8, 3], [5.5, 5]]) {                                               // tres flores
+    const X = Math.round(x);
+    p.px(c, [X - 1, y], [X + 1, y], [X, y - 1], [X, y + 1]).px('#ffe066', [X, y]);
+  }
+  return p.outline(INK);
+}
 function banner(c, dark, flip) {
   const p = new PX(15, 24);
   p.rect(2, 2, 2, 22, '#6e4520').rect(3, 2, 1, 22, '#8a5a2a').rect(1, 0, 4, 2, '#ffd23f');           // mástil y remate
@@ -819,6 +837,24 @@ const OBJ = {
   gem_r: () => gemArt('#e2574c', '#f7a8a0'), gem_b: () => gemArt('#3f6fd0', '#9fc0f7'), gem_y: () => gemArt('#e8b820', '#fff0a0'), gem_g: () => gemArt('#3f9f4f', '#a8e8a0'),
   cup() { return new PX(8, 8).rect(1, 2, 5, 5, '#f4f4ee').rect(1, 2, 5, 1, '#6e4520').px('#f4f4ee', [6, 3], [7, 4], [6, 5]).px('#3f8fd8', [2, 4], [4, 5]).outline(INK); },
   cushion() { return new PX(11, 9).ell(5.5, 4.5, 4.6, 3.4, '#f06aa8').px('#f7a8c0', [3, 3], [4, 2]).px('#c8407c', [5, 4], [6, 5]).outline(INK); },
+  // Cuadros de Ratencio the Rat en la pared del salón de las ratitas (en grande: assets/cuadros/ratencio*.png)
+  ratencio_1() { // sentado, mirando un limón, sobre fondo lila
+    const p = new PX(16, 20).rect(0, 0, 16, 20, '#8a5a2a').rect(1, 1, 14, 18, '#7a78d0').rect(1, 1, 14, 1, '#e8b820');
+    p.ell(7, 13, 4.2, 3.6, '#8a6a46').ell(7, 14.4, 3, 2.1, '#b08f62');                          // cuerpo y barriga
+    p.ell(8.5, 8, 2.6, 2.2, '#7a5a3a').ell(6.3, 6.8, 1.1, 1.1, '#4a3626').px('#7a5a3a', [9, 5], [10, 5]); // cabeza, oreja y tupé
+    p.px('#ffffff', [8, 7], [9, 7]).px('#1a1412', [9, 7]).ell(11.2, 8.7, 1, 0.9, '#1a1412');      // ojo y nariz
+    p.px('#f0a8b0', [6, 12], [5, 17], [9, 17], [4, 17], [3, 18], [5, 18], [6, 18], [7, 18], [8, 18]); // mano, patas y cola
+    p.ell(13, 16.2, 1.3, 0.9, '#ffe066').px('#5aa648', [14, 15]);                              // el limón
+    return p.outline(INK);
+  },
+  ratencio_2() { // de chef, con su espátula, sobre fondo naranja
+    const p = new PX(16, 20).rect(0, 0, 16, 20, '#8a5a2a').rect(1, 1, 14, 18, '#f59a4a').rect(1, 1, 14, 1, '#e8b820');
+    p.ell(7, 13.6, 4.2, 3.4, '#fbf6ea').px('#9a9a92', [8, 12], [8, 14]).px('#6e4a30', [5, 17], [9, 17]); // chaqueta y patas
+    p.ell(8, 8.4, 2.4, 2, '#6e4a30').px('#ffffff', [7, 8], [8, 8]).px('#1a1412', [8, 8]).ell(10.4, 9.2, 0.9, 0.8, '#1a1412');
+    p.ell(7.5, 3.6, 2.8, 1.6, '#ffffff').rect(5, 4, 5, 2, '#ffffff').rect(6, 6, 4, 1, '#e8e2d6'); // gorro de chef
+    p.line(12, 9, 12, 14, '#9aa0aa').rect(11, 7, 3, 2, '#c9ced8').px('#f0a8b0', [12, 13], [3, 18], [4, 18], [5, 18]); // espátula y cola
+    return p.outline(INK);
+  },
   frame() { return new PX(12, 11).rect(1, 1, 10, 9, '#8a5a2a').rect(2, 2, 8, 7, '#bfe3f7').rect(2, 6, 8, 3, '#82cc6a').px('#ffe066', [8, 3]).outline(INK); },
   ...Object.fromEntries(['#e2574c', '#3f9f4f', '#3f6fd0', '#e8b820', '#f06aa8'].flatMap((c, i) => [[`lamp_${i}_on`, () => lampArt(c, true)], [`lamp_${i}_off`, () => lampArt(c, false)]])),
   kai_sleep() {
@@ -847,7 +883,65 @@ const OBJ = {
     return p.outline(INK);
   },
   sofa: () => sofa('#c8402c', '#e2574c', '#b83b33'),
-  sofa_cait: () => sofa('#7d8ca6', '#93a3bc', '#6f7e98'), // sofá azul de Cait (#93A3BC)
+  sofa_cait: () => sofa('#7d8ca6', '#93a3bc', '#6f7e98'), // sofá azul de Cait (#93A3BC): la fiesta
+  // Casa de Cait, según las fotos: sofá largo gris azulado con cojines de rombos y una manta beige por encima
+  sofa_cait2() {
+    const p = new PX(48, 22), BK = '#6f8590', ST = '#86a0ab', AR = '#62767f';
+    p.rect(1, 1, 46, 11, BK).rect(1, 9, 46, 9, ST).rect(1, 6, 4, 12, AR).rect(43, 6, 4, 12, AR).rect(23, 9, 1, 9, AR);
+    p.rect(1, 9, 46, 1, '#9db5bf').rect(3, 18, 2, 3, '#4a3626').rect(43, 18, 2, 3, '#4a3626');
+    for (const x of [9, 16]) { // cojines de gatolleta (los de rombos negro y beige del sofá real)
+      p.rect(x, 4, 6, 6, '#2b2826');
+      for (let k = 0; k < 6; k++) p.px('#d8c8a8', [x + k, 4 + k], [x + 5 - k, 4 + k]);
+    }
+    p.rect(33, 5, 7, 5, '#7a919c').px('#9db5bf', [34, 5], [35, 5]);                       // cojín liso
+    p.rect(36, 8, 9, 10, '#c9a77c').rect(36, 8, 9, 1, '#dcc09a').rect(38, 18, 6, 2, '#c9a77c').px('#b08e66', [38, 11], [41, 13], [39, 15]); // manta
+    return p.outline(INK);
+  },
+  coffee_cait() { // mesa de centro oscura (wengué) con los mandos encima
+    const p = new PX(30, 16);
+    p.rect(1, 3, 28, 4, '#3a2c26').rect(1, 3, 28, 1, '#4e3d35').rect(2, 7, 3, 8, '#2c211c').rect(25, 7, 3, 8, '#2c211c').rect(5, 11, 20, 2, '#2c211c');
+    p.rect(8, 4, 5, 1, '#14151a').rect(15, 4, 4, 1, '#14151a').px('#e2574c', [20, 4]);
+    return p.outline(INK);
+  },
+  tvunit_cait() { // mueble blanco bajo de cubos con la tele plana negra encima
+    const p = new PX(34, 34);
+    p.rect(1, 22, 32, 11, '#f4f2ec').rect(1, 22, 32, 1, '#ffffff');
+    for (const x of [3, 11, 19, 27]) p.rect(x, 24, 6, 8, '#d9d4c8');
+    p.rect(4, 28, 4, 4, '#2b2826').rect(12, 27, 4, 5, '#f7a8c0').rect(13, 26, 2, 1, '#f7a8c0').rect(20, 27, 5, 5, '#ffd23f').rect(28, 29, 4, 3, '#3f8fd8'); // consola, peluches y juegos
+    p.rect(3, 2, 28, 16, '#14151a').rect(4, 3, 26, 14, '#20232c').px('#3a4050', [6, 5], [7, 5], [6, 6]).rect(15, 18, 4, 2, '#14151a').rect(12, 20, 10, 1, '#14151a');
+    return p.outline(INK);
+  },
+  kallax_cait() { // estantería alta blanca de cubos llena de peluches, con el mono colgado arriba
+    const p = new PX(20, 44);
+    p.rect(1, 6, 18, 37, '#f4f2ec');
+    for (let r = 0; r < 4; r++) for (const x of [2, 10]) p.rect(x, 8 + r * 9, 7, 7, '#d9d4c8');
+    const P = ['#f7a8c0', '#ffd23f', '#e8c08a', '#c8a2e0', '#f0a070', '#8fd070', '#ffffff', '#e2574c'];
+    for (let r = 0; r < 4; r++) for (const [i, x] of [[0, 3], [1, 11]]) { const c = P[(r * 2 + i) % P.length]; p.ell(x + 2.5, 12 + r * 9, 2.6, 2.2, c).px('#1a1412', [x + 1, 11 + r * 9], [x + 3, 11 + r * 9]); }
+    p.ell(6, 3, 2.2, 2, '#8a5a2a').ell(6, 3.4, 1.2, 1, '#e8c08a').line(4, 5, 3, 9, '#8a5a2a').line(8, 5, 10, 8, '#8a5a2a'); // el mono
+    p.rect(13, 1, 3, 5, '#14151a').rect(14, 0, 1, 1, '#c9a77c');                                  // botella negra (como en las fotos)
+    return p.outline(INK);
+  },
+  window_cait() { // ventanal a la terraza: toldo de rayas, árboles y plantas
+    const p = new PX(36, 30);
+    p.rect(0, 0, 36, 30, '#d8d0bf').rect(2, 2, 32, 26, '#bfe3f7');
+    p.ell(9, 13, 7, 6, '#7fb069').ell(26, 11, 8, 7, '#8fc070').rect(2, 18, 32, 10, '#c9b8a0').rect(2, 18, 32, 2, '#5a7d8a');
+    for (const x of [5, 12, 21, 28]) p.ell(x, 20, 2.4, 2.2, '#3f9f4f').rect(x - 2, 22, 4, 3, '#b06030');
+    p.px('#f06aa8', [12, 19], [28, 19]).px('#ffd23f', [5, 19]);
+    for (const x of [8, 31]) p.px('#ffffff', [x, 15], [x - 1, 16], [x + 1, 16], [x, 17]).px('#e8f4ff', [x, 16]).line(x, 18, x, 19, '#9aa0aa'); // molinillos que reflejan
+    for (let x = 2; x < 34; x += 4) p.rect(x, 2, 2, 3, '#3a4a5a').rect(x + 2, 2, 2, 3, '#f2ede2');   // toldo
+    p.rect(17, 2, 2, 26, '#d8d0bf');                                                               // marco central
+    return p.outline(INK);
+  },
+  floorlamp_cait() { // lámpara de pie negra con la luz encendida
+    const p = new PX(12, 34);
+    p.ell(6, 4, 4.5, 3, '#fff3c0').ell(6, 4, 3, 2, '#ffffff').rect(5, 6, 2, 26, '#2b2826').rect(2, 31, 8, 2, '#2b2826');
+    return p.outline(INK);
+  },
+  floorlamp_cait_off() { // la misma, apagada
+    const p = new PX(12, 34);
+    p.ell(6, 4, 4.5, 3, '#c9c2a8').ell(6, 4, 3, 2, '#d8d2bc').rect(5, 6, 2, 26, '#2b2826').rect(2, 31, 8, 2, '#2b2826');
+    return p.outline(INK);
+  },
   // Cuadros de la pared de Cait, en el mismo orden que los originales
   cuadro1: () => cuadro(1), cuadro2: () => cuadro(2), cuadro3: () => cuadro(3),
   stand: () => stand(0),
@@ -859,6 +953,12 @@ const OBJ = {
     return p.outline(INK);
   },
   hatch_open() { return new PX(16, 16).ell(8, 8, 7, 6.5, '#8a8f9a').ell(8, 8, 5.5, 5, '#0c0c10').px('#8a5a2a', [6, 5], [6, 7], [6, 9], [9, 5], [9, 7], [9, 9], [7, 6], [8, 6], [7, 8], [8, 8]).outline(INK); },
+  grate_shut() { // la rejilla del techo, con la trampilla cerrada: no entra luz
+    const p = new PX(12, 10);
+    p.rect(0, 0, 12, 10, '#3a3d46').rect(1, 1, 10, 8, '#5a5e6a');
+    for (let x = 3; x < 11; x += 3) p.rect(x, 1, 1, 8, '#3a3d46');
+    return p.px('#8a8f9a', [10, 5]);
+  },
   grate() {
     const p = new PX(12, 10);
     p.rect(0, 0, 12, 10, '#3a3d46').rect(1, 1, 10, 8, '#fff6b0');
@@ -1309,6 +1409,8 @@ const OBJ = {
     p.ell(24, 15, 23, 14, '#e2574c').ell(24, 15, 19, 10.5, '#f6c56b').ell(24, 15, 14, 7, '#e2574c');
     return p;
   },
+  // Tiestos con flores (más pequeños que las plantas): salón de la ratita blanca. Tres colores de flor.
+  flowerpot_r: () => flowerpot('#e2574c'), flowerpot_y: () => flowerpot('#ffd23f'), flowerpot_p: () => flowerpot('#f06aa8'),
   plant() { return new PX(12, 20).rect(3, 13, 6, 6, '#c96a10').rect(2, 12, 8, 2, '#f08a24').ell(6, 7, 5, 5.5, '#2f8f4a').ell(4.5, 5, 2, 2, '#45a85c').outline(INK); },
   shelf() {
     const p = new PX(32, 26);

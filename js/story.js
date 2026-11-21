@@ -23,9 +23,10 @@ export function hint() {
   if (!S.flag('tigrito')) return 'En el bosque del noreste unos monos no dejan pasar a nadie. Dicen que se han llevado a Tigrito.';
   if (!S.flag('caveOpen')) return 'Pasado el bosque hay una cueva tapada por un derrumbe. Lolete cava como nadie.';
   if (!(S.flag('r1') && S.flag('r2') && S.flag('r3'))) return 'Al otro lado de la cueva está el Apartamento de las Ratitas. Cada ratita guarda un espejo y un número.';
+  if (!S.flag('kai') && !S.flag('grateOpen')) return 'En el pasillo del apartamento hay una rejilla en el techo. Si se abriera, entraría el sol.';
   if (!S.flag('kai')) return 'Kai duerme delante de la puerta del último cuarto. Con los tres espejos se puede llevar el rayo de sol hasta su hocico' + ((S.d.flags.kaiCols || []).length >= 3 ? '… pero tiene que llegarle lila.' : '. Prueba a pasarlo por los cristales.');
   if (!S.flag('cuy')) return 'Al fondo del apartamento vive el cuarto roedor. Tiene una pregunta sobre Cuca.';
-  if (!S.flag('hatchOpen')) return 'El candado de la alcantarilla tiene cuatro cifras. La última está escrita en ruso: la nevera ayuda.';
+  if (!S.flag('hatchOpen')) return 'La alcantarilla del pasillo tiene un candado de cuatro cifras. ¿Y esos números que te dieron en el apartamento? El último está en ruso: la nevera ayuda.';
   if (!S.flag('cuyTemple')) return 'Lleva a Cuy al Templo de los Sabios: por fin alguien puede traducir a Cuca.';
   if (!S.flag('pato')) return 'En el Castillo de Mazapán, los capybaras no se atreven a entrar en su estanque: algo hace «cuac» entre los juncos.';
   if (!S.flag('simon')) return 'Los Owitos del Teatro Real no pueden ensayar sin Tigrito.';
@@ -53,22 +54,23 @@ const RUSO = [
   'Матрёшка? Нет. Сосиска? Да, да, да!',
 ];
 
-// Preguntas de la paella. Solo valen: arroz, pollo, conejo, batxoqueta, garrofó, tomate, aceite, azafrán, sal y agua.
+// Preguntas de la paella. Solo valen: arroz, pollo, conejo, bachoqueta, garrofón, tomate, aceite, azafrán, sal y agua.
+// Perrunfli parla en valencià; les respostes (el que tria Colgadín) van en castellà.
 const PAELLA = [
-  { q: 'Empezamos fácil. ¿Qué es lo primero que cae en la paella?', ok: 'Aceite de oliva',
-    bad: { Mantequilla: '¿Mantequilla? Esto es una paella, no un cruasán.', Mayonesa: 'Mayonesa… Voy a hacer como que no he oído nada.' } },
-  { q: 'Ahora la carne. ¿Cuál echamos?', ok: 'Pollo y conejo',
-    bad: { Chorizo: '¡¿CHORIZO?! Eso es «arroz con cosas». En Valencia se acaba de desmayar alguien.', 'Salchichas': 'Salchichas. En la paella. Lolete, tápate las orejas.' } },
-  { q: 'La verdura. Piénsalo bien.', ok: 'Batxoqueta y garrofó',
-    bad: { Guisantes: 'Los guisantes, a la menestra. Siguiente intento.', Nabos: '¡Que los nabos NO SE TOCAN! Ni los martes ni nunca.' } },
-  { q: '¿Y qué se sofríe con la carne y la verdura?', ok: 'Tomate rallado',
-    bad: { Cebolla: 'La cebolla ablanda el arroz. Y mi paciencia.', 'Pimiento rojo': 'El pimiento es para las paellas de las postales.' } },
-  { q: 'El color y el aroma. ¿De dónde salen?', ok: 'Azafrán',
-    bad: { Cúrcuma: 'Casi amarillo, casi correcto, totalmente mal.', 'Rotulador amarillo': 'Creativo. Pero no.' } },
-  { q: '¿Le ponemos algo del mar?', ok: 'Nada: solo sal y agua',
-    bad: { Gambas: 'Eso es otro plato. Muy rico, pero otro plato.', Mejillones: 'Mejillones… ¿Tú has venido a provocar?' } },
-  { q: 'Y la última, la más importante. ¿Qué es lo que NO puede faltar?', ok: 'Arroz',
-    bad: { Fideos: 'Eso es fideuà, y se hace otro día.', Cuscús: 'Me voy a sentar un momento.' } },
+  { q: 'Comencem fàcil. Què és el primer que tirem a la paella?', ok: 'Aceite de oliva',
+    bad: { Mantequilla: 'Mantega? Açò és una paella, no un croissant.', Mayonesa: 'Maionesa… Faré com si no haguera sentit res.' } },
+  { q: 'Ara la carn. Quina tirem?', ok: 'Pollo y conejo',
+    bad: { Chorizo: 'XORIÇO?! Això és «arròs amb coses». A València s\'acaba d\'esvanir algú.', 'Salchichas': 'Salsitxes. A la paella. Lolete, tapa\'t les orelles.' } },
+  { q: 'La verdura. Pensa-ho bé.', ok: 'Bachoqueta y garrofón',
+    bad: { Guisantes: 'Els pésols, a la menestra. Següent intent.', Nabos: 'Que els naps NO ES TOQUEN! Ni els dimarts ni mai.' } },
+  { q: 'I què es sofregix amb la carn i la verdura?', ok: 'Tomate rallado',
+    bad: { Cebolla: 'La ceba estova l\'arròs. I la meua paciència.', 'Pimiento rojo': 'El pebrot és per a les paelles de postal.' } },
+  { q: 'El color i l\'aroma. D\'on ixen?', ok: 'Azafrán',
+    bad: { Cúrcuma: 'Quasi groc, quasi correcte, totalment malament.', 'Rotulador amarillo': 'Creatiu. Però no.' } },
+  { q: 'Li posem alguna cosa de la mar?', ok: 'Nada: solo sal y agua',
+    bad: { Gambas: 'Això és un altre plat. Molt bo, però un altre plat.', Mejillones: 'Musclos… Tu has vingut a provocar?' } },
+  { q: 'I l\'última, la més important. Què és el que NO pot faltar?', ok: 'Arroz',
+    bad: { Fideos: 'Això és fideuà, i es fa un altre dia.', Cuscús: 'M\'assec un moment.' } },
 ];
 
 // Bart habla MUCHO. Es así.
@@ -112,7 +114,8 @@ export const SCRIPTS = {
       '¡Hoy es el gran día! ¡Cait cumple 40 años!',
       'Voy a prepararle la mejor fiesta sorpresa que se haya visto en la isla.',
       'A ver… hacen falta invitados, música, luces… ¡y una tarta enorme!',
-      'Lo primero: las invitaciones. Las dejé encima de la mesa.',
+      'Lo primero: las invitaciones…',
+      '…¿Y eso? Encima de la mesa hay un montón de invitaciones. Yo no las he hecho… ¿O sí?',
     ]);
     S.set('intro');
   },
@@ -124,14 +127,26 @@ export const SCRIPTS = {
       '(En el dibujo, Cait tiene siete dedos en cada mano y sonríe con tres filas de dientes.)',
     ]);
     S.set('invites');
-    await UI.say(C, '¡Perfectas! Ahora, a repartirlas por toda la isla.');
+    await UI.say(C, ['No sé quién las habrá dejado aquí, pero son justo lo que necesitaba.', '¡A repartirlas por toda la isla!']);
   },
-  async bed() { await UI.say(C, 'La cama de matrimonio de Cait. Hoy no hay tiempo para siestas… bueno, quizá luego.'); },
-  async sofa() { await UI.say(C, 'El sofá azul de Cait. Tiene la forma exacta de alguien que ve series hasta muy tarde.'); },
-  async cuadros() { await UI.say('', ['Tres cuadros colgados en la pared: Bulbasaur bajo un cerezo en flor, Squirtle flotando entre juncos y Charmander enroscado en una rama.', 'Cada uno lleva su nombre escrito en japonés, de arriba abajo.']); },
-  async shelf() { await UI.say(C, 'La estantería de Cait: videojuegos, mangas y un hueco perfecto para un regalo.'); },
+  async bed() { await UI.say(C, ['La cama de Cait. Hará falta una escalera para subirse.', 'De momento no hay tiempo para siestas… bueno, quizá luego.']); },
+  async sofa() { await UI.say(C, 'El sofá de Cait, gris azulado, con sus cojines de gatolleta y la manta beige.'); },
+  async coffeeCait() { await UI.say(C, 'La mesita de centro. Tres mandos a distancia y ninguno sabe exactamente qué enciende.'); },
+  async tvCait() { await UI.say(C, ['La tele de Cait, con cientos de consolas debajo. En el mueble, unos cuantos peluches vigilan quién tiene el mando.', 'Y una selección de juegos de mesa para las noches de insomnio de Mindeos.']); },
+  async lampCait(scene) {
+    const off = !S.flag('lampOff');
+    S.set('lampOff', off);
+    Sound.sfx('step');
+    scene.sync();
+    if (!off) return; // al encenderla, sin comentarios
+    const n = S.d.flags.mimir = (S.d.flags.mimir || 0) + 1;
+    await UI.say(C, n === 1 ? 'A mimir.' : n === 2 ? 'Two mimir.' : 'Enough mimir, ¡hay una fiesta que preparar!');
+  },
+  async ventanaCait() { await UI.say(C, ['Desde la ventana se ve a la vecina asomada… y unos molinillos para espantar palomas.', '¿Por qué tienen que reflejar tanto?']); },
+  async cuadros() { await UI.say('', ['Tres pósters: Bulbasaur, Squirtle y Charmander.', '¡En este juego no hay que elegir a nadie!']); },
+  async shelf() { await UI.say(C, ['La estantería de Cait: peluches en cada hueco, juegos de mesa y un mono colgado de lo más alto.', 'Ya no cabe ni uno más. Con razón le va regalando peluches a la vecina.']); },
   async exitCait(scene) {
-    if (!S.flag('invites')) { await UI.say(C, '¡Espera! No puedo irme sin las invitaciones. Están en la mesa.'); return false; }
+    if (!S.flag('invites')) { await UI.say(C, '¡Espera! Antes, esas invitaciones de la mesa. No puedo irme sin ellas.'); return false; }
     scene.warp('isla', 22, 11, 'down');
     return true;
   },
@@ -217,7 +232,18 @@ export const SCRIPTS = {
       '(Cualquier parecido con «Apartamento para tres» es imposible: esa sitcom solo se emite en la cabeza de Cait y no pasó del episodio piloto.)',
     ]);
   },
-  async grate() { await UI.say('', ['Por la rejilla del techo se cuela un rayo de sol que cae recto hasta el suelo. Si algo lo desviara…', 'Por el pasillo hay once pedestales vacíos, tres espejos atornillados al suelo que no se pueden mover y cuatro cristales de color: rojo, azul, amarillo y verde.']); },
+  async grate(scene) {
+    if (!S.flag('grateOpen')) {
+      await UI.say('', 'Una rejilla en el techo, con la trampilla cerrada. Por las rendijas se adivina que fuera hace sol.');
+      if (await UI.choose(C, '¿La abro?', ['Abrir la rejilla', 'Mejor no']) !== 0) return;
+      S.set('grateOpen');
+      Sound.sfx('get');
+      scene.sync();
+      scene.drawBeam();
+    }
+    return SCRIPTS.grateLight();
+  },
+  async grateLight() { await UI.say('', ['Por la rejilla del techo se cuela un rayo de sol que cae recto hasta el suelo. Si algo lo desviara…', 'Por el pasillo hay once pedestales vacíos, tres espejos atornillados al suelo que no se pueden mover y cuatro cristales de color: rojo, azul, amarillo y verde.']); },
   async kaiSleep() {
     await UI.say('', [
       'Kai, el gato negro, duerme atravesado delante de la puerta del último cuarto. Ronca como una moto.',
@@ -245,6 +271,7 @@ export const SCRIPTS = {
     else { f[ent.id] = 0; Sound.sfx('undo'); UI.toast('{mirror} Recoges el espejo del pedestal'); }
     S.save();
     scene.sync();
+    if (!S.flag('grateOpen')) return; // sin la rejilla abierta no hay luz que reflejar
     const b = traceBeam(scene.map, f);
     if (!b.hit) return;
     await new Promise((r) => scene.time.delayedCall(500, r));
@@ -280,13 +307,17 @@ export const SCRIPTS = {
     Sound.sfx('rep');
     if (cheeseStep < ORDER.length) return UI.say('', `Ñam. (${cheeseStep} de ${ORDER.length})`);
     await UI.say('', 'ÑAM. ¡Los cinco, y en el orden de la casa!');
-    await roomDone(1, 'Ratita gris', 'Así da gusto. Toma: mi espejo de mano. Y apunta: la primera cifra del candado es el 1.');
+    await roomDone(1, 'Ratita gris', [
+      'Así da gusto. Toma: mi espejo de mano.',
+      'Y apunta este número, que quizá te sea útil en el futuro. Es el primero de cuatro: impar, el más pequeño de todos los impares… y si lo multiplicas por sí mismo, se queda tal cual.',
+      '…Qué obsesión tengo con esto de los pares y los impares.',
+    ]);
   },
   async ratitaP() {
-    if (S.flag('r1')) return UI.say('Ratita gris', 'La primera cifra es el 1. Y los quesos, primero los pares; los impares, al revés.');
+    if (S.flag('r1')) return UI.say('Ratita gris', ['El primer número: el impar más pequeño. El que, multiplicado por sí mismo, se queda tal cual.', 'Ay, otra vez los pares y los impares. No lo puedo evitar.']);
     await UI.say('Ratita gris', [
       '¡Iiik! Bienvenido al Apartamento de las Ratitas. Aquí vivimos cuatro roedores. Y un gato, pero ese no paga alquiler.',
-      '¿El candado de la alcantarilla? Cada una sabemos una cifra. La mía te la digo si demuestras buenos modales en la mesa.',
+      'Cada una de nosotras guarda un número. El mío te lo digo si demuestras buenos modales en la mesa.',
       'En mi cocina hay cinco quesos, todos de tamaño distinto. Ordénalos en la cabeza de pequeño a grande.',
       'Las normas de la casa: primero se muerden los que ocupan puesto PAR, de menor a mayor. Después los de puesto IMPAR, pero al revés.',
       'Si te equivocas, se empieza otra vez. Y fíjate bien, que algunos se parecen mucho.',
@@ -294,27 +325,33 @@ export const SCRIPTS = {
   },
   async ratitaO() {
     const R = 'Ratita blanca';
-    if (S.flag('r2')) return UI.say(R, 'La segunda cifra es el 9. Y ahora calla, que empieza el capítulo. (La tele sigue apagada.)');
+    if (S.flag('r2')) return UI.say(R, 'El segundo número es el 9. Y ahora calla, que empieza el capítulo. (La tele sigue apagada.)');
     await UI.say(R, [
       '¡Chsss! Estoy viendo «Apartamento para tres». Sí, con la tele apagada: esa serie solo existe en la cabeza de Cait y no pasó del piloto.',
-      'En los anuncios, que son todos, me entretengo contando lo que hay en mi salón. Mi cifra del candado sale de una cuenta.',
+      'En los anuncios, que son todos, me entretengo contando lo que hay en mi salón. Mi número sale de una cuenta.',
       'Multiplica los COJINES ROSAS por las TAZAS. Al resultado súmale los CUADROS. Y a eso réstale las PLANTAS.',
       'Cuenta solo lo de este cuarto. Y mira bien por los rincones, que soy muy desordenada.',
     ]);
     const n = await UI.code('Cojines rosas × tazas + cuadros − plantas =', 2);
     if (n === null) return;
     if (+n !== 9) { Sound.sfx('bad'); return UI.say(R, `¿${+n}? ¡Meeec! Risas enlatadas. Cuenta otra vez, despacito.`); }
-    await roomDone(2, R, '¡Nueve! Dos cojines rosas por cinco tazas, más dos cuadros, menos tres plantas. Toma mi espejo. La segunda cifra es el 9.');
+    await roomDone(2, R, '¡Nueve! Dos cojines rosas por cinco tazas, más dos cuadros, menos tres plantas. Toma mi espejo. Y apunta: el segundo número es el 9. Quizá te sea útil algún día.');
+  },
+  async ratencio(scene, ent) {
+    const n = (ent && ent.n) || 1;
+    await UI.say('', n === 1
+      ? ['Un cuadro de Ratencio the Rat. Mira un limón con muchísima desconfianza.', '(El limón no ha hecho nada. De momento.)']
+      : ['Otro cuadro de Ratencio the Rat, esta vez de chef, espátula en mano.', 'Dicen que cocina de maravilla. Sin limón, eso sí.'], { img: `assets/cuadros/ratencio${n}.png`, big: true });
   },
   async tv() { await UI.say('', 'La tele está apagada. En la pantalla solo se refleja una ratita blanca riéndose de un chiste que nadie ha contado.'); },
   async ratitaB(scene) {
     const R = 'Ratita parda';
-    if (S.flag('r3')) return UI.say(R, 'La tercera cifra es el 8. Y gracias por la luz: ya puedo dormir.');
+    if (S.flag('r3')) return UI.say(R, 'El tercer número es el 8. Y gracias por la luz: ya puedo dormir.');
     if (!S.flag('metRatitaB')) {
       await UI.say(R, [
         'No puedo dormir a oscuras. Necesito las CINCO lámparas de mi cuarto encendidas a la vez.',
         'El problema es el electricista: cada interruptor enciende o apaga su lámpara… y alguna otra. Cada vez que arreglo una, se me apaga la de al lado.',
-        'Si consigues dejarlas todas encendidas, te doy mi espejo y mi cifra.',
+        'Si consigues dejarlas todas encendidas, te doy mi espejo y mi número.',
       ]);
       S.set('metRatitaB');
       return;
@@ -323,10 +360,10 @@ export const SCRIPTS = {
       S.d.flags.lamps = [0, 0, 0, 0, 0]; S.save(); Sound.sfx('undo'); scene.sync();
     }
   },
-  // Cada interruptor cambia su lámpara y otras. Única solución desde todo apagado: roja, azul, amarilla y rosa.
+  // Cada interruptor cambia su lámpara y otras. Única solución desde todo apagado: verde, azul y rosa.
   async lamp(scene, ent) {
     if (S.flag('r3')) return UI.say('', 'La lámpara da una luz calentita. Mejor no tocar nada.');
-    const TOGGLE = [[0, 2], [1, 3], [2, 3, 1], [3, 2, 0], [4, 0, 3]];
+    const TOGGLE = [[0, 1], [1, 0, 2], [2, 0, 3], [3, 0, 4], [4, 0, 2]];
     const L = S.d.flags.lamps = S.d.flags.lamps || [0, 0, 0, 0, 0];
     for (const j of TOGGLE[ent.n]) L[j] = L[j] ? 0 : 1;
     S.save();
@@ -334,7 +371,7 @@ export const SCRIPTS = {
     scene.sync();
     if (!L.every(Boolean)) return;
     await new Promise((r) => scene.time.delayedCall(400, r));
-    await roomDone(3, 'Ratita parda', '¡Las cinco! ¡Qué maravilla, se ve todo! Toma mi espejo. Y la tercera cifra del candado es el 8.');
+    await roomDone(3, 'Ratita parda', '¡Las cinco! ¡Qué maravilla, se ve todo! Toma mi espejo. Y apunta este número, que quizá te sirva en el futuro: el tercero es el 8.');
     scene.sync();
   },
   async fridge() {
@@ -348,7 +385,7 @@ export const SCRIPTS = {
   async note() {
     S.set('nota');
     await UI.say('', ['Una nota clavada en la pared, con la letra de Cuca:', '«Д Ш Д Ю Ж»'], { ruso: true });
-    await UI.say(S.flag('cuy') ? C : 'Cuy', S.flag('cuy') ? 'La cuarta cifra del candado, en ruso… y Cuy dijo que Cuca lo escribía todo al revés.' : 'Es la cuarta cifra del candado. Cuca me la apuntó en ruso para que nadie la entendiera. Y encima ella lo escribía todo al revés, de derecha a izquierda. Funcionó: tampoco la entiendo yo.');
+    await UI.say(S.flag('cuy') ? C : 'Cuy', S.flag('cuy') ? 'El cuarto número, en ruso… y Cuy dijo que Cuca lo escribía todo al revés.' : 'Es el cuarto número. Cuca me lo apuntó en ruso para que nadie lo entendiera. Y encima ella lo escribía todo al revés, de derecha a izquierda. Funcionó: tampoco lo entiendo yo.');
   },
   async cuy() {
     const Y = 'Cuy';
@@ -383,6 +420,7 @@ export const SCRIPTS = {
       return;
     }
     await UI.say('', 'La tapa de la alcantarilla que lleva al Castillo de Mazapán. Tiene un candado de cuatro cifras.');
+    if (S.flag('r1') || S.flag('r2') || S.flag('r3') || S.flag('nota')) await UI.say(C, '¿Cuatro cifras? Me suena haber apuntado unos cuantos números por el apartamento…');
     const code = await UI.code('Candado de la alcantarilla');
     if (code === null) return;
     if (code !== HATCH_CODE) { Sound.sfx('bad'); return UI.say('', `${code.split('').join(' ')}… El candado no cede.`); }
@@ -897,20 +935,26 @@ export const SCRIPTS = {
     const P = 'Perrunfli';
     if (S.flag('paella')) {
       invite('perrunfli', P);
-      return UI.say(P, ['La paella va a salir de escándalo. Y sin un solo guisante.', 'Los nabos siguen sin tocarse, por cierto.']);
+      return UI.say(P, ['La paella eixirà de categoria. I sense ni un pésol.', 'Els naps continuen sense tocar-se, per cert.']);
     }
     if (!S.flag('metPerrunfli')) {
       await UI.say(P, [
-        '¡Hombre, Colgadín! Sí, sí, es un campo de nabos. Ya sé lo que estás pensando.',
-        'No creerás que te vamos a poner a recoger nabos los martes a las 23:37 h, ¿verdad?',
-        'Aquí los nabos ni se compran ni se venden ni se pudren. Son de adorno.',
-        'Lo que sí estamos preparando en el pueblo es una paella valenciana para la fiesta de Cait.',
-        'El problema es que cada vecino dice que lleva una cosa distinta, y ya hemos tenido dos peleas y media.',
+        'Home, Colgadín! Sí, sí, és un camp de naps. Ja sé el que estàs pensant.',
+        'No et pensaràs que et farem collir naps els dimarts a les 23:37 h, veritat?',
+        'Ací els naps ni es compren ni es venen ni es podreixen. Són de decoració.',
+        'El que sí que estem preparant al poble és una paella valenciana per a la festa de Cait.',
+        'El problema és que cada veí diu que porta una cosa diferent, i ja hem tingut dues baralles i mitja. Aixina no hi ha manera.',
       ]);
       S.set('metPerrunfli');
     }
-    const c = await UI.choose(P, '¿Tú sabes qué lleva una paella valenciana DE VERDAD?', ['Claro que sí', 'Mejor otro día']);
-    if (c !== 0) return UI.say(P, 'Pues vuelve cuando lo tengas claro. Los nabos y yo no nos movemos.');
+    const c = await UI.choose(P, 'Tu saps què porta una paella valenciana DE VERITAT?', ['Claro que sí', 'Mejor otro día']);
+    if (!S.flag('perrunfliVa')) { // la primera vez que Colgadín le contesta en castellano
+      S.set('perrunfliVa');
+      await UI.say(P, 'Ei, ei… Que no parles valencià?');
+      await UI.say(C, 'No, pero lo entiendo perfectamente.');
+      await UI.say(P, 'Doncs meleta de romer! Seguim.');
+    }
+    if (c !== 0) return UI.say(P, 'Doncs torna quan ho tingues clar. A la marxeta, que els naps i jo no ens movem.');
 
     let fails = 0;
     for (const p of PAELLA) {
@@ -925,14 +969,14 @@ export const SCRIPTS = {
     }
     S.set('paella');
     await UI.say(P, [
-      fails === 0 ? '¡Ni un fallo! Tú has nacido con una paella debajo del brazo.' : `¡Eso es! Con ${fails === 1 ? 'un susto' : fails + ' sustos'} por el camino, pero lo tenemos.`,
-      'Arroz, pollo, conejo, batxoqueta, garrofó, tomate, aceite, azafrán, sal y agua. Y NADA MÁS.',
-      'Te has ganado esto. Es para Cait: una Mocadorà.',
+      fails === 0 ? 'Ni una errada! Tu has nascut amb una paella davall del braç.' : `Això és! Amb ${fails === 1 ? 'un esglai' : fails + ' esglais'} pel camí, però ja la tenim.`,
+      'Arròs, pollastre, conill, bajoqueta, garrofó, tomaca, oli, safrà, sal i aigua. I RES MÉS. Aixina, i només aixina.',
+      'T\'has guanyat açò. És per a Cait: una Mocadorà, amb els últims massapans d\'abans de les obres.',
     ]);
     gift('mocadora');
-    await UI.say('', '¡Has conseguido la MOCADORÀ! Un pañuelo anudado lleno de figuritas de mazapán con forma de frutas y hortalizas de la huerta valenciana.');
+    await UI.say('', '¡Has conseguido la MOCADORÀ! Un pañuelo anudado lleno de figuritas de mazapán con forma de frutas y hortalizas de la huerta valenciana: los últimos de antes de las obras.');
     invite('perrunfli', P);
-    await UI.say(P, 'Y cuenta conmigo para la fiesta. Llevo la paella. Y ni un nabo.');
+    await UI.say(P, 'I compta amb mi per a la festa. Jo porte la paella, a la marxeta, que el bon arròs no té pressa. I ni un nap.');
   },
 
   // ---------------------------------------------------------- Fitness Bartory (el gimnasio de Bart)
@@ -981,7 +1025,8 @@ export const SCRIPTS = {
     const N = 'Siri';
     if (S.flag('globos')) {
       invite('siri', 'Siri y los awawas');
-      return UI.say(N, ['¡Awawa! Mis sobrinos ya han llevado los globos a casa de Cait. Bien atados, que si no salen volando… y ellos detrás.', 'Vuelve cuando quieras. Aquí siempre hay un awawa asomado a algo.']);
+      await UI.say(N, ['¡Awawa! Mis sobrinos ya han llevado los globos a casa de Cait. Bien atados, que si no salen volando… y ellos detrás.', 'Vuelve cuando quieras. Aquí siempre hay un awawa asomado a algo.']);
+      return SCRIPTS.awawaSock(); // partidas en las que se ganó antes de que dieran el calcetín
     }
     if (!S.flag('metSiri')) {
       await UI.say(N, [
@@ -1003,7 +1048,15 @@ export const SCRIPTS = {
     S.set('globos');
     give('{party_balloons} Globos para la fiesta', true);
     invite('siri', 'Siri y los awawas');
-    await UI.say('Siri', 'El calcetín se lo quedan ellos, eso sí. Es su juguete. No es de nadie de la isla, no te preocupes.');
+    await SCRIPTS.awawaSock();
+  },
+  // El calcetín con el que juegan los awawas: te lo dan (su pareja anda por Kapadokya). Primera pareja posible de la isla.
+  async awawaSock() {
+    if (S.d.socks.includes('s12')) return;
+    await UI.say('Siri', ['Y toma, quédate el calcetín. Mis sobrinos ya le han sacado todo el jugo.', 'Lo encontraron por aquí, entre las chimeneas. Tenía pareja… pero esa se nos escapó.']);
+    S.d.socks.push('s12'); S.save();
+    const d = SOCK_DESIGN.s12, pair = S.d.socks.filter((s) => SOCK_DESIGN[s] === d).length === 2;
+    give(`{sock_${d}} Calcetín ${SOCK_DESIGNS[d]}${pair ? ': ¡ya tienes la pareja!' : ''} (${S.d.socks.length}/${TOTAL_SOCKS})`);
   },
 
   // ---------------------------------------------------------- Vecinos

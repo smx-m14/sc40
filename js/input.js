@@ -23,7 +23,14 @@ export const Input = {
     if (this.interceptor && this.interceptor(btn)) return;
     this.just[btn] = true;
   },
-  release(btn) { this.held[btn] = false; },
+  release(btn) {
+    // Un toque corto en la cruceta táctil = avanzar exactamente una baldosa (lo hace WorldScene con `nudge`):
+    // si no, Colgadín avanzaba un trozo distinto cada vez, según lo que durara el toque
+    if (this.held[btn] && this.touchDir && ['up', 'down', 'left', 'right'].includes(btn) && performance.now() - (this.t[btn] || 0) < 220) this.nudge = btn;
+    this.held[btn] = false;
+  },
+  nudge: null,      // dirección de un toque corto pendiente de convertir en un paso
+  touchDir: false,  // la última pulsación de dirección vino de la cruceta táctil
   take(btn) { const v = !!this.just[btn]; this.just[btn] = false; return v; },
   clear() { this.just = {}; },
   dir() {
@@ -52,7 +59,16 @@ export const Input = {
     window.addEventListener('touchstart', show, { once: true, passive: true });
 
     const bind = (el, btn) => {
-      const down = (e) => { e.preventDefault(); el.classList.add('on'); this.press(btn); };
+      // En móvil el primer toque a veces llegaba tarde o se perdía: se atiende ya en touchstart y el pointerdown que
+      // viene detrás del mismo toque se ignora (si no, contaría doble)
+      let touchT = -1e9;
+      const press = () => { el.classList.add('on'); this.press(btn); };
+      const isDir = ['up', 'down', 'left', 'right'].includes(btn);
+      el.addEventListener('touchstart', (e) => { e.preventDefault(); touchT = performance.now(); if (isDir) this.touchDir = true; press(); }, { passive: false });
+      const lift = (e) => { e.preventDefault(); el.classList.remove('on'); this.release(btn); };
+      el.addEventListener('touchend', lift, { passive: false });
+      el.addEventListener('touchcancel', lift, { passive: false }); // gesto del sistema: que no se quede «pulsado»
+      const down = (e) => { e.preventDefault(); if (e.pointerType === 'touch' || performance.now() - touchT < 600) return; press(); };
       const up = (e) => { e.preventDefault(); el.classList.remove('on'); this.release(btn); };
       el.addEventListener('pointerdown', down);
       el.addEventListener('pointerup', up);
@@ -61,6 +77,10 @@ export const Input = {
       el.addEventListener('contextmenu', (e) => e.preventDefault());
     };
     touch.querySelectorAll('[data-dir]').forEach((el) => bind(el, el.dataset.dir));
+    // Red de seguridad: si se levantan todos los dedos, no queda ninguna dirección pulsada (antes, si se perdía el
+    // «soltar», Colgadín seguía andando un buen trecho)
+    window.addEventListener('touchend', (e) => { if (!e.touches.length) for (const b of ['up', 'down', 'left', 'right']) if (this.held[b]) this.release(b); }, { passive: true });
+    window.addEventListener('keydown', () => { this.touchDir = false; }, { capture: true });
     bind(document.getElementById('tb-a'), 'a');
     // (En táctil no hay botón B: el menú, cerrar y «Salir» ya tienen su botón en pantalla. En teclado: Esc o X.)
   },

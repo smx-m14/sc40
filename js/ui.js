@@ -94,6 +94,7 @@ export const UI = {
       $('dialog-text').classList.toggle('ruso', !!opts.ruso);
       $('dialog-choices').innerHTML = '';
       $('dialog-img').src = opts.img || ''; show($('dialog-img'), !!opts.img);
+      $('dialog-img').classList.toggle('big', !!opts.big); // big: un cuadro o una foto que se quiere ver bien
       show($('dialog-next'), false);
       show($('dialog'));
       d.timer = setInterval(() => {
