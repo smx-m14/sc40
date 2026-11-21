@@ -28,12 +28,24 @@ export const CHARACTERS = [
   { id: 'inquisicion', name: 'Owitos de la Inquisición', where: 'Mesa de guerra del castillo' },
 ];
 
+// Cuándo se le puede dar ya la invitación a cada uno (bandera de la partida) y cómo lo nombra Colgadín al acordarse.
+// Si se cumple y aún no tiene invitación, Colgadín se lo pregunta al alejarse, y en el menú sale «falta la invitación».
+export const INVITE_READY = {
+  lolete: ['lolete', 'a Lolete'], scooby: ['metScooby', 'a Scooby'], cuca: ['cuyTemple', 'a Cuca'], fuxia: ['gramola', 'a Fucsia'],
+  perrunfli: ['paella', 'a Perrunfli'], bart: ['cali', 'a Bart'], tigrito: ['tigrito', 'a Tigrito'], cuy: ['cuy', 'a Cuy y a las ratitas'],
+  kai: ['kai', 'a Kai'], patito: ['pato', 'a Patito'], capybaras: ['pato', 'a los capybaras'], owitos_teatro: ['simon', 'a los Owitos del Teatro'],
+  mantecas: ['horno', 'a Mantecas y Manteca2'], peludito: ['gateOpen', 'al Rey Peludito'], narwal: ['narwal', 'a Narwal'],
+  owitos_navidad: ['luces', 'a los Owitos de Navidad'], owinken: ['tedi', 'a Owinken'], heladoncio: ['tarta', 'a Heladoncio'],
+  gatos: ['andamios', 'a los Gemelos bipolares'], siri: ['globos', 'a Siri y a los awawas'], ovejoncio: ['tediHack', 'a Ovejoncia'],
+  inquisicion: ['owiquis', 'a los Owitos de la Inquisición'],
+};
+
 // Regalos del gachapón (dibujados en art.js → GACHA_ART). Faltan por decidir hasta llegar a 10.
 export const GACHA = [
   { id: 'pachirisu', name: 'Pachirisu' },
   { id: 'kirby', name: 'Kirby' },
   { id: 'yoshi', name: 'Yoshi' },
-  { id: 'pulguita', name: 'Pulguita de Silksong' },
+  { id: 'marill', name: 'Marill' }, // el Pokémon favorito de Cait
   { id: 'poyopoyo', name: 'Poyopoyo' },
   { id: 'princesa-bultos', name: 'Princesa Bultos' },
   { id: 'socrates', name: 'Sócrates' },
@@ -46,6 +58,9 @@ export const GACHA = [
 export const GIFTS = {
   mocadora: { name: 'Mocadorà', icon: 'candy', desc: 'Figuritas de mazapán con forma de frutas y hortalizas de la huerta valenciana.' },
   miausis: { name: 'Libro de los Miausis', icon: 'book', desc: 'Un álbum de fotos de Cait y Mindeos.', album: true },
+  sushigo: { name: 'Sushi Go!', icon: 'sushi', desc: 'Un juego de mesa de cartas de sushi: facilito, rapidito y sin montajes. Regalo de Coleowe.' },
+  taiyaki: { name: 'Taiyakis', icon: 'taiyaki', desc: 'Pastelitos con forma de pez rellenos de anko, recién hechos en la Isla Helada.' },
+  mochis: { name: 'Cajita de mochis', icon: 'mochi', desc: 'Mochis de colores del puesto junto al estanque del castillo.' },
   flores: { name: 'Centro de flores de loto', icon: 'flower', desc: 'Flores de loto del estanque del castillo, de parte de Patito y los capybaras.' },
 };
 

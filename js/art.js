@@ -1028,6 +1028,37 @@ const OBJ = {
     for (const [x, c] of [[6, '#f08a24'], [12, '#e2574c'], [18, '#9fc86a'], [24, '#ffd23f'], [28, '#f08a24']]) p.ell(x, 16.5, 2.2, 2.2, c).px('#3f9f4f', [x, 14]);
     return p.outline(INK);
   },
+  stall_taiyaki() { // puesto de taiyakis: toldo azul marino, cartel con un pez y taiyakis humeantes en el mostrador
+    const p = new PX(34, 30);
+    p.rect(2, 12, 2, 17, '#6e4520').rect(30, 12, 2, 17, '#6e4520').rect(1, 18, 32, 9, '#a8743c').rect(1, 25, 32, 2, '#6e4520');
+    for (let x = 0; x < 34; x += 6) p.rect(x, 3, 6, 8, (x / 6) % 2 ? '#2a3f6e' : '#f4f4ee').ell(x + 3, 11, 3, 1.6, (x / 6) % 2 ? '#2a3f6e' : '#f4f4ee');
+    p.rect(0, 2, 34, 2, '#1a2a4a').rect(12, 0, 10, 4, '#f4f4ee').ell(16, 2, 3, 1.4, '#d8963a').px('#d8963a', [20, 1], [20, 3], [19, 2]);
+    for (const x of [7, 14, 21, 27]) p.ell(x, 16.5, 2.6, 1.8, '#d8963a').px('#b06a20', [x - 1, 16]).px('#d8963a', [x + 3, 15], [x + 3, 17]);
+    p.px('#ffffff', [8, 13], [9, 12], [22, 13], [21, 12]);
+    return p.outline(INK);
+  },
+  stall_mochi() { // puesto de mochis: toldo rosa y blanco, bandejas de mochis de colores
+    const p = new PX(34, 30);
+    p.rect(2, 12, 2, 17, '#8a5a2a').rect(30, 12, 2, 17, '#8a5a2a').rect(1, 18, 32, 9, '#f4e6d0').rect(1, 25, 32, 2, '#c9a77c');
+    for (let x = 0; x < 34; x += 6) p.rect(x, 3, 6, 8, (x / 6) % 2 ? '#f7a8c0' : '#ffffff').ell(x + 3, 11, 3, 1.6, (x / 6) % 2 ? '#f7a8c0' : '#ffffff');
+    p.rect(0, 2, 34, 2, '#e5869f');
+    const M = ['#f7a8c0', '#9fc86a', '#fff6ea', '#c8a2e0', '#f7a8c0', '#9fc86a'];
+    M.forEach((c, i) => p.ell(5 + i * 5, 16.5, 2.2, 2, c).px('#ffffff', [4 + i * 5, 15]));
+    return p.outline(INK);
+  },
+  comics() { // tienda de mangas «Doki Doki Manga»: tejadillo, cartel con bocadillo y corazón, escaparate lleno y puerta
+    const p = new PX(48, 42);
+    p.rect(1, 12, 46, 29, '#6f8fbf').rect(1, 38, 46, 3, '#4a6a9a').rect(0, 8, 48, 5, '#2a3f6e').rect(0, 12, 48, 1, '#1a2a4a');
+    for (let x = 1; x < 47; x += 4) p.rect(x, 13, 2, 2, '#f06aa8');                                      // flecos del toldo
+    p.ell(24, 4.5, 15, 4.2, '#ffffff').rect(10, 1, 28, 7, '#ffffff').px('#ffffff', [14, 9], [15, 10]);   // bocadillo
+    p.rect(13, 3, 13, 1, '#e2574c').rect(13, 5, 9, 1, '#2b2320').ell(32, 4.4, 2.4, 2, '#f06aa8').px('#f06aa8', [31, 7], [32, 7], [33, 7], [32, 8]); // texto y corazón
+    p.rect(4, 18, 26, 16, '#bfe3f7').rect(4, 18, 26, 1, '#e8f4ff').rect(16, 18, 1, 16, '#9ab8d0');     // escaparate
+    const C = ['#e2574c', '#ffd23f', '#3f8fd8', '#82cc6a', '#f06aa8', '#c8a2e0', '#f08a24', '#3f8fd8'];
+    C.forEach((c, i) => p.rect(5 + i * 3 + (i > 3 ? 2 : 0), 22 + (i % 2) * 2, 2, 8 - (i % 2) * 2, c));
+    p.rect(19, 30, 10, 3, '#8a5a2a').px('#ffd23f', [21, 29], [24, 29], [27, 29]);                     // figuritas en una balda
+    p.rect(34, 18, 10, 23, '#8a5a2a').rect(35, 19, 8, 21, '#a8743c').px('#ffd23f', [41, 29]).rect(36, 21, 6, 6, '#bfe3f7'); // puerta con ventanuco
+    return p.outline(INK);
+  },
   bench() { return new PX(22, 12).rect(1, 2, 20, 3, '#a8743c').rect(1, 6, 20, 2, '#c98f4e').rect(3, 8, 2, 3, '#6e4520').rect(17, 8, 2, 3, '#6e4520').rect(1, 1, 20, 1, '#c98f4e').outline(INK); },
   easel() {
     const p = new PX(16, 24);
@@ -1461,12 +1492,14 @@ const GACHA_ART = {
     p.ell(10, 5, 2, 3.2, W).ell(13.5, 5, 2, 3.2, W).rect(10, 4, 1, 3, BLACK).rect(13, 4, 1, 3, BLACK);
     p.px(GD, [19, 8], [20, 8], [6, 7], [7, 6], [6, 9]).px(R, [5, 8], [5, 10]);
   },
-  pulguita(p) {
-    const T = '#ecd2bc', B = '#9a7f78', D = '#6f5a56';
-    p.line(9, 9, 7, 6, D).line(15, 9, 17, 7, D).ell(6.5, 4.5, 3.2, 2.3, T).ell(18, 5.5, 3.2, 2.3, T);
-    p.ell(12, 14.5, 8.4, 7, B).ell(12, 18, 8, 4, D).ell(12, 16, 7, 2.4, B);
-    for (const x of [5, 8, 11, 14, 17]) p.px(B, [x, 18], [x + 1, 19]).px(T, [x + 1, 21]);
-    p.px(BLACK, [9, 11], [10, 12], [11, 12], [12, 11]).px('#e8b0a0', [14, 13]);
+  marill(p) { // ratoncito azul redondo, orejas redondas y cola en zigzag acabada en una bola azul
+    const B = '#4f8fe8', BL = '#7fb2f4', BD = '#2f63b8', W = '#eaf4ff';
+    p.ell(6.5, 5.5, 3.4, 3.4, B).ell(17.5, 5.5, 3.4, 3.4, B).ell(6.5, 5.8, 2, 2, BD).ell(17.5, 5.8, 2, 2, BD);            // orejas
+    p.ell(12, 14, 8, 7.6, B).ell(12, 17.6, 5.4, 3.6, W).ell(9, 9.5, 2.6, 1.3, BL);                                     // cuerpo y barriga
+    p.ell(7, 21, 2.4, 1.4, BD).ell(17, 21, 2.4, 1.4, BD).ell(5, 16, 1.6, 1.4, B).ell(19, 16, 1.6, 1.4, B);             // patas
+    for (const x of [9, 14]) p.rect(x, 11, 2, 3, BLACK).px('#ffffff', [x, 11]);                                        // ojos
+    p.px(BLACK, [11, 14], [12, 14]).px('#e58a8a', [11, 15], [12, 15]);                                                 // hocico
+    p.line(20, 19, 22, 18, BLACK).line(22, 18, 21, 16, BLACK).ell(21.6, 13.4, 2.6, 2.6, BLACK).ell(21.6, 13.4, 1.8, 1.8, B).px(BL, [21, 13]); // cola en zigzag y su bola
   },
   poyopoyo(p) {
     const Y = '#ffd84a', O = '#f0a020', BR = '#7a4f2a';
@@ -1568,6 +1601,9 @@ const ICONS = {
   music: (p) => p.rect(7, 1, 1, 8, D).px(D, [8, 1], [9, 2], [9, 3], [8, 2]).ell(5.5, 9, 2.2, 1.7, D),
   gift: (p) => p.rect(2, 5, 8, 6, '#e2574c').rect(1, 3, 10, 2, '#f06a5c').rect(5, 3, 2, 8, '#ffe066').px('#ffe066', [4, 2], [3, 1], [7, 2], [8, 1]),
   cake: (p) => p.rect(2, 6, 8, 5, '#f7a8c0').rect(2, 6, 8, 2, '#fff3dc').rect(6, 3, 1, 3, '#f4f4ee').px('#ffd23f', [6, 1], [6, 2]),
+  taiyaki: (p) => p.ell(5, 6, 4, 3, '#d8963a').px('#d8963a', [9, 6], [10, 4], [10, 5], [10, 7], [10, 8]).px('#b06a20', [3, 5], [5, 7], [7, 5]).px('#2b2320', [3, 5]).px('#ffd27a', [4, 4], [6, 4]), // pez de masa
+  mochi: (p) => p.rect(0, 7, 12, 4, '#c98f4e').ell(3, 6, 2.4, 2.2, '#f7a8c0').ell(8.5, 6, 2.4, 2.2, '#9fc86a').ell(6, 4, 2.4, 2.2, '#fff6ea').px('#ffffff', [2, 5], [7, 5], [5, 3]), // cajita con tres mochis
+  sushi: (p) => p.rect(2, 6, 8, 4, '#f4f4ee').rect(1, 3, 10, 4, '#f08a5a').rect(2, 4, 8, 1, '#ffb48a').rect(5, 3, 2, 7, '#1f2a20'), // un nigiri (Sushi Go!)
   candy: (p) => p.ell(6, 6, 3, 3, '#f08a24').px('#ffb45a', [5, 5]).px('#3f9f4f', [1, 4], [1, 6], [2, 5], [2, 6], [2, 4], [10, 4], [10, 6], [9, 5], [9, 4], [9, 6]),
   book: (p) => p.rect(2, 1, 8, 10, '#2a4fa0').rect(3, 3, 5, 1, '#ffe066').rect(3, 5, 4, 1, '#ffe066').rect(9, 2, 1, 9, '#f4f4ee'),
   wrench: (p) => p.line(3, 9, 8, 4, '#8a8f9a').line(4, 9, 8, 5, '#8a8f9a').line(3, 8, 7, 4, '#8a8f9a').rect(7, 1, 3, 2, '#8a8f9a').rect(9, 3, 2, 3, '#8a8f9a').px(null, [9, 2]),

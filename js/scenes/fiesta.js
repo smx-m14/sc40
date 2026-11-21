@@ -18,8 +18,8 @@ const LAYER = [0xf7a8c0, 0xfff3dc, 0x9fc86a, 0x4a2c1e];
 const BULBS = [0xffe066, 0xe2574c, 0x3f8fd8, 0x82cc6a, 0xf7a8c0];
 const LINES = {
   lolete: 'He inflado todos los globos. Bueno, los que no me he comido.', fuxia: '¡Dale a la gramola! Hoy pincho yo.', peludito: 'Declaro este cumpleaños fiesta nacional del Castillo de Mazapán.',
-  heladoncio: 'La tarta ha llegado entera. Y yo, que casi no llego a casa de Cait. ¡Menudo disgusto!', bart: 'Cuarenta años son solo cuarenta repeticiones. ¡Técnica estricta!', cuy: '¡Cui, cui! Cuca dice que felicidades. Bueno, lo dice en ruso.',
-  owinken: 'Oink. Prometo que soy el original.', siri: '¡Awawa! Los globos los hemos inflado nosotros. Con los dientecitos no, tranquilos.', ovejoncio: 'He traído el portátil por si hay que hackear algo. Es costumbre.', tigrito: 'Y ahora, todos conmigo. Un, dos, tres…',
+  heladoncio: 'La tarta ha llegado entera. Y yo, que casi no llego a casa de Cait. ¡Menudo disgusto!', bart: 'Cuarenta años son solo cuarenta repeticiones. ¡Técnica estricta!',
+  owinken: 'Oink. Prometo que soy el original.', siri: '¡Awawa! Los globos los hemos inflado nosotros. Con los dientecitos no, tranquilos.', ovejoncio: 'He traído el portátil por si hay que hackear algo. Es típico.',
 };
 
 export class FiestaScene extends Phaser.Scene {
@@ -78,16 +78,25 @@ export class FiestaScene extends Phaser.Scene {
     this.party = true;
     Sound.logro();
     this.cameras.main.flash(500, 255, 255, 255);
-    // El «Cumpleaños feliz» empieza cuando acaba la música de logro, no encima
-    Sound.music('fiesta', true, Sound.ctx ? Math.max(Sound.ctx.currentTime + 0.08, (Sound.jingleEnd || 0) + 0.15) : undefined);
     await this.wait(1000);
     await UI.say('TODOS', '¡¡¡SORPRESA!!!', top);
+    // Tigrito da la entrada y desde ese momento suena el «Cumpleaños feliz» (si aún suena la música de logro, al acabar)
+    if (d.invited.includes('tigrito')) await UI.say('Tigrito', 'Y ahora todos conmigo: ¡1, 2, 3!', this.at({ id: 'tigrito' }));
+    Sound.music('fiesta', true, Sound.ctx ? Math.max(Sound.ctx.currentTime + 0.08, (Sound.jingleEnd || 0) + 0.15) : undefined);
     await this.wait(2500); // y otro rato para ver la fiesta antes de que empiecen a hablar
     const who = CHARACTERS.filter((c) => d.invited.includes(c.id) && LINES[c.id]);
     for (const c of who) await UI.say(c.name, LINES[c.id], this.at({ id: c.id }));
     if (d.invited.includes('inquisicion')) {
       await UI.say('Owitos de la Inquisición', ['Operación «Fiesta sorpresa»: completada con éxito.', 'Buen trabajo, Colgadín. Sabíamos que eras el indicado.', '¡Feliz cumpleaños, comandante!'], this.at({ id: 'inquisicion' }));
       await UI.say('', '(Entre ellos hay un Owito con capa de piel granate, pelo rubio y armadura plateada. Se parece muchísimo a alguien…)', this.at({ tex: 'owi_cul' }));
+    }
+    // Cuca (en ruso, con Cuy de traductor) y, cerrando la ronda, Scooby
+    if (d.invited.includes('cuca') && d.invited.includes('cuy')) {
+      await UI.say('Cuca', 'Гав-гав! Плюшевые… нет, нет, нет!', { ...this.at({ id: 'cuca' }), ruso: true });
+      await UI.say('Cuy', 'Dice que no le pongas todos esos peluches encima, Cait. Que así no hay quien se eche una siesta.', this.at({ id: 'cuy' }));
+    }
+    if (d.invited.includes('scooby')) {
+      await UI.say('Scooby', ['Y una última cosa, Cait.', '¿Sabes lo mejor de estar ahí arriba? Que sigo cumpliendo años y no me sale ni una cana. Gracias por seguir celebrándolos.', '¡Todos te queremos muchísimo!'], this.at({ id: 'scooby' }));
     }
     await UI.say('', [
       `Han venido ${n} de ${CHARACTERS.length} invitados, la tarta tiene ${this.layers} ${this.layers === 1 ? 'piso' : 'pisos'} y hay ${this.gifts} ${this.gifts === 1 ? 'regalo' : 'regalos'} esperando.`,

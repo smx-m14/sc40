@@ -59,9 +59,8 @@ export class TediScene extends Phaser.Scene {
     Input.clear();
     UI.say('Colgadín', [
       '¡La máquina clonadora! Cada cerdito que escupe es una copia de Owinken hecha con IA.',
-      'Hay seis enchufes: tres arriba en la máquina y tres abajo en el desagüe. Cuando se abra la tapa de uno, llego y lo arranco con la cola (botón de acción).',
-      'Las cintas de los lados bajan y la del medio sube desde el desagüe. Si me subo a una, me arrastra: mejor cruzarlas rápido. Y si un clon me toca, vuelta a la entrada.',
-      'Y ojo con los clones del casco amarillo: van a volver a enchufar lo que arranque. A esos hay que espantarlos con el botón de acción antes de que lleguen.',
+      'Hay seis enchufes: tres arriba en la máquina y tres abajo en el desagüe. Cuando se abra la tapa de uno, llego y lo arranco. Si un clon me toca, vuelta a la entrada.',
+      'Y ojo con los clones del casco amarillo: van a volver a enchufar lo que arranque. Hay que espantarlos antes de que lleguen.',
     ]).then(() => { this.lock = false; });
   }
 

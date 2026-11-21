@@ -38,6 +38,7 @@ export class CaliScene extends Phaser.Scene {
     this.bart = this.add.image(262, 134, 'bart_down_0').setOrigin(0.5, 1).setScale(2);
     this.meter = this.add.graphics();
     this.ev = 0; this.lock = true;
+    this.holdFails = 0; // reintentos de la plancha: cada uno la hace un poco más fácil
     Input.clear();
     this.begin();
   }
@@ -124,14 +125,15 @@ export class CaliScene extends Phaser.Scene {
         else if (this.left <= 0) this.retry(`¡Tiempo! Te has quedado en el ${Math.round(this.fill)} %. Eso no es un sprint, es un paseo. ¡Otra vez, y más rápido!`);
       } else {
         this.left -= dt;
-        if ((this.windT -= dt) <= 0) { this.windT = 0.35 + Math.random() * 0.5; this.wind = (Math.random() * 2 - 1) * (2.2 + (e.time - this.left) * 0.16) * 0.9; } // ×0,9: un 10 % más suave
+        const easy = Math.max(0.6, 1 - this.holdFails * 0.1); // −10 % de temblor por reintento (hasta −40 %)
+        if ((this.windT -= dt) <= 0) { this.windT = 0.35 + Math.random() * 0.5; this.wind = (Math.random() * 2 - 1) * (2.2 + (e.time - this.left) * 0.16) * 0.9 * easy; } // ×0,9: un 10 % más suave
         const d = Input.dir().x;
         this.vel += (this.wind + d * 4.2) * dt;
         this.vel *= Math.exp(-1.2 * dt);
         this.bal += this.vel * dt;
         if (Math.abs(this.bal) > 1) { this.bal = Math.sign(this.bal); this.vel = 0; }
         if (Math.abs(this.bal) > 0.38) this.out += dt;
-        if (this.out > e.miss) this.retry('¡Se te ha caído la cadera! Glúteo apretado, abdomen apretado, carácter apretado. Desde el principio.');
+        if (this.out > e.miss + this.holdFails * 0.4) { this.holdFails++; this.retry('¡Se te ha caído la cadera! Glúteo apretado, abdomen apretado, carácter apretado. Desde el principio.'); } // y algo más de margen fuera de la zona
         else if (this.left <= 0) this.passed();
       }
       this.bar();
@@ -159,7 +161,7 @@ export class CaliScene extends Phaser.Scene {
       m.fillStyle(0x5aa648).fillRect(MID - zw / 2, MY, zw, 8).fillStyle(0x9ad486).fillRect(MID - zw / 2, MY, zw, 2);
       m.fillStyle(0xffffff).fillRect(Math.round(MID + this.bal * (X1 - X0) / 2) - 1, MY - 5, 3, 18);
       m.fillStyle(0x1a1412).fillRect(X0 - 3, MY - 12, X1 - X0 + 6, 5).fillStyle(0x6fb4ee).fillRect(X0, MY - 11, (X1 - X0) * Math.max(0, this.left) / e.time, 3);
-      m.fillStyle(0xe2574c).fillRect(X0, MY + 11, (X1 - X0) * Math.min(1, this.out / e.miss), 2);
+      m.fillStyle(0xe2574c).fillRect(X0, MY + 11, (X1 - X0) * Math.min(1, this.out / (e.miss + this.holdFails * 0.4)), 2);
     }
   }
 }

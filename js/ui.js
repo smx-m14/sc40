@@ -1,5 +1,5 @@
 // Interfaz en HTML/CSS sobre el lienzo: diálogos, HUD, menú, título y avisos.
-import { State, CHARACTERS, GACHA, GIFTS, ALBUM, TOTAL_SOCKS, SOCK_DESIGNS, SOCK_DESIGN } from './state.js';
+import { State, CHARACTERS, INVITE_READY, GACHA, GIFTS, ALBUM, TOTAL_SOCKS, SOCK_DESIGNS, SOCK_DESIGN } from './state.js';
 import { Input } from './input.js';
 import { Sound } from './audio.js';
 import { STEPS, PLACES, UNDO, skipTo, undoStep, teleport, reloadWorld, startParty, inviteAll } from './debug.js';
@@ -346,8 +346,10 @@ export const UI = {
       h += '<ul>';
       for (const c of CHARACTERS) {
         const inv = d.invited.includes(c.id), party = d.party.includes(c.id);
+        const ready = INVITE_READY[c.id] && State.flag(INVITE_READY[c.id][0]); // ya se le puede invitar, pero falta
         h += inv || party
           ? `<li><span>${party ? '🐾' : '💌'}</span><span class="grow">${esc(c.name)}</span><small>${party ? 'Te acompaña' : 'Invitado'}</small></li>`
+          : ready ? `<li class="todo"><span>❔</span><span class="grow">${esc(c.name)}</span><small>Falta la invitación</small></li>`
           : '<li class="todo"><span>❔</span><span class="grow">???</span></li>';
       }
       h += '</ul>';
@@ -382,7 +384,11 @@ export const UI = {
       }
       h += '</ul><h3>Ir a…</h3><ul><li><span class="grow">' + PLACES.map((p, i) => `<button class="btn" data-tp="${i}">${esc(p[0])}</button>`).join(' ') + '</span></li>';
       h += '<li><span class="grow">Monedas de gachapón</span><button class="btn" data-act="coins">+5 🪙</button></li>';
-      if (State.d.invited.length) h += '<li><span class="grow">Quitar una invitación <small>(para repetir su diálogo)</small><br>' + CHARACTERS.filter((c) => State.d.invited.includes(c.id)).map((c) => `<button class="btn" data-uninv="${c.id}">${esc(c.name)}</button>`).join(' ') + '</span></li>';
+      // Invitaciones: todos los personajes, con su estado. Pulsar uno se la da o se la quita (para repetir su diálogo)
+      h += `<li><span class="grow">Invitaciones <small>(${State.d.invited.length}/${CHARACTERS.length} · ✅ invitado · ⬜ sin invitar; pulsa para cambiar)</small><br>` + CHARACTERS.map((c) => {
+        const inv = State.d.invited.includes(c.id);
+        return `<button class="btn${inv ? ' sel' : ''}" data-inv="${c.id}">${inv ? '✅' : '⬜'} ${esc(c.name)}</button>`;
+      }).join(' ') + '</span></li>';
       h += `<li><span class="grow">Fiesta final <small>(con lo que haya en la partida: ${State.d.invited.length}/${CHARACTERS.length} invitados)</small></span><button class="btn" data-act="invall">Invitar a todos</button> <button class="btn" data-act="party">Ver la fiesta</button></li>`;
       h += '<li><span class="grow"><small>Mayús+D activa o desactiva este modo. Dentro de una prueba, Mayús+W (o el botón «Ganar») la supera.</small></span></li></ul>';
     } else {
@@ -399,7 +405,11 @@ export const UI = {
     const b = e.target.closest('button');
     if (!b) return;
     if (b.dataset.act === 'album') this.album();
-    if (b.dataset.uninv) { State.d.invited = State.d.invited.filter((id) => id !== b.dataset.uninv); State.save(); this.updateHud(); this.toggleMenu(false); reloadWorld(); }
+    if (b.dataset.inv) {
+      const id = b.dataset.inv, d = State.d;
+      d.invited = d.invited.includes(id) ? d.invited.filter((x) => x !== id) : [...d.invited, id];
+      State.save(); this.updateHud(); this.renderMenu();
+    }
     if (b.dataset.act === 'invall') { inviteAll(); this.updateHud(); this.renderMenu(); }
     if (b.dataset.act === 'party') { this.toggleMenu(false); startParty(); }
     if (b.dataset.act === 'coins') { State.d.coins += 5; State.save(); this.updateHud(); this.renderMenu(); }

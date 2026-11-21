@@ -97,6 +97,10 @@ function isla() {
   // Edificios y decorado
   m.obj('house_cait', 21, 9, 3, 2, { open: [[22, 10]] });
   m.obj('house_lolete', 10, 16, 3, 2, { open: [[11, 17]] });
+  // Tienda de cómics «Doki Doki Manga», enfrente del Biang Biang (al otro lado del camino), con su caminito
+  m.obj('comics', 18, 15, 3, 2);
+  path(18, 17, 21, 17); // delante de toda la fachada, como en el Biang Biang
+  for (const tx of [18, 19, 20]) m.ent({ id: 'comics' + tx, tx, ty: 16, script: 'comics' });
   m.obj('house_fuxia', 12, 28, 3, 2, { open: [[13, 29]] });
   m.obj('house_a', 14, 9, 3, 2);
   m.obj('house_b', 14, 16, 3, 2);
@@ -365,6 +369,11 @@ function castillo() {
   // Mordiscos en la muralla hasta que la Pastelería Real termine la reconstrucción
   if (!S.flag('horno')) for (const x of [10, 24, 34]) m.objects.push({ tex: 'bite', x: x * TILE + 8, y: 3 * TILE, flat: true, top: true });
 
+  // Puesto de mochis, en la esquina de abajo a la derecha, con su camino desde el de la Pastelería (regalo para Cait)
+  path(32, 20, 32, 25); path(32, 25, 34, 25);
+  m.obj('stall_mochi', 33, 24, 2, 1);
+  for (const tx of [33, 34]) m.ent({ id: 'mochi' + tx, tx, ty: 24, script: 'mochis' });
+
   // Plaza Principal
   m.obj('fountain', 19, 14, 2, 2);
   m.deco('banner_k', 13, 10); m.deco('banner_g_r', 26, 10); m.deco('banner_g', 13, 20); m.deco('banner_k_r', 26, 20);
@@ -457,9 +466,13 @@ function helada() {
   m.obj('sweetfamosa', 17, 4, 6, 3);
   m.obj('casa_navidad', 6, 9, 4, 2);
   m.obj('tedi', 28, 8, 5, 3);
-  for (const [x, y] of [[4, 8], [11, 6], [14, 9], [24, 4], [26, 7], [34, 9], [35, 14], [5, 15], [10, 18], [15, 17], [24, 18], [30, 17], [13, 4], [3, 12]]) m.obj('pine_snow', x, y);
-  m.obj('snowman', 11, 11); m.obj('rock', 16, 11);
+  for (const [x, y] of [[4, 8], [11, 6], [14, 9], [24, 4], [26, 7], [34, 9], [35, 14], [5, 15], [10, 18], [15, 17], [21, 16], [30, 17], [13, 4], [3, 12]]) m.obj('pine_snow', x, y);
+  m.obj('snowman', 11, 11);
   m.obj('gym', 22, 16, 4, 2);
+  // Puesto de taiyakis (regalo para Cait)
+  m.obj('stall_taiyaki', 15, 10, 2, 1);
+  path(15, 11, 18, 11); // caminito desde el camino central hasta el mostrador
+  for (const tx of [15, 16]) m.ent({ id: 'taiyaki' + tx, tx, ty: 10, script: 'taiyaki' });
   m.ent({ id: 'gym_door', tx: 23, ty: 17, script: 'gymDoor' });
   m.ent({ id: 'bart', npc: 'bart', tx: 26, ty: 17, solid: true, script: 'bart' });
   m.ent({ id: 'ovejoncio', npc: 'ovejoncio', tx: 27, ty: 11, solid: true, script: 'ovejoncio' });
@@ -469,7 +482,7 @@ function helada() {
   m.ent({ id: 'heladoncio_h', npc: 'heladoncioh', tx: 22, ty: 8, solid: true, script: 'heladoncio', when: () => S.flag('hat') }); // con su sombrero
   // Curiosidad: el sombrero de Heladoncio se voló y acabó pegado al lado izquierdo de la Casa de la Navidad, por detrás de
   // la pared: la casa lo tapa casi entero y solo asoma la punta del ala. Se coge desde la baldosa (5, 9), mirando a la casa
-  m.ent({ id: 'straw_hat', tex: 'straw_hat', tx: 6, ty: 9, ox: -1, script: 'hatPick', when: () => !S.flag('hatGot') });
+  m.ent({ id: 'straw_hat', tex: 'straw_hat', tx: 6, ty: 9, ox: -4, script: 'hatPick', when: () => !S.flag('hatGot') });
   m.ent({ id: 'sf_door', tx: 21, ty: 6, script: 'sfDoor' });
   m.ent({ id: 'tedi_door', tx: 30, ty: 10, script: 'tediDoor' });
   m.ent({ id: 'owinken', npc: 'owinken', tx: 31, ty: 11, solid: true, script: 'owinken', when: () => S.flag('tedi') });
@@ -484,7 +497,7 @@ function helada() {
     { name: 'Sweet Famosa', x0: 15, y0: 3, x1: 24, y1: 9, music: 'sweetfamosa' },
     { name: 'Casa de la Navidad', x0: 4, y0: 8, x1: 12, y1: 13, music: 'navidad' },
     { name: 'TEDI', x0: 26, y0: 7, x1: 34, y1: 12, music: 'tedi' },
-    { name: 'Fitness Bartory', x0: 21, y0: 14, x1: 27, y1: 18, music: 'gym' },
+    { name: 'Fitness Bartory', x0: 20, y0: 13, x1: 28, y1: 19, music: 'gym' },
     { name: 'Muelle helado', x0: 17, y0: 20, x1: 23, y1: 25 },
   ];
   return m;

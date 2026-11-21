@@ -1,6 +1,6 @@
 // Guion: qué pasa al interactuar con cada entidad. Cada script recibe (scene, ent).
 // Un script de tipo "step" puede devolver true si ha cambiado de mapa/escena.
-import { State, GACHA, GIFTS, CHARACTERS, HATCH_CODE, SOCK_DESIGNS, SOCK_DESIGN, TOTAL_SOCKS } from './state.js';
+import { State, GACHA, GIFTS, CHARACTERS, INVITE_READY, HATCH_CODE, SOCK_DESIGNS, SOCK_DESIGN, TOTAL_SOCKS } from './state.js';
 import { traceBeam } from './beam.js';
 import { UI } from './ui.js';
 import { Sound } from './audio.js';
@@ -89,7 +89,7 @@ const BART_INTRO = [
   'Y no me hables del kipping. El kipping NO es una dominada. El kipping es un pez fuera del agua con cuota mensual.',
   '¿Por dónde iba? Ah, sí. El agarre. Prono, supino, neutro. Hay gente que usa correas. Yo a esa gente no la juzgo. La miro fijamente, pero no la juzgo. Lo que SÍ se permite son los estropajos: para el agarre no hay nada mejor. Y de paso dejas la barra reluciente.',
   'Total, que aquí mismo, en esta sala, se conocieron Cait y Mindeos. Cait estaba haciendo… bueno, estaba mirando la barra. Mindeos también. Fue precioso.',
-  'Tengo un regalo guardado para Cait desde entonces. Pero no se lo doy a cualquiera: primero tienes que demostrarme que respetas la calistenia.',
+  'Y tú, Colgadín, ¿respetas la calistenia? Eso hay que demostrarlo. Aquí, en la barra.',
 ];
 const BART_MAS = [
   'Te cuento una cosa de la plancha. La plancha no es aguantar. La plancha es EMPUJAR EL SUELO mientras aprietas glúteo, abdomen, cuádriceps y carácter. Treinta segundos bien hechos valen más que tres minutos pensando en la cena. Yo en la cena también pienso, pero en proteína. Sin gluten, eso sí.',
@@ -100,6 +100,25 @@ const BART_MAS = [
 
 // Cuarto de ratita resuelto: espejo + cifra del candado
 let cheeseStep = 0;
+const remindSeen = {}; // desde cuándo está pendiente cada invitación (para remindInvite)
+
+// Coleowe le trae a Colgadín un juego de mesa para Cait: tiene tres, pero solo uno le parece buena idea
+async function coleoweGift() {
+  if (S.d.gifts.includes('sushigo')) return;
+  await UI.say('Coleowe', 'Te he traído un juego de mesa. Para Cait. Tengo tres. Elige.');
+  const NO = {
+    Root: ['Root. Gatos con ejército, pájaros burócratas y un mapa enorme…', 'Seguro que Mindeos se queda dormido a mitad de la partida jugando con Cait. Roncando encima del bosque. ¿No prefieres otro?'],
+    'Rue Morgue': ['Rue Morgue. Una morgue, cadáveres, investigaciones a medianoche…', 'Si Cait lo saca, creo que Mindeos va a huir corriendo. Y no volverá a por su abrigo. ¿No prefieres otro?'],
+  };
+  for (;;) {
+    const opts = ['Root', 'Rue Morgue', 'Sushi Go!'];
+    const pick = opts[await UI.choose('Coleowe', '¿Cuál le llevas a Cait?', opts)];
+    if (NO[pick]) { await UI.say('Coleowe', NO[pick]); continue; }
+    await UI.say('Coleowe', 'Sushi Go. Ese está bien: facilito, rapidito, sin montajes, ni tablets, ni libros de instrucciones de cuarenta páginas. Todos contentos.');
+    break;
+  }
+  gift('sushigo');
+}
 async function roomDone(n, who, line) {
   await UI.say(who, line);
   S.set('r' + n);
@@ -424,6 +443,11 @@ export const SCRIPTS = {
     const code = await UI.code('Candado de la alcantarilla');
     if (code === null) return;
     if (code !== HATCH_CODE) { Sound.sfx('bad'); return UI.say('', `${code.split('').join(' ')}… El candado no cede.`); }
+    // Código correcto, pero sin haber conseguido los cuatro números (las tres ratitas, la nota y los imanes): no vale
+    if (!['r1', 'r2', 'r3', 'nota', 'imanes'].every((k) => S.flag(k))) {
+      Sound.sfx('bad');
+      return UI.say('', [`${code.split('').join(' ')}… El candado hace «clic», pero no se abre.`, 'Parece que alguien está jugando a ser adivino. Mejor conseguir los cuatro números como es debido.']);
+    }
     Sound.logro();
     S.set('hatchOpen');
     scene.sync();
@@ -582,6 +606,14 @@ export const SCRIPTS = {
     };
     // Ya visto y con la invitación entregada: cada uno dice lo suyo, y todos piden silencio. (Si la escena se vio antes
     // de que existiera la invitación, se repite entera, con Coleowe incluido.)
+    if (S.flag('owiquis') && S.d.invited.includes('inquisicion') && !S.d.gifts.includes('sushigo')) {
+      const p = scene.p, cole = scene.add.image(p.x + 18, p.y, 'owi_col_down_0').setOrigin(0.5, 1).setDepth(p.y + 1);
+      Sound.sfx('rep');
+      await UI.say('', '(De repente, junto a Colgadín, vuelve a estar el Owito del sombrero enorme.)');
+      await coleoweGift();
+      scene.tweens.add({ targets: cole, alpha: 0, duration: 200, onComplete: () => cole.destroy() });
+      return UI.say('', '(Y ya no está.)');
+    }
     if (S.flag('owiquis') && S.d.invited.includes('inquisicion')) {
       const [who, line] = LINES[e && e.id] || [T, 'Siguen cuchicheando alrededor de la mesa de guerra, moviendo figuritas por el mapa.'];
       return UI.say(who, [...[].concat(line), SH]);
@@ -600,6 +632,7 @@ export const SCRIPTS = {
     await new Promise((r) => scene.time.delayedCall(700, r)); // un instante sin diálogo, para que se le vea aparecer
     await UI.say('', '(De repente, junto a Colgadín, hay un Owito con un sombrero enorme. Nadie lo ha visto llegar.)');
     await UI.say('Coleowe', 'Las orejas de Colgadín cuelgan porque escucha con todo el cuerpo. Por eso, cuando Cait le habla, se queda tan quieto. Le gusta guardar lo que oye.');
+    await coleoweGift();
     scene.tweens.add({ targets: cole, alpha: 0, duration: 200, onComplete: () => cole.destroy() });
     await UI.say('', '(Y ya no está. Nadie lo ha visto irse.)');
     await invitation();
@@ -643,6 +676,13 @@ export const SCRIPTS = {
   },
 
   // ---------------------------------------------------------- Isla Helada
+  async heladaFrio() {
+    S.set('heladaFrio');
+    await UI.say(C, [
+      '¡Brrrr! ¡Qué frío! Se me han congelado hasta las orejas. Y tengo MUCHA oreja.',
+      'Esto es como untarse de Tiger Balm de la cabeza a los pies. Pero sin ese olorcito tan rico.',
+    ]);
+  },
   async heladoncio(scene) {
     const H = 'Heladoncio';
     // Curiosidad (no es obligatoria ni da regalo): devolverle el sombrero que se le voló
@@ -982,8 +1022,11 @@ export const SCRIPTS = {
   // ---------------------------------------------------------- Fitness Bartory (el gimnasio de Bart)
   async bart(scene) {
     const B = 'Bart';
+    // La primera vez: «combate» gratuito, sin mediar palabra (escena combate.js); Bart lo corta y sigue su charla
+    if (!S.flag('bartPelea')) { S.set('bartPelea'); return scene.startScene('combate', 26, 18); }
     if (!S.flag('metBart')) {
-      await UI.say(B, BART_INTRO);
+      // Justo después del «combate», la bienvenida empieza de cero
+      await UI.say(B, S.flag('bartPelea') ? ['Bueno. Empecemos de cero.', ...BART_INTRO] : BART_INTRO);
       S.set('metBart');
     } else if (!S.flag('cali')) {
       await UI.say(B, ['¡Has vuelto! Sabía que la barra te llamaba. La barra siempre llama.', BART_MAS[(S.d.flags.bartN = ((S.d.flags.bartN || 0) + 1)) % BART_MAS.length]]);
@@ -1057,6 +1100,44 @@ export const SCRIPTS = {
     S.d.socks.push('s12'); S.save();
     const d = SOCK_DESIGN.s12, pair = S.d.socks.filter((s) => SOCK_DESIGN[s] === d).length === 2;
     give(`{sock_${d}} Calcetín ${SOCK_DESIGNS[d]}${pair ? ': ¡ya tienes la pareja!' : ''} (${S.d.socks.length}/${TOTAL_SOCKS})`);
+  },
+
+  // Al alejarse de alguien con quien ya se ha terminado sin darle la invitación, Colgadín se lo pregunta (una vez por
+  // personaje). Solo si hace un rato que está pendiente, para no saltar justo al acabar su prueba.
+  async remindInvite() {
+    if (!S.flag('invites')) return;
+    const now = Date.now(), seen = remindSeen;
+    const due = CHARACTERS.filter((c) => {
+      const r = INVITE_READY[c.id];
+      if (!r || !S.flag(r[0]) || S.d.invited.includes(c.id) || S.flag('rem_' + c.id)) return false;
+      seen[c.id] = seen[c.id] || now;
+      return now - seen[c.id] > 15000;
+    });
+    if (!due.length) return;
+    const c = due[0];
+    S.set('rem_' + c.id);
+    await UI.say(C, `Un momento… ¿Le he dado la invitación ${INVITE_READY[c.id][1]}?`);
+  },
+
+  // ---------------------------------------------------------- Puestos y tiendas
+  async taiyaki() {
+    const V = 'Vendedor de taiyakis';
+    if (S.d.gifts.includes('taiyaki')) return UI.say(V, 'Siguen calentitos. ¿Por dónde se empiezan, por la cola o por la cabeza? Aquí hay debates que acaban a gritos.');
+    await UI.say(V, ['¡Taiyakis calentitos! Pastelitos con forma de pez, rellenos de anko.', 'Con este frío se venden solos. Y te calientan las manos de camino.']);
+    await UI.say(C, 'Son para el cumpleaños de Cait. ¿Me pones unos cuantos?');
+    await UI.say(V, '¿Para Cait? Entonces invita la casa. Toma: una bolsita, recién salidos de la plancha.');
+    gift('taiyaki');
+  },
+  async mochis() {
+    const V = 'Vendedora de mochis';
+    if (S.d.gifts.includes('mochis')) return UI.say(V, 'Los capybaras vienen todas las tardes a mirar los mochis. No compran nada. Solo miran. Mucho rato.');
+    await UI.say(V, ['¡Mochis! De fresa, de matcha, de sésamo negro… Blanditos como un cojín.', 'Por eso estoy aquí, en esta esquina: no queremos hacerle la competencia a los mazapanes. En este castillo, el mazapán es sagrado.']);
+    await UI.say(C, '¿Me preparas una cajita? Es para el cumpleaños de Cait.');
+    await UI.say(V, '¡Claro! Una de cada sabor. Llévala con cuidado, que se pegan a todo.');
+    gift('mochis');
+  },
+  async comics() {
+    await UI.say('', ['DOKI DOKI MANGA. En el escaparate: mangas, tebeos, figuritas y un póster enorme de una chica mágica con coletas.', 'Hay dos carteles pegados en la puerta, escritos con mucha rabia: «NO SOMOS PUNTO DE RECOGIDA DE PAQUETES» y «ESTO NO ES UNA BIBLIOTECA».', '(Debajo, alguien ha dejado un paquetito. Con una nota: «Vuelvo luego a por él. Y a terminarme el tomo 12».)']);
   },
 
   // ---------------------------------------------------------- Vecinos

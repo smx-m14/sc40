@@ -57,12 +57,17 @@ export class WorldScene extends Phaser.Scene {
     this.saveT = 0;
     UI.minibar(null);
     UI.hud(true);
-    Sound.music(m.music);
+    // Música de la zona donde aparece Colgadín (no la general del mapa): si nada más llegar salta un diálogo, la zona
+    // no se comprueba hasta que acaba, y sonaba la del mapa (p. ej., la de la Isla Helada al volver al gimnasio)
+    const t0 = this.tileOf(), reg0 = m.regions.find((r) => t0.x >= r.x0 && t0.x <= r.x1 && t0.y >= r.y0 && t0.y <= r.y1);
+    Sound.music((reg0 && reg0.music) || m.music);
     if (m.id !== 'isla') UI.zone(m.name);
     Input.clear();
 
     if (m.id === 'cait' && !State.flag('intro')) this.run('intro');
     else if (m.id === 'cait' && !State.flag('fin')) this.run('fiestaCheck');
+    else if (m.id === 'helada' && !State.flag('heladaFrio')) this.run('heladaFrio'); // la primera vez que llega
+    if (State.after) { const s = State.after; State.after = null; this.run(s); } // guion pendiente al volver de una escena
   }
 
   drawGround() {
@@ -270,6 +275,7 @@ export class WorldScene extends Phaser.Scene {
         if (reg) UI.zone(reg.name); else if (this.region === undefined) UI.zone(this.map.name);
         this.region = reg;
         Sound.music((reg && reg.music) || this.map.music);
+        if (!this.running) this.run('remindInvite'); // ¿se ha quedado alguien sin invitación?
         if (reg && reg.jingle) Sound.jingle(reg.jingle); // sintonía que suena una sola vez al entrar en la zona
       }
 

@@ -34,7 +34,7 @@ export const STEPS = [
   { id: 'globos', label: 'Globos (awawas de Kapadokya)', flag: 'globos', apply() { f('metSiri', 'globos'); inv('siri'); } },
   { id: 'gramola', label: 'Prueba de oído de Fucsia', flag: 'gramola', apply() { f('metFuxia', 'gramola'); inv('fuxia'); } },
   { id: 'paella', side: true, label: 'Paella de Perrunfli', flag: 'paella', apply() { f('metPerrunfli', 'paella'); gift('mocadora'); inv('perrunfli'); } },
-  { id: 'owiquis', side: true, label: 'Mesa de guerra: Owitos de la Inquisición', flag: 'owiquis', apply() { f('owiquis'); inv('inquisicion'); } },
+  { id: 'owiquis', side: true, label: 'Mesa de guerra: Owitos de la Inquisición', flag: 'owiquis', apply() { f('owiquis'); inv('inquisicion'); gift('sushigo'); } },
   { id: 'hat', side: true, label: 'Curiosidad: sombrero de Heladoncio', flag: 'hat', apply() { f('metHel', 'hatAsk', 'hatGot', 'hat'); } },
 ];
 
@@ -67,7 +67,7 @@ export const UNDO = {
   globos: { at: ['isla', 46, 35], undo() { no('globos'); } },
   gramola: { at: ['isla', 15, 31], undo() { no('gramola'); S.d.flags.fuxiaPts = 0; } },
   paella: { at: ['isla', 24, 26], undo() { no('paella', 'metPerrunfli', 'perrunfliVa'); } }, // también la presentación y lo del valenciano
-  owiquis: { at: ['castillo', 5, 20], undo() { no('owiquis'); } },
+  owiquis: { at: ['castillo', 5, 20], undo() { no('owiquis'); S.d.gifts = S.d.gifts.filter((g) => g !== 'sushigo'); } }, // también el regalo de Coleowe
   hat: { at: ['helada', 5, 9], undo() { no('hat', 'hatGot'); } },
 };
 export function undoStep(id) {
