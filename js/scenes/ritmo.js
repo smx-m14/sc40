@@ -14,6 +14,10 @@ import { GENERATED } from '../songs-data.js';
 const SONG = 'andamios2';
 const BPM = GENERATED[SONG].bpm, BEAT = 60000 / BPM, EIGHTH = BEAT / 2, BAR = BEAT * 4;
 const WIN = Math.min(135, EIGHTH * 0.48); // margen para acertar un golpe (ms), sin llegar a pisar la corchea de al lado
+// En pantalla táctil cuesta mucho más clavarlo: el toque llega tarde (unos 80 ms) y el dedo es menos preciso que una
+// tecla. Se compensa ese retraso y se da más margen.
+const TOUCH_LAG = 80, WIN_TOUCH = Math.min(165, EIGHTH * 0.66);
+const win = () => (Input.touchA ? WIN_TOUCH : WIN);
 const CYCLE = ['count', 'call', 'count2', 'resp', 'rest'];
 
 // Tonos en armonía con la música: los martillazos del gato, los de Colgadín y los clics de la cuenta suenan en
@@ -136,7 +140,7 @@ export class RitmoScene extends Phaser.Scene {
     const used = new Set();
     let ok = true;
     for (const t of targets) {
-      const i = this.presses.findIndex((p, j) => !used.has(j) && Math.abs(p - t) <= WIN);
+      const i = this.presses.findIndex((p, j) => !used.has(j) && Math.abs(p - t) <= win());
       if (i < 0) ok = false; else used.add(i);
     }
     if (used.size !== this.presses.length) ok = false; // golpes de más
@@ -173,20 +177,20 @@ export class RitmoScene extends Phaser.Scene {
       const ph = this.phase(now);
       this.bar = ph.b;
       // la respuesta se evalúa un poco después de acabar su compás, para admitir el último golpe algo tarde
-      if (ph.kind === 'rest' && now - ph.start >= WIN && !this.judged.has(ph.b)) {
+      if (ph.kind === 'rest' && now - ph.start >= win() && !this.judged.has(ph.b)) {
         this.judged.add(ph.b);
         this.judge(ph.start - BAR);
         if (this.lock || this.done) return;
       }
       if (ph.kind === 'call') this.result = '';
       if (Input.take('a')) {
-        const t = (Input.t.a || now) - this.latency();
+        const t = (Input.t.a || now) - this.latency() - (Input.touchA ? TOUCH_LAG : 0);
         // se admite el primer golpe un pelín adelantado (al final de la cuenta) y el último algo tarde
-        const early = ph.kind === 'count2' && ph.start + BAR - t <= WIN + 60; // el primer golpe, con algo más de margen
-        if (ph.kind === 'resp' || early || (ph.kind === 'rest' && now - ph.start < WIN)) {
+        const early = ph.kind === 'count2' && ph.start + BAR - t <= win() + 60; // el primer golpe, con algo más de margen
+        if (ph.kind === 'resp' || early || (ph.kind === 'rest' && now - ph.start < win())) {
           const start = ph.kind === 'resp' ? ph.start : early ? ph.start + BAR : ph.start - BAR;
           this.presses.push(t);
-          const hit = PATTERNS[this.pat % PATTERNS.length].some((e) => Math.abs(start + e * EIGHTH - t) <= WIN);
+          const hit = PATTERNS[this.pat % PATTERNS.length].some((e) => Math.abs(start + e * EIGHTH - t) <= win());
           // acierto: la quinta del acorde que suena (contesta al gato en armonía); fallo: zumbido grave, a propósito
           this.at(now, hit ? (HARMONIC ? hz(this.rootAt(now), 3, 7) : 196) : 120, 0.1, hit ? 'square' : 'sawtooth', 0.14);
           this.colHit = 1;

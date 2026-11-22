@@ -214,16 +214,18 @@ export class WorldScene extends Phaser.Scene {
       let d = Input.dir();
       // Toque corto en la cruceta táctil: un paso de una baldosa justa, hasta el centro de la siguiente
       if (Input.nudge) {
-        const v = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[Input.nudge], t0 = this.tileOf();
-        this.nudgeTo = { x: (t0.x + v[0]) * TILE + 8, y: (t0.y + v[1]) * TILE + 12, v };
+        // Solo en el eje del toque (nada de diagonales): hasta el centro de la siguiente baldosa en esa dirección
+        const v = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[Input.nudge];
+        const ahead = (pos, off, dir) => { const c = Math.floor((pos - off) / TILE) * TILE + off; let t = dir > 0 ? (c > pos ? c : c + TILE) : (c < pos ? c : c - TILE); if (Math.abs(t - pos) < 4) t += dir * TILE; return t; };
+        this.nudgeTo = v[0] ? { axis: 'x', to: ahead(p.x, 8, v[0]), v } : { axis: 'y', to: ahead(p.y, 12, v[1]), v };
         Input.nudge = null;
       }
       if (d.x || d.y) this.nudgeTo = null;
       else if (this.nudgeTo) {
-        const g = this.nudgeTo, rx = g.x - p.x, ry = g.y - p.y;
-        if (Math.abs(rx) + Math.abs(ry) < 1 || this.blocked(p.x + g.v[0] * 2, p.y + g.v[1] * 2)) this.nudgeTo = null;
-        else d = { x: Math.sign(Math.round(rx)) || 0, y: Math.sign(Math.round(ry)) || 0 };
-        if (this.nudgeTo && Math.hypot(rx, ry) < SPEED * dt) { p.x = g.x; p.y = g.y; this.nudgeTo = null; d = { x: 0, y: 0 }; }
+        const g = this.nudgeTo, r = g.to - p[g.axis];
+        if (Math.abs(r) < 1 || this.blocked(p.x + g.v[0] * 2, p.y + g.v[1] * 2)) this.nudgeTo = null;
+        else if (Math.abs(r) <= SPEED * dt) { p[g.axis] = g.to; this.nudgeTo = null; p.moving = true; }
+        else d = { x: g.v[0], y: g.v[1] };
       }
       if (d.x || d.y) {
         const n = Math.hypot(d.x, d.y), vx = (d.x / n) * SPEED * dt, vy = (d.y / n) * SPEED * dt;

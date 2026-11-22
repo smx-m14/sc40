@@ -13,7 +13,7 @@ export const FUXIA_SONGS = [
  {
   "id": "03",
   "artist": "Billie Eilish",
-  "title": "Birds of a feather"
+  "title": "What was I made for"
  },
  {
   "id": "04",

@@ -23,8 +23,8 @@ export class MonosScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#1f4a2e').fadeIn(250);
     UI.hud(false);
     Sound.music('bosque');
-    Sound.clip('monos', 0.35);
     this.idx = 0;
+    Sound.preload('mono1', 'mono2');
     this.loadLevel(true);
   }
 
@@ -100,7 +100,7 @@ export class MonosScene extends Phaser.Scene {
     const to = lv.seq[this.t % lv.seq.length], m = this.monos[to];
     this.passes.push(to);
     this.bar();
-    Sound.sfx('step');
+    Sound.clip('mono2', 0.7); // los monos se pasan a Tigrito
     const sx = this.tig.x, sy = this.tig.y, ex = m.spr.x, ey = m.spr.y - 15;
     this.tweens.addCounter({
       from: 0, to: 1, duration: 260,
@@ -125,13 +125,12 @@ export class MonosScene extends Phaser.Scene {
   }
 
   async caught() {
-    Sound.sfx('get');
+    Sound.clip('mono1', 0.8); // ¡les quitamos a Tigrito!
     this.tweens.add({ targets: this.tig, y: this.col.y + 10, duration: 200 });
     this.cameras.main.flash(200, 255, 240, 160);
     await new Promise((r) => this.time.delayedCall(600, r));
     this.idx++;
     if (this.idx < LEVELS.length) {
-      Sound.clip('monos', 0.35);
       await UI.say('Colgadín', AFTER[this.idx - 1]);
       this.loadLevel(false);
       return;

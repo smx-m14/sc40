@@ -14,7 +14,7 @@ const LEVELS = [
   { up: 1.1, every: 0.65, sock: 0.4 },
   { up: 0.8, every: 0.5, sock: 0.33 },
 ];
-const SOCK = 'sock_9'; // su calcetín de jugar (no es ninguno de los 20 de la isla)
+const SOCK = 'sock_6'; // su calcetín de jugar: el rosa de lunares (s12), el que luego le regalan a Colgadín
 
 export class AwawasScene extends Phaser.Scene {
   constructor() { super('awawas'); }

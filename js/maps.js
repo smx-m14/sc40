@@ -97,10 +97,6 @@ function isla() {
   // Edificios y decorado
   m.obj('house_cait', 21, 9, 3, 2, { open: [[22, 10]] });
   m.obj('house_lolete', 10, 16, 3, 2, { open: [[11, 17]] });
-  // Tienda de cómics «Doki Doki Manga», enfrente del Biang Biang (al otro lado del camino), con su caminito
-  m.obj('comics', 18, 15, 3, 2);
-  path(18, 17, 21, 17); // delante de toda la fachada, como en el Biang Biang
-  for (const tx of [18, 19, 20]) m.ent({ id: 'comics' + tx, tx, ty: 16, script: 'comics' });
   m.obj('house_fuxia', 12, 28, 3, 2, { open: [[13, 29]] });
   m.obj('house_a', 14, 9, 3, 2);
   m.obj('house_b', 14, 16, 3, 2);
@@ -136,8 +132,9 @@ function isla() {
   m.ent({ id: 'cuy_templo', npc: 'cuy', tx: 33, ty: 12, solid: true, script: 'cuca', when: () => S.flag('cuyTemple') });
   m.ent({ id: 'biang', tx: 24, ty: 16, script: 'biang' });
   m.ent({ id: 'perrunfli', npc: 'perrunfli', tx: 24, ty: 25, solid: true, script: 'perrunfli' });
-  m.ent({ id: 'door_a', tx: 15, ty: 10, script: 'houseA' });
-  m.ent({ id: 'door_b', tx: 15, ty: 17, script: 'houseB' });
+  // Vecinos intercambiados: en la casa azul (la de al lado de Cait) vive la vecina de los peluches; en la verde, la nota del Combini
+  m.ent({ id: 'door_a', tx: 15, ty: 10, script: 'houseB' });
+  m.ent({ id: 'door_b', tx: 15, ty: 17, script: 'houseA' });
   m.ent({ id: 'door_law', tx: 21, ty: 29, script: 'houseLaw' });
   m.ent({ id: 'door_c', tx: 25, ty: 29, script: 'houseC' });
   m.ent({ id: 'sign_law', tex: 'sign', tx: 23, ty: 30, solid: true, script: 'signLaw' });
@@ -195,6 +192,13 @@ function isla() {
     m.block[y][x] = false;
   };
   const extra = (tex, x, y) => { clear(x, y); m.obj(tex, x, y); };
+  // Tienda de cómics «Doki Doki Manga», enfrente del Biang Biang (al otro lado del camino), con su caminito. Va aquí,
+  // después del reparto de árboles: si se pone antes, cambia el sorteo y se mueven todos los árboles (y los calcetines
+  // se quedan sin nada delante)
+  for (let y = 15; y <= 17; y++) for (let x = 18; x <= 21; x++) clear(x, y);
+  m.obj('comics', 18, 15, 3, 2);
+  path(18, 17, 21, 17); // delante de toda la fachada, como en el Biang Biang
+  for (const tx of [18, 19, 20]) m.ent({ id: 'comics' + tx, tx, ty: 16, script: 'comics' });
   // Entrada de casa de Cait: macetitas y el cartel con su nombre
   extra('pot_r', 20, 10); extra('pot_y', 24, 10); extra('pot_p', 21, 11); extra('pot_v', 23, 11);
   clear(20, 11); m.ent({ id: 'sign_cait', tex: 'sign_cait', tx: 20, ty: 11, solid: true, script: 'signCait' });
@@ -239,7 +243,7 @@ function cait() {
   m.obj('kallax_cait', 7, 2);
   m.obj('tvunit_cait', 8, 2, 2, 1);
   // La lámpara de pie se puede apagar y encender (al apagarla, la casa se oscurece)
-  m.ent({ id: 'lampCait', tx: 11, ty: 2, solid: true, texFn: () => (State.flag('lampOff') ? 'floorlamp_cait_off' : 'floorlamp_cait'), script: 'lampCait' });
+  m.ent({ id: 'lampCait', tx: 11, ty: 8, solid: true, texFn: () => (State.flag('lampOff') ? 'floorlamp_cait_off' : 'floorlamp_cait'), script: 'lampCait' });
   m.obj('plant', 0, 8);
   m.obj('table', 4, 3, 2, 1);
   m.obj('sofa_cait2', 8, 8, 3, 1);
@@ -312,6 +316,8 @@ function ratitas() {
   m.beam = { src: [5, 8], dir: [0, 1], mirrors: PEDS.map(([id, tx, ty]) => ({ id, tx, ty })), fixed: FIXED.map(([tx, ty, st]) => ({ tx, ty, st })), gems: GEMS, target: [23, 8], stop: [24, 8] };
   m.ent({ id: 'kai_sleep', tex: 'kai_sleep', tx: 24, ty: 8, solid: true, script: 'kaiSleep', when: () => !S.flag('kai') });
   m.ent({ id: 'kai', npc: 'kai', tx: 23, ty: 8, solid: true, script: 'kai', when: () => S.flag('kai') });
+  // Al cruzar la puerta del cuarto de Cuy, con Kai ya despierto, Colgadín le deja la invitación de paso
+  m.ent({ id: 'kai_door', kind: 'step', tx: 24, ty: 7, script: 'kaiDoor', when: () => S.flag('kai') && !S.d.invited.includes('kai') });
   m.ent({ id: 'hatch', tx: 27, ty: 10, solid: true, texFn: () => (S.flag('hatchOpen') ? 'hatch_open' : 'hatch'), script: 'hatch' });
 
   // Cuarto 1: cocina de la ratita gris (quesos de menor a mayor) y nevera con imanes
@@ -372,7 +378,9 @@ function castillo() {
   // Puesto de mochis, en la esquina de abajo a la derecha, con su camino desde el de la Pastelería (regalo para Cait)
   path(32, 20, 32, 25); path(32, 25, 34, 25);
   m.obj('stall_mochi', 33, 24, 2, 1);
+  sock(m, 's21', 9, 17, 6); sock(m, 's23', 25, 22, -6); // calcetines 21 y 23, detrás de un árbol
   for (const tx of [33, 34]) m.ent({ id: 'mochi' + tx, tx, ty: 24, script: 'mochis' });
+  m.ent({ id: 'vend_mochi', npc: 'owito_m', tx: 35, ty: 24, solid: true, script: 'mochis' }); // la vendedora, junto al puesto
 
   // Plaza Principal
   m.obj('fountain', 19, 14, 2, 2);
@@ -473,11 +481,14 @@ function helada() {
   m.obj('stall_taiyaki', 15, 10, 2, 1);
   path(15, 11, 18, 11); // caminito desde el camino central hasta el mostrador
   for (const tx of [15, 16]) m.ent({ id: 'taiyaki' + tx, tx, ty: 10, script: 'taiyaki' });
+  m.ent({ id: 'vend_taiyaki', npc: 'owito_x', tx: 17, ty: 10, solid: true, script: 'taiyaki' }); // un Owito de Navidad, junto al puesto
   m.ent({ id: 'gym_door', tx: 23, ty: 17, script: 'gymDoor' });
   m.ent({ id: 'bart', npc: 'bart', tx: 26, ty: 17, solid: true, script: 'bart' });
   m.ent({ id: 'ovejoncio', npc: 'ovejoncio', tx: 27, ty: 11, solid: true, script: 'ovejoncio' });
 
-  m.ent({ id: 'narwal', tex: 'narwal', tx: 21, ty: 23, ox: 6, oy: 6, solid: true, script: 'narwalBack', bob: true });
+  m.ent({ id: 'narwal', tex: 'narwal', tx: 21, ty: 23, ox: 6, oy: 6, solid: true, script: 'narwalBack', bob: true, when: () => S.flag('narwal') });
+  // Sin Narwal (se ha llegado con el truco #frozen): al final del muelle no hay quien te lleve de vuelta
+  m.ent({ id: 'dock_end', tx: 21, ty: 23, solid: true, script: 'heladaAtrapado', when: () => !S.flag('narwal') });
   m.ent({ id: 'heladoncio', npc: 'heladoncio', tx: 22, ty: 8, solid: true, script: 'heladoncio', when: () => !S.flag('hat') });
   m.ent({ id: 'heladoncio_h', npc: 'heladoncioh', tx: 22, ty: 8, solid: true, script: 'heladoncio', when: () => S.flag('hat') }); // con su sombrero
   // Curiosidad: el sombrero de Heladoncio se voló y acabó pegado al lado izquierdo de la Casa de la Navidad, por detrás de
@@ -491,6 +502,7 @@ function helada() {
   // Los Owitos de Navidad, uno a cada lado del camino, simétricos respecto a la puerta
   m.ent({ id: 'owito_n', npc: 'owito_n', tx: 6, ty: 11, solid: true, script: 'navidad' });
   m.ent({ id: 'owito_r', npc: 'owito_r', tx: 9, ty: 11, solid: true, script: 'navidad' });
+  sock(m, 's22', 30, 16, -6); sock(m, 's24', 5, 14, 6); // detrás de un pino
   sock(m, 's8', 3, 11, 6); sock(m, 's9', 34, 8, -6); sock(m, 's13', 26, 6, 6); sock(m, 's19', 10, 17, -6);
 
   m.regions = [

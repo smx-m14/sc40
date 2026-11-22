@@ -5,6 +5,7 @@ import { traceBeam } from './beam.js';
 import { UI } from './ui.js';
 import { Sound } from './audio.js';
 import { gachaIcon } from './art.js';
+import { buildMap, MAP_IDS } from './maps.js';
 import { fuxiaQuiz, GOAL } from './fuxia.js';
 
 const S = State;
@@ -102,16 +103,46 @@ const BART_MAS = [
 let cheeseStep = 0;
 const remindSeen = {}; // desde cuándo está pendiente cada invitación (para remindInvite)
 
+// ---------------------------------------------------------------- Trucos («cheatcodes»)
+// Se escriben en la hoja de reclamaciones de Aeroflot empezando por «#». No hacen nada en el momento: Aeroflot
+// devuelve un papelito con la pista en ruso, y hay que llevárselo a Cuca (con Cuy de traductor) para que surta efecto.
+// Para añadir uno: una entrada aquí con `once` (si solo vale una vez) y `run(scene)`, que devuelve lo que dice Cuy
+// (o [lo que dice Cuy, función que se ejecuta después], p. ej. para teletransportar).
+const CHEATS = {
+  wherearemysocks: { run: () => sockClue() },
+  frozen: { // a la Isla Helada sin pasar por Narwal… y sin billete de vuelta
+    run: (scene) => ['Dice que te abrigues bien. Y que cierres los ojos.', () => scene.warp('helada', 19, 22, 'up')],
+  },
+  gimmemoney: {
+    run: () => { S.d.coins++; S.save(); give('{coin} +1 moneda de gachapón'); return 'Dice que tengas esta moneda. Que es para el gachapón, no para gastártela en mazapanes.'; },
+  },
+};
+// Dónde buscar un calcetín que falta: primero los que completarían una pareja (para Scooby), luego cualquiera
+function sockClue() {
+  const missing = Object.keys(SOCK_DESIGN).filter((id) => !S.d.socks.includes(id));
+  if (!missing.length) return 'Dice que ya tienes todos los calcetines. Que dejes de buscar debajo de las camas.';
+  const half = missing.filter((id) => S.d.socks.some((s) => SOCK_DESIGN[s] === SOCK_DESIGN[id]));
+  const id = (half.length ? half : missing)[0];
+  for (const mid of MAP_IDS) {
+    const m = buildMap(mid), e = m.ents.find((x) => x.id === id);
+    if (!e) continue;
+    const reg = m.regions.find((r) => e.tx >= r.x0 && e.tx <= r.x1 && e.ty >= r.y0 && e.ty <= r.y1)
+      || m.regions.slice().sort((a, b) => Math.hypot((a.x0 + a.x1) / 2 - e.tx, (a.y0 + a.y1) / 2 - e.ty) - Math.hypot((b.x0 + b.x1) / 2 - e.tx, (b.y0 + b.y1) / 2 - e.ty))[0];
+    return `Dice que busques un calcetín ${SOCK_DESIGNS[SOCK_DESIGN[id]]} en ${m.name}${reg ? `, cerca de ${reg.name}` : ''}. Escondido detrás de algo, como siempre.`;
+  }
+  return `Dice que el calcetín ${SOCK_DESIGNS[SOCK_DESIGN[id]]} lo tienen los awawas de Kapadokya. Que se lo ganes jugando.`;
+}
+
 // Coleowe le trae a Colgadín un juego de mesa para Cait: tiene tres, pero solo uno le parece buena idea
 async function coleoweGift() {
   if (S.d.gifts.includes('sushigo')) return;
   await UI.say('Coleowe', 'Te he traído un juego de mesa. Para Cait. Tengo tres. Elige.');
   const NO = {
     Root: ['Root. Gatos con ejército, pájaros burócratas y un mapa enorme…', 'Seguro que Mindeos se queda dormido a mitad de la partida jugando con Cait. Roncando encima del bosque. ¿No prefieres otro?'],
-    'Rue Morgue': ['Rue Morgue. Una morgue, cadáveres, investigaciones a medianoche…', 'Si Cait lo saca, creo que Mindeos va a huir corriendo. Y no volverá a por su abrigo. ¿No prefieres otro?'],
+    Zombicide: ['Zombicide. Una ciudad infestada de zombis, supervivientes a la desesperada y un montón de miniaturas que preparar antes de empezar…', 'Si Cait lo saca, creo que Mindeos va a huir corriendo. Más rápido que de los propios zombis. ¿No prefieres otro?'],
   };
   for (;;) {
-    const opts = ['Root', 'Rue Morgue', 'Sushi Go!'];
+    const opts = ['Root', 'Zombicide', 'Sushi Go!'];
     const pick = opts[await UI.choose('Coleowe', '¿Cuál le llevas a Cait?', opts)];
     if (NO[pick]) { await UI.say('Coleowe', NO[pick]); continue; }
     await UI.say('Coleowe', 'Sushi Go. Ese está bien: facilito, rapidito, sin montajes, ni tablets, ni libros de instrucciones de cuarenta páginas. Todos contentos.');
@@ -278,6 +309,13 @@ export const SCRIPTS = {
       invite('kai', 'Kai');
     }
   },
+  async kaiDoor() {
+    if (S.flag('invites') && !S.d.invited.includes('kai')) {
+      await UI.say('', 'Al pasar, Colgadín le deja a Kai su invitación al lado. Kai la pisa sin soltar el puntito de luz. En idioma gato, eso es que sí.');
+      invite('kai', 'Kai');
+    }
+    return true; // es un paso de puerta: Colgadín sigue su camino
+  },
   async mirror(scene, ent) {
     if (S.flag('kai')) return UI.say('', 'El espejo está justo donde tiene que estar. Mejor no tocarlo.');
     const f = S.d.flags, ids = scene.map.beam.mirrors.map((m) => m.id);
@@ -412,10 +450,13 @@ export const SCRIPTS = {
       await UI.say(Y, ['¡Cui, cui! ¿Quién ha despertado a Kai? …¡Colgadín!', 'Antes de nada, una pregunta. Es muy importante.']);
       S.set('metCuy');
     }
-    const OK = '¡Claro! ¡Está con Scooby!';
-    const opts = shuffle([OK, '¿Qué Cuca?', 'Quieres decir ¿Беа?']);
-    if (opts[await UI.choose(Y, '¿Has visto a Cuca?', opts)] !== OK) {
+    const OK = '¡Claro! ¡Está con Scooby!', BEA = 'Quieres decir ¿Беа?';
+    const opts = shuffle([OK, '¿Qué Cuca?', BEA]);
+    const pick = opts[await UI.choose(Y, '¿Has visto a Cuca?', opts)];
+    if (pick !== OK) {
       Sound.sfx('bad');
+      // «Беа» era su nombre antiguo, y no le gusta nada que la llamen así
+      if (pick === BEA) return UI.say(Y, ['¡¿Беа?! ¡Cui! ¡Ese es su nombre de antes!', 'No le gusta NADA que la llamen así. Si te oye, te contesta en ruso. Y no precisamente cosas bonitas.']);
       return UI.say(Y, '…Cui. (Cuy se da la vuelta, muy serio. Quizá esperaba otra respuesta.)');
     }
     await UI.say(Y, [
@@ -501,11 +542,11 @@ export const SCRIPTS = {
     if (!S.flag('metCapys')) {
       await UI.say(K, [
         '…',
-        'Nosotros solo queremos hacer un xapu en nuestro estanque. Pero entre los juncos hay ALGO.',
+        'Nosotros solo queremos pegarnos un chapu en nuestro estanque. Pero entre los juncos hay ALGO.',
         'Hace un ruido espantoso. «Cuac». Así, sin avisar. Dicen que es un pato feroz.',
       ]);
       S.set('metCapys');
-    } else await UI.say(K, '…Sigue ahí. Ha vuelto a hacer «cuac». Así no hay quien haga un xapu.');
+    } else await UI.say(K, '…Sigue ahí. Ha vuelto a hacer «cuac». Así no hay quien se pegue un chapu.');
     if (await UI.choose(C, '¿Me acerco a ver qué hay entre los juncos?', ['Con mucho cuidado', 'Ahora no']) !== 0) return;
     scene.startScene('pato', 27, 12);
   },
@@ -516,15 +557,15 @@ export const SCRIPTS = {
     ]);
     await UI.say(C, 'No son ratones: son capybaras. Y están aterrados… de ti.');
     await UI.say('Patito', ['¿De mí? Si yo ni siquiera soy un pato. Me llaman Patito porque soy amarillo.', 'De pequeño me tragué el altavoz de un pato de juguete. Desde entonces, cuando me pongo nervioso, me sale el «cuac».']);
-    await UI.say('Capybara', '¿Ese era el monstruo? Pero si es blandito. Anda, ven a hacer un xapu, que hay sitio para todos.');
+    await UI.say('Capybara', '¿Ese era el monstruo? Pero si es blandito. Anda, ven a pegarte un chapu, que hay sitio para todos.');
     Sound.logro();
     S.set('pato');
-    await UI.say('Capybara', ['Gracias, Colgadín. Te debemos un xapu. Cuando quieras, hay sitio.', 'Y llévale esto a Cait de nuestra parte: un centro con las flores de loto más bonitas del estanque.']);
+    await UI.say('Capybara', ['Gracias, Colgadín. Te debemos un chapu. Cuando quieras, hay sitio.', 'Y llévale esto a Cait de nuestra parte: un centro con las flores de loto más bonitas del estanque.']);
     gift('flores');
     invite('patito', 'Patito');
     invite('capybaras', 'los capybaras');
   },
-  async capybarasHappy() { invite('capybaras', 'los capybaras'); await UI.say('Capybara', 'Glu, glu, glu. Por fin, un xapu. El agua está a la temperatura exacta de no hacer nada. A la fiesta vamos, pero despacio.'); },
+  async capybarasHappy() { invite('capybaras', 'los capybaras'); await UI.say('Capybara', 'Glu, glu, glu. Por fin, un chapu. El agua está a la temperatura exacta de no hacer nada. A la fiesta vamos, pero despacio.'); },
   async patito() { invite('patito', 'Patito'); await UI.say('Patito', 'Cuac. Es broma, ya no estoy nervioso. Bueno, un poco. ¿En la fiesta habrá ratones gigantes?'); },
   async teatro(scene) {
     const O = 'Owitos del Teatro';
@@ -644,7 +685,8 @@ export const SCRIPTS = {
   async owitoC() { await UI.say('Owito de la suerte', 'El rosa combina bien con el verde. Lo dice el libreto, lo dice el telón y lo digo yo.'); },
   async mantecas(scene) {
     const M = 'Mantecas';
-    if (S.flag('horno')) return UI.say(M, 'La muralla ha quedado para comérsela. Pero NO te la comas. Te estoy mirando. Bueno, no: tengo los ojos cerrados. Pero te oigo masticar.');
+    const bye = () => UI.say('Manteca2', '¡Dragsta pronto, shiushi!'); // al despedirse
+    if (S.flag('horno')) { await UI.say(M, 'La muralla ha quedado para comérsela. Pero NO te la comas. Te estoy mirando. Bueno, no: tengo los ojos cerrados. Pero te oigo masticar.'); return bye(); }
     if (!S.flag('metMantecas')) {
       await UI.say(M, '¡Bienvenido a la Pastelería Real! Yo soy Mantecas y aquí tienes a Manteca2. Últimamente le ha dado muy fuerte con Drag Race.');
       await UI.say('Manteca2', '¡Hola, hola, shiushi! ¡Bienvenido al taller! Hoy hornearemos con tacones.');
@@ -654,16 +696,17 @@ export const SCRIPTS = {
       ]);
       S.set('metMantecas');
     }
-    if (await UI.choose(M, '¿Te pones el delantal?', ['¡A hornear!', 'Ahora no']) !== 0) return;
+    if (await UI.choose(M, '¿Te pones el delantal?', ['¡A hornear!', 'Ahora no']) !== 0) return bye();
     scene.startScene('horno', 32, 19);
   },
   async manteca2() {
     const M = 'Manteca2';
-    if (await UI.choose(M, '¿Sí, shiushi? Ando a tope. Bueno, a tope de estorbar.', ['¿Vas de drag?', 'Nada, nada']) !== 0) return;
+    if (await UI.choose(M, '¿Sí, shiushi? Ando a tope. Bueno, a tope de estorbar.', ['¿Vas de drag?', 'Nada, nada']) !== 0) return UI.say(M, '¡Dragsta pronto, shiushi!');
     await UI.say(M, [
       '¡Pues sí, shiushi! Estoy experimentando con esta nueva faceta… ¡y me encanta!',
       'Mis reinas son Kandy Krush y Wasabi Spice. Kandy va de kawaii, pero es malísima. Y Wasabi tiene una lengua afiladísima. ¡Por eso me encantan! ¡Harían tan buena pareja!',
       'Peluca cardada, tiara, pestañas hasta el techo… ¿Para cuándo un lipsync?',
+      '¡Dragsta pronto, shiushi!',
     ]);
   },
   async hornoDone() {
@@ -702,7 +745,7 @@ export const SCRIPTS = {
     if (!S.flag('metHel')) {
       await UI.say(H, [
         'Bienvenido a SWEET FAMOSA, la fábrica de pasteles más dulce del hemisferio helado. Soy Heladoncio, maestro pastelero.',
-        '¿Ves las cascadas? Chocolate negro, chocolate blanco, crema de Speculoos y crema de pistacho. Los panettones se rellenan hasta que revientan. Así debe ser.',
+        '¿Ves las cascadas? Chocolate negro, chocolate blanco, crema de Lotus y crema de pistacho. Los panettones se rellenan hasta que revientan. Así debe ser.',
         '¿Una tarta para Cait? Me encantaría… pero cada pastel que sale del horno se lo lleva un cerdito rosa antes de que nadie pueda probarlo.',
       ]);
       S.set('metHel');
@@ -743,7 +786,7 @@ export const SCRIPTS = {
   },
   async sfDoor(scene) {
     await UI.say('', [
-      'SWEET FAMOSA. Por la fachada caen cascadas de chocolate negro, chocolate blanco, crema de Speculoos y crema de pistacho.',
+      'SWEET FAMOSA. Por la fachada caen cascadas de chocolate negro, chocolate blanco, crema de Lotus y crema de pistacho.',
       'Por la ventana se ve cómo rellenan un panettone. Le sale crema por arriba, por los lados y por sitios que un panettone no debería tener.',
     ]);
     // Dentro no se entra: quien atiende es Heladoncio, en la puerta. Llamar a la puerta es como hablar con él.
@@ -947,6 +990,22 @@ export const SCRIPTS = {
       return;
     }
     invite('cuca', 'Cuca');
+    const pend = S.d.flags.cheats || [];
+    if (pend.length) { // papelitos de Aeroflot: Cuca los lee y Cuy traduce
+      S.d.flags.cheats = [];
+      S.d.flags.cheatsUsed = [...new Set([...(S.d.flags.cheatsUsed || []), ...pend])];
+      S.save();
+      let after = null;
+      for (const code of pend) {
+        await UI.say('Cuca', 'Гав! Аэрофлот… хм-хм. Гав-гав!', { ruso: true });
+        const r = CHEATS[code] ? CHEATS[code].run(scene) : 'Dice que esta nota no hay quien la entienda.';
+        const [text, then] = Array.isArray(r) ? r : [r];
+        await UI.say('Cuy', text);
+        if (then && !after) after = then;
+      }
+      if (after) { after(); return true; }
+      return;
+    }
     await UI.say('Cuca', RUSO[(S.d.flags.cucaN = ((S.d.flags.cucaN || 0) + 1)) % RUSO.length], { ruso: true });
     await UI.say('Cuy', 'Dice: «' + hint() + '»');
   },
@@ -1121,7 +1180,7 @@ export const SCRIPTS = {
 
   // ---------------------------------------------------------- Puestos y tiendas
   async taiyaki() {
-    const V = 'Vendedor de taiyakis';
+    const V = 'Vendedor de taiyakis'; // un Owito de Navidad, el del gorro de árbol
     if (S.d.gifts.includes('taiyaki')) return UI.say(V, 'Siguen calentitos. ¿Por dónde se empiezan, por la cola o por la cabeza? Aquí hay debates que acaban a gritos.');
     await UI.say(V, ['¡Taiyakis calentitos! Pastelitos con forma de pez, rellenos de anko.', 'Con este frío se venden solos. Y te calientan las manos de camino.']);
     await UI.say(C, 'Son para el cumpleaños de Cait. ¿Me pones unos cuantos?');
@@ -1129,7 +1188,7 @@ export const SCRIPTS = {
     gift('taiyaki');
   },
   async mochis() {
-    const V = 'Vendedora de mochis';
+    const V = 'Vendedora de mochis'; // una Owito color melocotón
     if (S.d.gifts.includes('mochis')) return UI.say(V, 'Los capybaras vienen todas las tardes a mirar los mochis. No compran nada. Solo miran. Mucho rato.');
     await UI.say(V, ['¡Mochis! De fresa, de matcha, de sésamo negro… Blanditos como un cojín.', 'Por eso estoy aquí, en esta esquina: no queremos hacerle la competencia a los mazapanes. En este castillo, el mazapán es sagrado.']);
     await UI.say(C, '¿Me preparas una cajita? Es para el cumpleaños de Cait.');
@@ -1182,6 +1241,17 @@ export const SCRIPTS = {
     if (c !== 0) return;
     const text = await UI.prompt('Hoja de reclamaciones de Aeroflot');
     if (!text) return UI.say('Aeroflot', 'Reclamación en blanco archivada con éxito.');
+    if (text.trim().startsWith('#')) { // un truco: se devuelve un papelito con la pista para Cuca
+      const code = text.trim().slice(1).toLowerCase().replace(/[^a-z0-9]/g, ''), ch = CHEATS[code];
+      const used = S.d.flags.cheatsUsed || [], pend = S.d.flags.cheats || [];
+      if (!ch) return UI.say('Aeroflot', ['Código no reconocido.', 'Su reclamación ha sido procesada y triturada correctamente.']);
+      if (ch.once && used.includes(code)) return UI.say('Aeroflot', 'Ese código ya fue utilizado. Aeroflot no repite. Ni vuelos ni regalos.');
+      if (pend.includes(code)) return UI.say('Aeroflot', 'Ya tiene usted esa nota. Llévela a quien corresponda.');
+      S.d.flags.cheats = [...pend, code]; S.save();
+      await UI.say('Aeroflot', ['Código aceptado.', 'La máquina escupe una nota con algo escrito en ruso. Y una flecha que señala… hacia el templo.']);
+      give('{note} Nota en ruso');
+      return;
+    }
     S.d.quejas.push(text.slice(0, 300)); S.d.quejas = S.d.quejas.slice(-10);
     S.d.vales++; S.save();
     await UI.say('Aeroflot', ['Su reclamación ha sido procesada y triturada correctamente.', 'Como compensación, reciba este VALE DE AEROFLOT.']);
@@ -1221,6 +1291,13 @@ export const SCRIPTS = {
   async narwal(scene) {
     invite('narwal', 'Narwal');
     if (await UI.choose('Narwal', '¡Fiuuu! ¿Rumbo a la Isla Helada? Agárrate a la corona, que de cuerno no ando bien.', ['¡A la Isla Helada!', 'Ahora no']) === 0) scene.warp('helada', 19, 22, 'up');
+  },
+  // En el muelle de la Isla Helada sin haber llamado a Narwal (se llegó con el truco #frozen)
+  async heladaAtrapado(scene) {
+    await UI.say(C, ['Ni un barco, ni una barca, ni un triste flotador…', 'Me he quedado atrapado para siempre en esta isla. Tenía que haber pensado en cómo volver.']);
+    await UI.say('', '(Al rato, un témpano de hielo pasa flotando junto al muelle, rumbo a la Isla de Cait. Colgadín se sube de un salto, sin pensárselo dos veces.)');
+    scene.warp('isla', 9, 10, 'down');
+    return true;
   },
   async narwalBack(scene) {
     if (await UI.choose('Narwal', '¿Volvemos a la Isla de Cait?', ['Sí, vámonos', 'Todavía no']) === 0) scene.warp('isla', 9, 10, 'down');

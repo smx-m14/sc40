@@ -2,11 +2,13 @@
 // js/maps.js), así la guía siempre se parece al juego aunque cambie el pixel art.
 //   <img data-spr="colgadin_down_0" data-x="4">           sprite del juego, a 4 aumentos
 //   <img data-icon="coin" data-x="3">                     icono del interfaz (o cualquier objeto de art.js)
+//   <img data-gacha="kirby" data-x="3">                   regalo del gachapón (24×24)
 //   <img data-map="castillo" data-rect="12,8,22,13">      trozo de mapa: x, y, ancho y alto en baldosas
 //        data-col="18,14,down"                           (opcional) Colgadín en esa baldosa
 //        data-flags="intro,invites"                      (opcional) progreso con el que se dibuja el mapa
+//        data-marks="s1=1;s8=2;@46,10=A"                (opcional) círculos numerados sobre entidades (por id) o baldosas (@x,y)
 // No toca la partida guardada: el estado se monta solo en memoria.
-import { makeTextures, makeTiles, icon } from '../js/art.js';
+import { makeTextures, makeTiles, icon, gachaIcon } from '../js/art.js';
 import { buildMap, TILE } from '../js/maps.js';
 import { State } from '../js/state.js';
 
@@ -29,8 +31,13 @@ for (const img of document.querySelectorAll('img[data-spr], img[data-icon]')) {
   if (!cv) console.warn('Guía: no existe el sprite', img.dataset.spr || img.dataset.icon);
 }
 
+for (const img of document.querySelectorAll('img[data-gacha]')) {
+  img.src = gachaIcon(img.dataset.gacha);
+  img.style.width = 24 * +(img.dataset.x || 4) * 0.25 + 'mm';
+}
+
 // ---------------------------------------------------------------- capturas de mapa
-function snapshot(id, [x0, y0, w, h], col, flags) {
+function snapshot(id, [x0, y0, w, h], col, flags, marks = []) {
   const keep = State.d;
   State.d = JSON.parse(JSON.stringify(keep));
   for (const f of flags) if (f) State.d.flags[f] = true;
@@ -71,6 +78,23 @@ function snapshot(id, [x0, y0, w, h], col, flags) {
     const t = TEX[it.tex];
     if (t) g.drawImage(t, Math.round(it.x - t.width / 2), Math.round(it.y - t.height));
   }
+  // Marcas: un círculo alrededor y una etiqueta con número (para la guía del completista: calcetines, etc.)
+  const fs = Math.max(9, Math.round(w * TILE / 40));
+  for (const mk of marks) {
+    const [what, label] = mk.split('=');
+    let mx, my;
+    if (what.startsWith('@')) { const [tx, ty] = what.slice(1).split(',').map(Number); mx = tx * TILE + 8; my = ty * TILE + 8; }
+    else { const e = m.ents.find((x) => x.id === what); if (!e) { console.warn('Guía: no existe', what); continue; } mx = e.tx * TILE + 8 + (e.ox || 0); my = e.ty * TILE + 8; }
+    const R = Math.max(10, fs * 0.8);
+    g.lineWidth = Math.max(2, fs / 6); g.strokeStyle = '#1a1412'; g.beginPath(); g.arc(mx, my, R + 1, 0, Math.PI * 2); g.stroke();
+    g.lineWidth = Math.max(1.5, fs / 9); g.strokeStyle = '#ffd23f'; g.beginPath(); g.arc(mx, my, R, 0, Math.PI * 2); g.stroke();
+    if (!label) continue;
+    g.font = `bold ${fs}px Arial, sans-serif`;
+    const tw = g.measureText(label).width + fs * 0.5, bx = mx + R * 0.55, by = my - R * 0.55 - fs;
+    g.fillStyle = '#d62a2a'; g.strokeStyle = '#1a1412'; g.lineWidth = Math.max(1.5, fs / 8);
+    g.fillRect(bx, by, tw, fs * 1.1); g.strokeRect(bx, by, tw, fs * 1.1);
+    g.fillStyle = '#fff'; g.textBaseline = 'middle'; g.fillText(label, bx + fs * 0.25, by + fs * 0.58);
+  }
   State.d = keep;
   return cv;
 }
@@ -78,7 +102,8 @@ for (const img of document.querySelectorAll('img[data-map]')) {
   try {
     const rect = img.dataset.rect.split(',').map(Number);
     const col = img.dataset.col ? img.dataset.col.split(',') : null;
-    img.src = snapshot(img.dataset.map, rect, col, (img.dataset.flags || '').split(',')).toDataURL();
+    const marks = img.dataset.marks ? img.dataset.marks.split(';') : [];
+    img.src = snapshot(img.dataset.map, rect, col, (img.dataset.flags || '').split(','), marks).toDataURL();
   } catch (e) { console.warn('Guía: no se pudo dibujar el mapa', img.dataset.map, e); }
 }
 

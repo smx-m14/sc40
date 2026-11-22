@@ -37,7 +37,7 @@ export const UI = {
     $('btn-mute').addEventListener('click', () => this.toggleMute());
     document.querySelectorAll('#menu .tab').forEach((t) => t.addEventListener('click', () => { this.tab = t.dataset.tab; this.renderMenu(); }));
     $('menu-body').addEventListener('click', (e) => this.onMenuClick(e));
-    document.querySelectorAll('#hud .chip, #minibar button, #dialog-next, #menu .tabs button, .album-title, #album button, #touch .d').forEach((el) => { el.innerHTML = pix(el.innerHTML); });
+    document.querySelectorAll('#hud .chip, #minibar button, #dialog-next, #menu .tabs button, .album-title, #album button, #touch .d, #touch .ab').forEach((el) => { el.innerHTML = pix(el.innerHTML); });
     Input.combo = (code) => (code === 'KeyD' ? this.setDebug(!State.settings.debug) : this.debugWin());
     $('mb-win').onclick = () => this.debugWin();
     show($('tab-debug'), !!State.settings.debug);
@@ -338,7 +338,8 @@ export const UI = {
       h += li(State.flag('luces'), 'Luces');
       h += li(State.flag('globos'), 'Globos');
       h += li(State.flag('tarta'), 'Tarta');
-      h += li(d.gifts.length + d.gacha.length > 0, 'Regalos para Cait', `${d.gifts.length + d.gacha.length}`);
+      const nGifts = d.gifts.length + d.gacha.length, allGifts = Object.keys(GIFTS).length + GACHA.length;
+      h += li(nGifts >= allGifts, 'Regalos para Cait', `${nGifts}/${allGifts}`); // como los invitados: marcado solo con todos
       h += '</ul><h3>Para llegar al 100 %</h3><ul>';
       for (const p of cp.parts) h += li(p.done >= p.total, esc(p.name), `${Math.min(p.done, p.total)}/${p.total}`);
       h += '</ul>';

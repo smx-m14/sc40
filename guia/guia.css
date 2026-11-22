@@ -12,7 +12,7 @@
 * { box-sizing: border-box; }
 html { background: #5b5f6b; }
 body { margin: 0; padding: 10mm 0; font-family: var(--body); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-img[data-spr], img[data-icon], img[data-map], .strip img { image-rendering: pixelated; }
+img[data-spr], img[data-icon], img[data-gacha], img[data-map], .strip img { image-rendering: pixelated; }
 
 /* ------------------------------------------------------------ página */
 .page {
@@ -80,7 +80,6 @@ p.lead { font-style: italic; }
 .logo .s { display: block; margin-bottom: 3mm; font: 13pt var(--head); color: #fff; -webkit-text-stroke: 1pt var(--ink); paint-order: stroke fill; text-shadow: .8mm .8mm 0 var(--ink); }
 .logo .b { font: 25pt/1.25 var(--head); color: var(--yellow); -webkit-text-stroke: 1.4pt var(--ink); paint-order: stroke fill; text-shadow: 1.3mm 1.3mm 0 var(--ink); }
 .logo .b span { color: #f06aa8; }
-.logo .sub { font: italic 700 13pt var(--body); color: var(--ink); margin-top: 2mm; }
 .cover .hero { position: absolute; left: 0; right: 0; top: 78mm; text-align: center; }
 .cover .hero img { filter: drop-shadow(1.5mm 1.5mm 0 rgba(0, 0, 0, .35)); }
 .cover .crowd { position: absolute; left: 6mm; right: 6mm; bottom: 26mm; display: flex; justify-content: space-between; align-items: flex-end; }

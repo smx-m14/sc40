@@ -41,6 +41,7 @@ SONGS = {
     'logro': ('Música Logro 2', 128, dict(whole=True, search=True)),
     'gym': ('Fitness Fattory', 0),     # solo MIDI (music/gym.mid); el gimnasio ahora se llama Fitness Bartory
     'fuxia': ('Fuxia', 0),             # solo MIDI
+    'casa': ('Casa de Cait', 0),        # solo MIDI (music/casa.mid): la casa de Cait
     'inquisicion': ('Dragon Age', 0),  # solo MIDI (music/inquisicion.mid): la mesa de guerra de los Owitos del castillo
 }
 # Reparto de pistas para los MIDI con arreglo completo (music/<id>.mid). Sin entrada aquí se trata como piano.
@@ -130,6 +131,10 @@ MIDI_OPTS = {
     # 41-56, el tema principal entero (fa-re-la | la-si-do-si-la | re…) con su subida al re agudo. El 56 se queda en
     # si♭ y vuelve al re menor del 41 sin costura (unos 38 s).
     'inquisicion': dict(roles=dict(melody=[0], bass=[1], chords=[1]), start_beat=160, max_beats=64),
+    # Casa de Cait (music/casa.mid): 1 = piano (melodía: su nota aguda), 2 = bajo, 3 = cuerdas (acordes); el arpa (4)
+    # solo hace adornos, fuera. A 120. Solo el estribillo: los compases 1-8 (la melodía principal); el 9 la repite
+    # con otra cola, así que volver del 8 al 1 suena igual que en el original (unos 16 s).
+    'casa': dict(roles=dict(melody=[1], bass=[2], chords=[3]), max_beats=32),
     # Teatro de los Owitos: 2 = melodía en octavas, 0 = bajo, 1 = piano
     # Sin la intro de piano (compases 1-5): bucle de los compases 6-30, el tema del violín entero (A y B). El 30 acaba
     # resolviendo en re♭, que es justo donde arranca el tema en el 6, así que vuelve sin costura (unos 46 s).

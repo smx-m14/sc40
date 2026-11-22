@@ -50,8 +50,10 @@ export const GACHA = [
   { id: 'princesa-bultos', name: 'Princesa Bultos' },
   { id: 'socrates', name: 'Sócrates' },
   { id: 'crash', name: 'Crash Bandicoot' },
-  { id: 'larva', name: 'Larva' },
   { id: 'spyro', name: 'Spyro' },
+  { id: 'grizzly', name: 'Grizzly' },
+  { id: 'morsez', name: 'Morsez' },
+  { id: 'owinken-mandarino', name: 'Owinken Mandarino' },
 ];
 
 // Regalos especiales que se consiguen superando pruebas
@@ -83,15 +85,17 @@ export const ALBUM = [
   { img: '15-corea', place: 'Corea', date: 'Agosto de 2025', deco: ['pagoda', 'flower'] },
 ];
 
-export const TOTAL_SOCKS = 20;
-// Los calcetines van por parejas de diseño: 10 diseños × 2. Cada calcetín está en una zona distinta que su pareja.
+export const TOTAL_SOCKS = 24;
+// Los calcetines van por parejas de diseño: 12 diseños × 2 (una pareja = una moneda = un regalo del gachapón, que tiene 12). Cada calcetín está en una zona distinta que su pareja.
 export const SOCK_DESIGNS = [
   'de rayas verdes', 'de lunares rojos', 'de zigzag azul', 'de puntera amarilla', 'de cruz morada',
   'naranja de rayas', 'rosa de lunares', 'turquesa de zigzag', 'gris de puntera', 'negro de cruz',
+  'lila de lunares', 'granate de rayas',
 ];
 export const SOCK_DESIGN = {
   s1: 0, s8: 0, s2: 1, s5: 1, s3: 2, s6: 2, s4: 3, s9: 3, s7: 4, s10: 4,
   s11: 5, s14: 5, s12: 6, s18: 6, s13: 7, s16: 7, s15: 8, s19: 8, s17: 9, s20: 9,
+  s21: 10, s22: 10, s23: 11, s24: 11,
 };
 export const HATCH_CODE = '1987'; // el año en que nació Cait
 

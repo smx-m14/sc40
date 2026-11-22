@@ -139,8 +139,7 @@ body { display: flex; flex-direction: column; align-items: center; justify-conte
 .title-small { font-size: calc(5 * var(--u)); letter-spacing: .5em; font-weight: 700; }
 .title-big { font-size: calc(13 * var(--u)); font-weight: 700; line-height: .95; }
 .title-big span { color: #ffe066; display: inline-block; animation: bob .5s infinite alternate; }
-.title-sub { font-size: calc(3 * var(--u)); margin: calc(1.5 * var(--u)) 0 calc(3 * var(--u)); }
-.title-btns { display: flex; gap: calc(2 * var(--u)); justify-content: center; text-shadow: none; }
+.title-btns { margin-top: calc(4 * var(--u)); display: flex; gap: calc(2 * var(--u)); justify-content: center; text-shadow: none; }
 .title-btns .btn { font-size: calc(3.6 * var(--u)); padding: calc(0.8 * var(--u)) calc(3 * var(--u)); }
 .title-foot { margin-top: calc(3.5 * var(--u)); font-size: calc(2.2 * var(--u)); opacity: .85; text-shadow: none; }
 
@@ -165,7 +164,7 @@ body { display: flex; flex-direction: column; align-items: center; justify-conte
   body { justify-content: flex-start; }
   #touch button { background: rgba(255, 255, 255, .12); }
   /* El juego ocupa arriba 9/16 del ancho; los mandos crecen para llenar el hueco de debajo (--dp: tamaño de la cruceta) */
-  #touch { --dp: min(58vw, calc((100dvh - 56.25vw) * 0.78), 320px); --low: max(18px, env(safe-area-inset-bottom), calc((100dvh - 56.25vw - var(--dp)) / 2)); }
+  #touch { --dp: min(52vw, calc((100dvh - 56.25vw) * 0.7), 288px); /* 10 % más pequeños que la primera versión */ --low: max(18px, env(safe-area-inset-bottom), calc((100dvh - 56.25vw - var(--dp)) / 2)); }
   #dpad { width: var(--dp); height: var(--dp); left: max(14px, 5vw); bottom: var(--low); }
   #dpad .d { width: calc(var(--dp) / 3); height: calc(var(--dp) / 3); font-size: calc(var(--dp) * 0.12); border-radius: calc(var(--dp) * 0.07); }
   #dpad .up { left: calc(var(--dp) / 3); top: 0; } #dpad .down { left: calc(var(--dp) / 3); top: calc(var(--dp) * 2 / 3); }
@@ -173,6 +172,7 @@ body { display: flex; flex-direction: column; align-items: center; justify-conte
   #abtns { width: calc(var(--dp) * 0.5); height: calc(var(--dp) * 0.5); right: max(18px, 6vw); bottom: calc(var(--low) + var(--dp) * 0.25); }
   #abtns .ab { width: calc(var(--dp) * 0.5); height: calc(var(--dp) * 0.5); font-size: calc(var(--dp) * 0.16); }
   #touch .ico { height: calc(var(--dp) * 0.12); }
+  #touch #abtns .ico { height: calc(var(--dp) * 0.22); } /* más específico: gana a la regla general de más abajo */
 }
 
 /* Gachapón en el menú */
@@ -234,6 +234,7 @@ body { display: flex; flex-direction: column; align-items: center; justify-conte
 .ico { height: 1em; width: auto; image-rendering: pixelated; vertical-align: -0.16em; }
 .ico.r90 { transform: rotate(90deg); } .ico.r180 { transform: rotate(180deg); } .ico.r270 { transform: rotate(270deg); }
 #touch .ico { filter: invert(1); height: 22px; }
+#abtns .ico { height: 38px; filter: brightness(0) invert(1); } /* la huellita del botón de acción, en blanco */
 #album-deco .ico { height: 1.3em; margin-left: calc(0.3 * var(--u)); }
 .btn.primary .ico, .tabs .tab.active .ico { filter: invert(1); }
 

@@ -111,14 +111,17 @@ export class RobotScene extends Phaser.Scene {
     this.reset();
     this.bar();
     this.lock = true;
+    // Explicación corta: lo que hace cada bloque ya lo cuenta el cuadrito de abajo al pasar por encima
     const say = first && this.lv === 0 ? [
-      'Beee… ¿me oyes? Te veo por la cámara del conducto. Ese cacharro con morro de cerdito es el robot de mantenimiento de la máquina clonadora.',
-      'Los clones lo programan para que recorra los conductos arreglando cables. Pues lo vamos a reprogramar nosotros: que vaya hasta los interruptores de la puerta y los pulse.',
-      'Abajo tienes los bloques: avanzar, girar a la izquierda, girar a la derecha, pulsar, repetir y Fn (la función). Con ← → eliges uno y con el botón de acción lo añades al programa marcado.',
-      'Cuando haya función, con ↑ y ↓ (o tocándolos) cambias entre el programa principal y la función. El botón de la papelera vacía el programa marcado, y si tocas un bloque del programa, se quita.',
-      'Cuando lo tengas, dale al play. Si se equivoca, vuelve a su sitio y lo arreglas.',
+      'Beee… ¿me oyes? Ese cacharro con morro de cerdito es el robot de mantenimiento de la máquina clonadora. Vamos a reprogramarlo para que pulse los interruptores de la puerta.',
+      'Elige bloques con ← → y añádelos con el botón de acción. Abajo te digo qué hace cada uno. Cuando lo tengas, dale al play.',
       L.tip,
     ] : [L.tip];
+    // La primera cerradura con función: cómo se cambia entre el programa principal y la función
+    if (L.f1 && !this.fnTold) {
+      this.fnTold = true;
+      say.splice(say.length - 1, 0, 'Esta cerradura tiene función: con ↑ y ↓ (o tocándolos) cambias entre el programa principal y la función. El bloque Fn hace todo lo que pongas en ella.');
+    }
     await UI.say('Ovejoncia', say);
     Input.clear();
     this.lock = false;

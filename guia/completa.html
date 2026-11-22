@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Super Cait's 40 — Guía del completista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Lilita+One&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="guia.css">
+<style>
+  /* Solo para la guía del completista */
+  .page { font-size: 11pt; line-height: 1.2; }
+  .cover.c100 { background: radial-gradient(ellipse at 50% 38%, #d8f0ff 0%, #7fc4ef 45%, #4b2a8f 100%); }
+  .step { display: flow-root; margin-bottom: 2.2mm; }
+  .step h2 { font-size: 14pt; }
+  .step > img { float: right; margin: 0 0 1mm 2mm; }
+  ol.do { margin: 0 0 1.5mm; padding-left: 5mm; }
+  ol.do li { margin-bottom: .6mm; }
+  .got { display: inline-block; background: var(--yellow); border: .35mm solid var(--ink); border-radius: 1mm; padding: 0 1.2mm; font-weight: 700; font-size: 9.5pt; line-height: 1.35; }
+  .got.inv { background: #f7c6d6; } .got.gift { background: #c9e9b8; } .got.sock { background: #cfe0ff; }
+  .opt { font-size: 9.5pt; color: var(--purple); font-weight: 700; text-transform: uppercase; letter-spacing: .3pt; }
+  table.t { width: 100%; border-collapse: collapse; font-size: 10pt; line-height: 1.15; margin-bottom: 2mm; }
+  table.t td, table.t th { border-bottom: .3mm solid #d8c9a6; padding: .55mm 1mm; vertical-align: middle; text-align: left; }
+  table.t th { background: var(--purple); color: #fff; font-weight: 700; }
+  table.t td.n { font: 7pt var(--head); color: var(--red-d); text-align: center; width: 7mm; }
+  table.t td.ck { width: 5mm; }
+  table.t td.ck::before { content: ''; display: inline-block; width: 3.2mm; height: 3.2mm; border: .4mm solid var(--ink); background: #fff; border-radius: .5mm; vertical-align: middle; }
+  table.t img { display: block; }
+  table.t.big td { padding: .9mm 1mm; }
+  .seq { font: 12pt/1.55 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: .4pt; background: #fff; border: .4mm dashed var(--ink); padding: 1mm 2mm; margin-bottom: 2mm; word-spacing: 1.5pt; }
+  .seq sub { font-size: 8pt; color: var(--red-d); }
+  .blk { display: inline-block; min-width: 6.5mm; padding: 0 1mm; margin: 0 .5mm .6mm 0; border: .35mm solid var(--ink); border-radius: 1mm; background: #e8ddff; font-weight: 700; font-size: 9.5pt; text-align: center; line-height: 1.4; }
+  .blk.fn { background: #d8b8ff; } .blk.rep { background: #ffe39a; } .blk.p { background: #ffb3aa; } .blk.f { background: #b9d8ff; }
+  .grids { display: flex; gap: 3mm; justify-content: space-between; align-items: flex-start; margin: 1mm 0 2mm; }
+  .grids figure { margin: 0; flex: 1; text-align: center; font-size: 9pt; }
+  svg.grid { width: 100%; display: block; background: #1d3a2e; border: .6mm solid var(--ink); border-radius: 1mm; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; fill: #fff; }
+  .notes { display: flex; gap: 1mm; flex-wrap: wrap; margin: 1mm 0 2mm; }
+  .note { border: .4mm solid var(--ink); border-radius: 1mm; padding: .3mm 1.4mm; font-weight: 700; font-size: 10pt; }
+  .pct { font: 30pt var(--head); color: var(--red); text-align: center; margin: 2mm 0 4mm; text-shadow: .8mm .8mm 0 var(--ink); -webkit-text-stroke: .8pt var(--ink); }
+  .shot.map { margin-bottom: 1mm; }
+  .shot.map.s { width: 80%; margin-left: auto; margin-right: auto; }
+  table.t.socks { font-size: 9.5pt; } table.t.socks td { padding: .2mm 1mm; }
+  table.t td.nn { font-weight: 700; white-space: nowrap; text-align: center; }
+  .cap { font-size: 9pt; color: #6b5a4a; margin-bottom: 2.5mm; }
+  .gacha { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1mm .5mm; text-align: center; }
+  .gacha figure { margin: 0; } .gacha img { display: block; margin: 0 auto; }
+  .gacha figcaption { font-size: 8pt; line-height: 1.05; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="noprint">
+  <b>Guía del completista de Super Cait's 40</b> · formato A5, como el manual. Para imprimir: Ctrl+P → papel <b>A5</b>, márgenes
+  <b>Ninguno</b> y <b>Gráficos de fondo</b> activado. Los textos están en <code>guia/completa.html</code>; mapas y dibujos salen del código del juego.
+</div>
+
+<!-- ================================================================ PORTADA -->
+<section class="page bare cover c100" id="portada">
+  <div class="tag">PARA COMPLETISTAS</div>
+  <div class="logo">
+    <div class="s">SUPER</div>
+    <div class="b">CAIT'S <span>40</span></div>
+  </div>
+  <div class="hero"><img data-spr="colgadin_down_0" data-x="16" alt="Colgadín"></div>
+  <div class="crowd">
+    <img data-icon="sock_6" data-x="7" alt=""><img data-icon="coin" data-x="8" alt=""><img data-icon="invites" data-x="8" alt="">
+    <img data-icon="gift" data-x="8" alt=""><img data-icon="cake" data-x="8" alt=""><img data-icon="sock_2" data-x="7" alt="">
+  </div>
+  <div class="badge">JUEGO AL<b>100 %</b>PASO A PASO</div>
+</section>
+
+<!-- ================================================================ AVISO -->
+<section class="page bare legal" id="aviso">
+  <div class="content" style="position:absolute">
+    <div class="warn">Atención: esta guía lo cuenta todo. Soluciones de todos los puzles, la respuesta a cada pregunta y dónde está
+      escondido cada calcetín.</div>
+    <p>Si todavía no has jugado, cierra este librito y vuelve cuando te atasques. O cuando ya hayas celebrado la fiesta y te pique
+      ese 99 % del menú.</p>
+    <p>La guía sigue el orden más cómodo para no dejarse nada, pero casi todo se puede hacer en otro orden. Cuando algo se puede
+      hacer antes, se avisa.</p>
+    <div class="box" style="margin-top:5mm">
+      <h3>Cómo leer esta guía</h3>
+      <p style="margin:0 0 1.5mm">Cada vez que consigas algo que cuenta para el 100 %, aparece una etiqueta:</p>
+      <p style="margin:0"><span class="got inv">Invitación</span> &nbsp;<span class="got gift">Regalo</span> &nbsp;<span class="got sock">Calcetín</span>
+        &nbsp;<span class="got">Historia o curiosidad</span></p>
+      <p style="margin:1.5mm 0 0">Las flechas (↑ ↓ ← →) son pulsaciones de la cruceta o de las teclas de dirección. Un número pequeño
+        detrás quiere decir «tantas veces»: →<sub style="font-size:7pt">3</sub> son tres a la derecha.</p>
+    </div>
+    <p class="tiny muted" style="margin-top:8mm">Las soluciones de las cajas, los monos y el robot están calculadas por ordenador: son las más cortas que existen.
+      Se puede hacer de otras maneras, claro.</p>
+  </div>
+</section>
+
+<!-- ================================================================ ÍNDICE -->
+<section class="page" id="indice">
+  <div class="band"></div><h1>ÍNDICE</h1><div class="foot"></div>
+  <div class="content">
+    <ul class="toc" style="font-size:13.5pt;line-height:1.5">
+      <li>El 100 %<span data-ref="cien"></span></li>
+      <li>1. Casa de Cait<span data-ref="cap1"></span></li>
+      <li>2. Primer paseo por la isla<span data-ref="cap2"></span></li>
+      <li>3. Lolete y Tigrito<span data-ref="cap3"></span></li>
+      <li>4. El Apartamento de las Ratitas<span data-ref="cap4"></span></li>
+      <li>5. El Castillo de Mazapán<span data-ref="cap5"></span></li>
+      <li>6. Narwal<span data-ref="cap6"></span></li>
+      <li>7. La Isla Helada<span data-ref="cap7"></span></li>
+      <li>8. Los 24 calcetines<span data-ref="cap8"></span></li>
+      <li>9. Scooby y el gachapón<span data-ref="cap9"></span></li>
+      <li>10. La fiesta<span data-ref="cap10"></span></li>
+      <li>Lista de comprobación<span data-ref="lista"></span></li>
+      <li>La chuleta de Fucsia<span data-ref="chuleta"></span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================================================================ EL 100 % -->
+<section class="page" id="cien">
+  <div class="band"></div><h1>EL 100 %</h1><div class="foot"></div>
+  <div class="content">
+    <p>El porcentaje está en el menú, en la pestaña de la fiesta. Cada cosa conseguida suma un punto, y el juego no redondea:
+      solo marca 100 cuando no falta absolutamente nada.</p>
+    <table class="t big">
+      <tr><th>Qué</th><th style="width:16mm">Puntos</th></tr>
+      <tr><td><b>Historia</b>: cada paso de la aventura, hasta la fiesta</td><td>25</td></tr>
+      <tr><td><b>Prueba opcional</b>: la paella de Perrunfli</td><td>1</td></tr>
+      <tr><td><b>Invitaciones</b> entregadas</td><td>22</td></tr>
+      <tr><td><b>Calcetines</b> encontrados</td><td>24</td></tr>
+      <tr><td><b>Parejas</b> entregadas a Scooby</td><td>12</td></tr>
+      <tr><td><b>Regalos del gachapón</b></td><td>12</td></tr>
+      <tr><td><b>Regalos especiales</b>: Mocadorà, Libro de los Miausis, Sushi Go!, taiyakis, mochis y flores de loto</td><td>6</td></tr>
+      <tr><td><b>Curiosidades</b>: un vale de Aeroflot, un cuenco de Biang Biang y el sombrero de Heladoncio</td><td>3</td></tr>
+      <tr><th>Total</th><th>105</th></tr>
+    </table>
+    <div class="box">
+      <h3>Lo que más se olvida</h3>
+      El cuenco de Biang Biang, el vale de Aeroflot, el sombrero de Heladoncio, los tres puestos de comida y la invitación del
+      Rey Peludito (hay que volver a hablar con él cuando abre la puerta).
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ CAPÍTULO 1 -->
+<section class="page" id="cap1">
+  <div class="band"></div><h1 class="small">1. CASA DE CAIT</h1><div class="foot"></div>
+  <div class="content">
+    <img class="shot map" data-map="cait" data-rect="0,0,12,10" data-marks="s10=1" alt="">
+    <p class="cap">El calcetín 1, debajo de la cama.</p>
+    <ol class="do">
+      <li>Coge las <b>invitaciones</b> de la mesa. Sin ellas no puedes salir de casa. <span class="got">Historia</span></li>
+      <li>Antes de salir, pasa por la esquina de la cama, a su derecha: asoma un calcetín de cruz morada. <span class="got sock">Calcetín 1</span></li>
+    </ol>
+    <p>Lo demás de la casa no cuenta para el 100 %, pero merece la pena: la lámpara de pie (dale varias veces), la ventana,
+      los pósters, la estantería y el sofá tienen su comentario.</p>
+    <div class="box">
+      <h3>Antes de salir</h3>
+      Las invitaciones se entregan solas al terminar cada prueba. Solo hay dos personajes a los que hay que volver a hablarles
+      a propósito: <b>Scooby</b> y el <b>Rey Peludito</b>. Si te dejas a alguien, Colgadín se lo pregunta al alejarse, y en el menú
+      (pestaña Amigos) sale «Falta la invitación».
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ CAPÍTULO 2 -->
+<section class="page" id="cap2">
+  <div class="band"></div><h1 class="small">2. PRIMER PASEO</h1><div class="foot"></div>
+  <div class="content">
+    <p>Todo esto está abierto desde el principio. Se puede dejar para más tarde, pero así no se olvida.</p>
+    <div class="step"><img data-spr="scooby_down_0" data-x="4" alt="">
+      <h2>Scooby (Templo de los Sabios)</h2>
+      Sube la escalinata y habla con él. <span class="got inv">Scooby</span><br>
+      Es quien cambia cada pareja de calcetines por una moneda de gachapón. Vuelve cada vez que completes parejas.
+    </div>
+    <div class="step"><img data-spr="perrunfli_down_0" data-x="3" alt="">
+      <h2>Perrunfli (campo de nabos)</h2>
+      Dile que sabes hacer la paella. Las respuestas buenas, en orden:
+      <ol class="do" style="margin-top:.8mm">
+        <li>Aceite de oliva · 2. Pollo y conejo · 3. Bachoqueta y garrofón · 4. Tomate rallado · 5. Azafrán ·
+          6. Nada: solo sal y agua · 7. Arroz</li>
+      </ol>
+      <span class="got">Prueba opcional</span> <span class="got gift">Mocadorà</span> <span class="got inv">Perrunfli</span>
+    </div>
+    <div class="step">
+      <h2>Biang Biang Mian</h2>
+      En el restaurante de al lado del cruce, pide un cuenco («¡Uno picante!»). <span class="got">Curiosidad</span>
+    </div>
+    <div class="step">
+      <h2>Aeroflot (aeropuerto)</h2>
+      Habla con el quiosco, elige «Escribir reclamación» y escribe lo que quieras (que no empiece por «#»). Te dan un vale que
+      no sirve para nada. <span class="got">Curiosidad</span>
+    </div>
+    <div class="step">
+      <h2>Doki Doki Manga y los vecinos</h2>
+      La tienda de mangas, las casas de los vecinos, el Combini y el bufete no dan nada. Solo chistes.
+    </div>
+  </div>
+</section>
+
+<section class="page" id="cap2b">
+  <div class="band"></div><h1 class="small">2. PRIMER PASEO (Y 2)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="step"><img data-spr="fuxia_down_0" data-x="4" alt="">
+      <h2>Fucsia: la música</h2>
+      Habla con ella delante de la Casa Fucsia. Suena un trocito de canción y hay que escribir el título:
+      <ul style="margin:.8mm 0;padding-left:5mm">
+        <li>A la primera: <b>10 puntos</b>.</li>
+        <li>Con la pista del artista: <b>5</b>.</li>
+        <li>Con cuatro opciones: <b>2</b>.</li>
+      </ul>
+      Hacen falta 100. Los puntos se guardan si lo dejas a medias. No importan tildes ni mayúsculas.
+      Tienes todas las canciones en la <b>chuleta</b> del final. <span class="got">Historia: música</span> <span class="got inv">Fucsia</span>
+    </div>
+    <div class="step"><img data-spr="siri_down_0" data-x="4" alt="">
+      <h2>Siri y los awawas (Kapadokya)</h2>
+      Al sur del castillo. Los awawas se pasan un calcetín de madriguera en madriguera: hazle cosquillas (botón de acción a su
+      lado) <b>al que lo lleva en la boca</b>, tres veces por ronda. Si se las haces a uno sin calcetín, pierdes una.
+      Son tres rondas, cada una más rápida.
+      <br>Consejo: quédate en el centro y espera a ver el calcetín antes de moverte.
+      <br><span class="got">Historia: globos</span> <span class="got inv">Siri y los awawas</span> <span class="got sock">Calcetín 9</span>
+    </div>
+    <div class="box">
+      <h3>Calcetines de la Isla de Cait</h3>
+      Los de la isla (del 2 al 8) se pueden coger desde el principio. Están en el mapa de la página <span data-ref="cap8b"></span>.
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ CAPÍTULO 3 -->
+<section class="page" id="cap3">
+  <div class="band"></div><h1 class="small">3. LOLETE Y TIGRITO</h1><div class="foot"></div>
+  <div class="content">
+    <div class="step"><img data-spr="lolete_down_0" data-x="4" alt="">
+      <h2>Lolete: la mudanza</h2>
+      Llama a la puerta de su casa, al oeste. Son tres habitaciones de cajas (como un Sokoban): empuja cada caja hasta una marca.
+      Si te atascas, el botón de reiniciar deja la habitación como al principio. Solución, empezando sin tocar nada:
+    </div>
+    <p class="opt">Habitación 1 (18 pasos)</p><div class="seq">↑ → ↑ → ↓ ← ↓ → ←<sub>2</sub> ↓ ↑<sub>2</sub> ←<sub>2</sub> ↑ ← ↓</div>
+    <p class="opt">Habitación 2, los calcetines (99 pasos)</p><div class="seq tiny">↓<sub>4</sub> →<sub>6</sub> ↑ ← ↓ ← ↑ →<sub>3</sub> ↑<sub>3</sub> ←<sub>2</sub> ↓<sub>2</sub> ← ↓<sub>2</sub> →<sub>2</sub> ↑ ← →<sub>2</sub> ↑<sub>2</sub> ← ↑ ← ↓<sub>2</sub> ←<sub>4</sub> →<sub>2</sub> ↓<sub>2</sub> ←<sub>3</sub> ↑<sub>3</sub> →<sub>3</sub> ↑ ← ↓<sub>2</sub> → ↓<sub>2</sub> → ↑ ↓ →<sub>2</sub> ↑ ← ↑ ←<sub>4</sub> →<sub>2</sub> ↓<sub>2</sub> ←<sub>3</sub> ↑<sub>2</sub> ↓<sub>2</sub> →<sub>4</sub> ↑ → ↑ ←<sub>4</sub></div>
+    <p class="opt">Habitación 3, los juguetes (57 pasos)</p><div class="seq">← ↓<sub>2</sub> ←<sub>2</sub> ↑<sub>2</sub> → ← ↑<sub>2</sub> →<sub>2</sub> ↑ →<sub>2</sub> ↓ ←<sub>2</sub> ↓<sub>2</sub> →<sub>2</sub> ↑ ↓<sub>3</sub> →<sub>2</sub> ↑<sub>2</sub> ← → ↑<sub>2</sub> ←<sub>3</sub> ↑ ← ↓ →<sub>2</sub> ↓<sub>2</sub> ←<sub>4</sub> ↑<sub>2</sub> →<sub>3</sub> ↑ → ↓</div>
+    <p><span class="got">Historia</span> <span class="got inv">Lolete</span> Lolete se une a ti.</p>
+  </div>
+</section>
+
+<section class="page" id="cap3b">
+  <div class="band"></div><h1 class="small">3. LOLETE Y TIGRITO (Y 2)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="step"><img data-spr="tigrito_down_0" data-x="4" alt="">
+      <h2>Tigrito: el bosque de los monos</h2>
+      Los monos cortan el camino del bosque, al noreste. Cada vez que Colgadín salta a otra rama, los monos hacen un pase,
+      siempre en el mismo orden. Hay que caer en la rama de un mono justo cuando le llega Tigrito. Si caes en la rama de un
+      mono sin Tigrito, vuelves al principio. Soluciones:
+    </div>
+    <table class="t big">
+      <tr><td><b>Rama 1</b></td><td class="seq" style="border:0;background:none;padding:0">→ → ← ↑ ↑</td></tr>
+      <tr><td><b>Rama 2</b></td><td class="seq" style="border:0;background:none;padding:0">→ → ↓</td></tr>
+      <tr><td><b>Rama 3</b></td><td class="seq" style="border:0;background:none;padding:0">→ → ← → ← ↑</td></tr>
+    </table>
+    <p><span class="got">Historia</span> <span class="got inv">Tigrito</span> Tigrito se une a ti (lo necesitas en el teatro) y los monos dejan el camino libre.</p>
+    <div class="step"><img data-spr="mono_down_0" data-x="3" alt="">
+      <h2>La cueva</h2>
+      Al final del camino del bosque hay un derrumbe. Con Lolete en el grupo, habla con las piedras: Lolete cava el túnel y se
+      va a casa de Cait. <span class="got">Historia</span><br>
+      Entra en la cueva: lleva al Apartamento de las Ratitas.
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ CAPÍTULO 4 -->
+<section class="page" id="cap4">
+  <div class="band"></div><h1 class="small">4. LAS RATITAS</h1><div class="foot"></div>
+  <div class="content">
+    <p>Tres cuartos, tres ratitas. Cada una te da un <b>espejo de mano</b> y una cifra del candado.
+      <span class="got">Historia × 3</span></p>
+    <div class="step"><img data-spr="ratita_p_down_0" data-x="3" alt="">
+      <h2>Ratita gris: los quesos (cocina)</h2>
+      Hay cinco quesos de tamaños distintos. Numéralos de pequeño (1) a grande (5) y muérdelos en este orden:
+      <div class="notes"><span class="note">2.º</span><span class="note">4.º</span><span class="note">5.º</span><span class="note">3.º</span><span class="note">1.º</span></div>
+      Es decir: el segundo más pequeño, el cuarto, el más grande, el del medio y el más pequeño. Cifra: <b>1</b>.
+    </div>
+    <div class="step"><img data-spr="ratita_o_down_0" data-x="3" alt="">
+      <h2>Ratita blanca: la cuenta (salón)</h2>
+      2 cojines rosas × 5 tazas + 2 cuadros − 3 plantas = <b>9</b>. Escribe 9. Cifra: <b>9</b>.
+    </div>
+    <div class="step"><img data-spr="ratita_b_down_0" data-x="3" alt="">
+      <h2>Ratita parda: las lámparas (dormitorio)</h2>
+      Cada interruptor cambia su lámpara y alguna más. Con todas apagadas (la ratita las apaga si se lo pides), pulsa solo estas tres:
+      <div class="notes"><span class="note" style="background:#8fd070">verde</span><span class="note" style="background:#9cc4ff">azul</span><span class="note" style="background:#f7b8c8">rosa</span></div>
+      La verde está a la derecha del todo; la azul, abajo a la derecha; la rosa, abajo a la izquierda. Cifra: <b>8</b>.
+    </div>
+    <div class="step">
+      <h2>Calcetines del apartamento</h2>
+      El 10 y el 11 están en el salón; el 12, en el dormitorio. Mapa en la página <span data-ref="cap8c"></span>.
+      <span class="got sock">Calcetines 10, 11 y 12</span>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="cap4b">
+  <div class="band"></div><h1 class="small">4. LAS RATITAS (Y 2)</h1><div class="foot"></div>
+  <div class="content">
+    <img class="shot map" data-map="ratitas" data-rect="0,7,30,6" data-marks="m1=A;m2=B;m10=C;grate" alt="">
+    <p class="cap">El pasillo: la rejilla (sin número) y los tres pedestales de la solución.</p>
+    <div class="step"><img data-spr="kai_down_0" data-x="3" alt="">
+      <h2>Kai y el rayo de luz</h2>
+      <ol class="do">
+        <li>Abre la <b>rejilla del techo</b>, a la izquierda del pasillo.</li>
+        <li>Pon un espejo en los pedestales <b>A</b>, <b>B</b> y <b>C</b>. Pulsa cada uno <b>dos veces</b>: la primera pone el espejo «/», la segunda lo gira a «\».</li>
+        <li>El rayo pasa por el cristal rojo y el azul, y le llega a Kai <b>lila</b>. Kai se despierta. <span class="got">Historia</span></li>
+        <li>Al cruzar la puerta del último cuarto, Colgadín le deja la invitación. <span class="got inv">Kai</span></li>
+      </ol>
+    </div>
+    <div class="step"><img data-spr="cuy_down_0" data-x="3" alt="">
+      <h2>Cuy</h2>
+      Te pregunta: «¿Has visto a Cuca?». Contesta <b>«¡Claro! ¡Está con Scooby!»</b> y dile que se venga.
+      <span class="got">Historia</span> <span class="got inv">Cuy y las ratitas</span><br>
+      Lee la <b>nota</b> de la pared de su cuarto y mira la <b>nevera</b> de la cocina: hacen falta las dos para el candado.
+    </div>
+    <div class="step">
+      <h2>La alcantarilla</h2>
+      Al final del pasillo. El código es <b>1 9 8 7</b> (el año en que nació Cait). Solo se abre si has conseguido las cuatro cifras
+      de verdad: las tres ratitas, la nota y la nevera. <span class="got">Historia</span><br>
+      Cuy no quiere bajar: primero hay que llevarlo al templo.
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ CAPÍTULO 5 -->
+<section class="page" id="cap5">
+  <div class="band"></div><h1 class="small">5. EL CASTILLO</h1><div class="foot"></div>
+  <div class="content">
+    <div class="step"><img data-spr="cuca_down_0" data-x="3" alt="">
+      <h2>Primero, al templo</h2>
+      Sal por la cueva y lleva a Cuy al Templo de los Sabios. Habla con Cuca: por fin se la entiende.
+      <span class="got">Historia</span> <span class="got inv">Cuca</span><br>
+      Vuelve al apartamento y baja por la alcantarilla: sales en el patio del castillo.
+    </div>
+    <div class="step"><img data-spr="patito_down_0" data-x="3" alt="">
+      <h2>Patito (estanque, arriba a la derecha)</h2>
+      Habla con los capybaras. Hay que acercarse a los juncos sin que te vea. Cuando Patito <b>tiembla</b>, o los capybaras se
+      tapan la cara con su flor, ponte pegado a una mata de juncos y no te muevas. Cruza en diagonal mientras no mira.
+      <br><span class="got">Historia</span> <span class="got gift">Flores de loto</span> <span class="got inv">Patito</span> <span class="got inv">Los capybaras</span>
+    </div>
+    <div class="step"><img data-spr="owi_col_down_0" data-x="3" alt="">
+      <h2>La mesa de guerra (abajo a la izquierda)</h2>
+      Habla con cualquiera de los Owitos. Aparecerá Coleowe con tres juegos de mesa: elige <b>Sushi Go!</b> (los otros dos los rechaza).
+      <br><span class="got gift">Sushi Go!</span> <span class="got inv">Owitos de la Inquisición</span>
+    </div>
+    <div class="step"><img data-spr="owito_m_down_0" data-x="3" alt="">
+      <h2>Puesto de mochis (abajo a la derecha)</h2>
+      Habla con la vendedora. <span class="got gift">Cajita de mochis</span>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="cap5b">
+  <div class="band"></div><h1 class="small">5. EL CASTILLO (Y 2)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="step"><img data-spr="owito_t_down_0" data-x="3" alt="">
+      <h2>Teatro Real: «Owicked»</h2>
+      Con Tigrito en el grupo, entra al teatro. Los Owitos cantan una secuencia y hay que repetirla: ← → para elegir Owito, acción
+      para que cante. Empieza con tres notas y crece hasta once. Es la misma melodía que luego tocarás para Narwal (página <span data-ref="cap6"></span>).
+      Fíjate en el <b>color</b>: los Owitos cambian de sitio.
+      <br><span class="got">Historia</span> <span class="got inv">Owitos del Teatro</span> Te dan el <b>Otamatone</b>.
+    </div>
+    <div class="step"><img data-spr="mantecas_down_0" data-x="3" alt="">
+      <h2>Pastelería Real</h2>
+      Diez pedidos en 290 segundos. Cada mazapán: mesa (almendra y azúcar) → amasar (3 pulsaciones) → molde del pedido →
+      horno (sácalo antes de que se queme) → ventanilla. La barra de arriba dice qué hace el botón en cada sitio.
+      Consejo: mete uno en el horno y, mientras se cuece, prepara el siguiente.
+      <br><span class="got">Historia</span> <span class="got inv">Mantecas y Manteca2</span>
+    </div>
+    <div class="step"><img data-spr="gato_down_0" data-x="3" alt="">
+      <h2>Los Gemelos bipolares (junto a la puerta)</h2>
+      Juego de ritmo: el gato marca un ritmo con el martillo y tú lo repites igual con el botón de acción. Ocho tablones.
+      Si fallas, se repite el mismo ritmo; no pierdes nada.
+      <br><span class="got">Historia × 2</span> <span class="got inv">Los Gemelos bipolares</span> La puerta del castillo se abre.
+    </div>
+    <div class="step"><img data-spr="peludito_down_0" data-x="3" alt="">
+      <h2>¡No te vayas sin esto!</h2>
+      Vuelve a hablar con el <b>Rey Peludito</b>, en el trono: ahora sí acepta la invitación. <span class="got inv">Rey Peludito</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ CAPÍTULO 6 -->
+<section class="page" id="cap6">
+  <div class="band"></div><h1 class="small">6. NARWAL</h1><div class="foot"></div>
+  <div class="content">
+    <div class="step"><img data-spr="owito_w_down_0" data-x="4" alt="">
+      Ve al <b>muelle</b>, al oeste de la Isla de Cait, y lee el cartel. Colgadín sacará el Otamatone.
+    </div>
+    <p>Arrastra el dedo con ↑ ↓ por el mástil: se queda pegado a seis marcas de colores, una por Owito. Arriba están las notas
+      graves y abajo las agudas. Acción toca la nota. Si fallas una, se empieza de nuevo.</p>
+    <p class="opt">Las marcas, de arriba abajo</p>
+    <div class="notes">
+      <span class="note" style="background:#b07a44;color:#fff">1 marrón</span><span class="note" style="background:#d6e6f7">2 blanco</span>
+      <span class="note" style="background:#b8a0d8">3 lila</span><span class="note" style="background:#f7a8c0">4 rosa</span>
+      <span class="note" style="background:#8fd070">5 verde</span><span class="note" style="background:#f3e6c0">6 crema</span>
+    </div>
+    <p class="opt">La melodía (once notas, en tres frases)</p>
+    <div class="seq">blanco · marrón · blanco · blanco &nbsp;|&nbsp; blanco · verde · lila · rosa &nbsp;|&nbsp; rosa · crema · blanco</div>
+    <div class="seq">2 · 1 · 2 · 2 &nbsp;|&nbsp; 2 · 5 · 3 · 4 &nbsp;|&nbsp; 4 · 6 · 2</div>
+    <p><span class="got">Historia</span> <span class="got inv">Narwal</span> Desde ahora, Narwal te lleva a la Isla Helada (y te trae de vuelta)
+      desde el muelle.</p>
+    <div class="row"><img data-spr="narwal" data-x="2.5" alt=""></div>
+  </div>
+</section>
+
+<!-- ================================================================ CAPÍTULO 7 -->
+<section class="page" id="cap7">
+  <div class="band"></div><h1 class="small">7. LA ISLA HELADA</h1><div class="foot"></div>
+  <div class="content">
+    <div class="step"><img data-spr="owito_x_down_0" data-x="3" alt="">
+      <h2>Puesto de taiyakis</h2>
+      Subiendo por el camino desde el muelle, a la izquierda. Habla con el vendedor. <span class="got gift">Taiyakis</span>
+    </div>
+    <div class="step"><img data-spr="owito_n_down_0" data-x="3" alt="">
+      <h2>Casa de la Navidad: las luces</h2>
+      Hay que tender un único cable desde el enchufe hasta la estrella. Los números dicen cuántas casillas de cada fila y columna
+      llevan cable. Soluciones:
+    </div>
+    <div class="grids">
+      <figure><svg class="grid" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg"><text x="11.5" y="5.2" font-size="5" text-anchor="middle">4</text><text x="3.2" y="13.3" font-size="5" text-anchor="middle">3</text><text x="20.5" y="5.2" font-size="5" text-anchor="middle">3</text><text x="3.2" y="22.3" font-size="5" text-anchor="middle">1</text><text x="29.5" y="5.2" font-size="5" text-anchor="middle">4</text><text x="3.2" y="31.3" font-size="5" text-anchor="middle">3</text><text x="38.5" y="5.2" font-size="5" text-anchor="middle">1</text><text x="3.2" y="40.3" font-size="5" text-anchor="middle">1</text><text x="47.5" y="5.2" font-size="5" text-anchor="middle">1</text><text x="3.2" y="49.3" font-size="5" text-anchor="middle">5</text><rect x="7.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="25.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="7.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="16.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="25.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="7.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="25.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="7.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="25.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="34.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="7.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="25.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="43.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><polyline points="11.5,11.5 20.5,11.5 29.5,11.5 29.5,20.5 29.5,29.5 20.5,29.5 11.5,29.5 11.5,38.5 11.5,47.5 20.5,47.5 29.5,47.5 38.5,47.5 47.5,47.5" fill="none" stroke="#ffd23f" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><rect x="8.9" y="8.9" width="5.2" height="5.2" fill="#f4f4ee" stroke="#1a1412" stroke-width=".5"/><rect x="9.9" y="10.5" width=".9" height="1.6" fill="#1a1412"/><rect x="12.2" y="10.5" width=".9" height="1.6" fill="#1a1412"/><polygon points="47.50,44.10 48.38,46.29 50.73,46.45 48.93,47.96 49.50,50.25 47.50,49.00 45.50,50.25 46.07,47.96 44.27,46.45 46.62,46.29" fill="#ffe066" stroke="#1a1412" stroke-width=".5"/></svg><figcaption>Tablero 1</figcaption></figure>
+      <figure><svg class="grid" viewBox="0 0 63 63" xmlns="http://www.w3.org/2000/svg"><text x="11.5" y="5.2" font-size="5" text-anchor="middle">5</text><text x="3.2" y="13.3" font-size="5" text-anchor="middle">5</text><text x="20.5" y="5.2" font-size="5" text-anchor="middle">3</text><text x="3.2" y="22.3" font-size="5" text-anchor="middle">2</text><text x="29.5" y="5.2" font-size="5" text-anchor="middle">4</text><text x="3.2" y="31.3" font-size="5" text-anchor="middle">5</text><text x="38.5" y="5.2" font-size="5" text-anchor="middle">1</text><text x="3.2" y="40.3" font-size="5" text-anchor="middle">2</text><text x="47.5" y="5.2" font-size="5" text-anchor="middle">3</text><text x="3.2" y="49.3" font-size="5" text-anchor="middle">4</text><text x="56.5" y="5.2" font-size="5" text-anchor="middle">4</text><text x="3.2" y="58.3" font-size="5" text-anchor="middle">2</text><rect x="7.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="25.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="43.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="52.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="7.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="25.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="34.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="52.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="7.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="25.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="52.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="7.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="16.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="25.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="52.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="7.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="25.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="52.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="7.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="25.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="34.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="52.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><polyline points="11.5,56.5 11.5,47.5 20.5,47.5 29.5,47.5 29.5,38.5 29.5,29.5 20.5,29.5 11.5,29.5 11.5,20.5 11.5,11.5 20.5,11.5 29.5,11.5 38.5,11.5 47.5,11.5 47.5,20.5 47.5,29.5 56.5,29.5 56.5,38.5 56.5,47.5 56.5,56.5" fill="none" stroke="#ffd23f" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><rect x="8.9" y="53.9" width="5.2" height="5.2" fill="#f4f4ee" stroke="#1a1412" stroke-width=".5"/><rect x="9.9" y="55.5" width=".9" height="1.6" fill="#1a1412"/><rect x="12.2" y="55.5" width=".9" height="1.6" fill="#1a1412"/><polygon points="56.50,53.10 57.38,55.29 59.73,55.45 57.93,56.96 58.50,59.25 56.50,58.00 54.50,59.25 55.07,56.96 53.27,55.45 55.62,55.29" fill="#ffe066" stroke="#1a1412" stroke-width=".5"/></svg><figcaption>Tablero 2</figcaption></figure>
+      <figure><svg class="grid" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><text x="11.5" y="5.2" font-size="5" text-anchor="middle">6</text><text x="3.2" y="13.3" font-size="5" text-anchor="middle">7</text><text x="20.5" y="5.2" font-size="5" text-anchor="middle">4</text><text x="3.2" y="22.3" font-size="5" text-anchor="middle">2</text><text x="29.5" y="5.2" font-size="5" text-anchor="middle">4</text><text x="3.2" y="31.3" font-size="5" text-anchor="middle">5</text><text x="38.5" y="5.2" font-size="5" text-anchor="middle">3</text><text x="3.2" y="40.3" font-size="5" text-anchor="middle">5</text><text x="47.5" y="5.2" font-size="5" text-anchor="middle">5</text><text x="3.2" y="49.3" font-size="5" text-anchor="middle">2</text><text x="56.5" y="5.2" font-size="5" text-anchor="middle">3</text><text x="3.2" y="58.3" font-size="5" text-anchor="middle">4</text><text x="65.5" y="5.2" font-size="5" text-anchor="middle">6</text><text x="3.2" y="67.3" font-size="5" text-anchor="middle">6</text><rect x="7.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="25.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="43.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="52.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="61.4" y="7.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="7.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="25.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="34.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="52.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="61.4" y="16.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="7.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="25.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="43.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="52.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="61.4" y="25.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="7.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="16.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="25.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="52.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="61.4" y="34.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="7.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="25.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="34.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="52.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="61.4" y="43.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="7.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="25.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="34.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="43.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="52.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="61.4" y="52.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="7.4" y="61.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="16.4" y="61.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="25.4" y="61.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="34.4" y="61.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="43.4" y="61.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><rect x="52.4" y="61.4" width="8.2" height="8.2" rx=".8" fill="#26483a"/><rect x="61.4" y="61.4" width="8.2" height="8.2" rx=".8" fill="#2a5a44"/><polyline points="11.5,29.5 11.5,20.5 11.5,11.5 20.5,11.5 29.5,11.5 38.5,11.5 47.5,11.5 56.5,11.5 65.5,11.5 65.5,20.5 65.5,29.5 65.5,38.5 56.5,38.5 47.5,38.5 47.5,29.5 38.5,29.5 29.5,29.5 29.5,38.5 20.5,38.5 20.5,47.5 11.5,47.5 11.5,56.5 11.5,65.5 20.5,65.5 29.5,65.5 38.5,65.5 47.5,65.5 47.5,56.5 56.5,56.5 65.5,56.5 65.5,65.5" fill="none" stroke="#ffd23f" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><rect x="8.9" y="26.9" width="5.2" height="5.2" fill="#f4f4ee" stroke="#1a1412" stroke-width=".5"/><rect x="9.9" y="28.5" width=".9" height="1.6" fill="#1a1412"/><rect x="12.2" y="28.5" width=".9" height="1.6" fill="#1a1412"/><polygon points="65.50,62.10 66.38,64.29 68.73,64.45 66.93,65.96 67.50,68.25 65.50,67.00 63.50,68.25 64.07,65.96 62.27,64.45 64.62,64.29" fill="#ffe066" stroke="#1a1412" stroke-width=".5"/></svg><figcaption>Tablero 3</figcaption></figure>
+    </div>
+    <p><span class="got">Historia: luces</span> <span class="got inv">Owitos de Navidad</span></p>
+    <div class="step"><img data-icon="straw_hat" data-x="4" alt="">
+      <h2>El sombrero de Heladoncio</h2>
+      Detrás de la Casa de la Navidad, por su lado izquierdo, asoma la punta de un sombrero. Ponte a la izquierda de la casa,
+      mirando hacia ella, y cógelo. Luego dáselo a Heladoncio en la puerta de Sweet Famosa. <span class="got">Curiosidad</span>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="cap7b">
+  <div class="band"></div><h1 class="small">7. LA ISLA HELADA (2)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="step"><img data-spr="bart_down_0" data-x="3" alt="">
+      <h2>Bart (Fitness Bartory)</h2>
+      La primera vez te reta a un combate de rol que no es tal: elige lo que quieras. Luego viene su charla y la calistenia:
+      <ol class="do">
+        <li><b>Dominadas</b>: pulsa acción cuando el marcador pase por la zona verde.</li>
+        <li><b>Flexiones</b>: machaca el botón de acción hasta llenar la barra.</li>
+        <li><b>Plancha</b>: mantén el marcador en el centro con ← →. Cada vez que repites, es más fácil.</li>
+      </ol>
+      <span class="got">Historia</span> <span class="got gift">Libro de los Miausis</span> <span class="got inv">Bart</span>
+    </div>
+    <div class="step"><img data-spr="ovejoncio_down_0" data-x="3" alt="">
+      <h2>Ovejoncia y el robot</h2>
+      Ya en forma, habla con Ovejoncia, junto a TEDI, y métete por el conducto. Hay que programar al robot. Soluciones:
+    </div>
+    <table class="t">
+      <tr><td><b>1</b></td><td>Principal: <span class="blk rep">×2</span><span class="blk rep">×3</span><span class="blk f">Av</span><span class="blk p">Pul</span></td></tr>
+      <tr><td><b>2</b></td><td>Principal: <span class="blk rep">×3</span><span class="blk fn">Fn</span><span class="blk f">Av</span><span class="blk p">Pul</span><br>Función: <span class="blk f">Av</span><span class="blk ">Der</span><span class="blk f">Av</span><span class="blk ">Izq</span></td></tr>
+      <tr><td><b>3</b></td><td>Principal: <span class="blk rep">×3</span><span class="blk fn">Fn</span><span class="blk p">Pul</span><br>Función: <span class="blk p">Pul</span><span class="blk rep">×3</span><span class="blk f">Av</span><span class="blk ">Der</span></td></tr>
+      <tr><td><b>4</b></td><td>Principal: <span class="blk fn">Fn</span><span class="blk rep">×3</span><span class="blk ">Der</span><span class="blk rep">×2</span><span class="blk f">Av</span><span class="blk fn">Fn</span><br>Función: <span class="blk rep">×3</span><span class="blk ">Der</span><span class="blk rep">×2</span><span class="blk rep">×3</span><span class="blk f">Av</span><span class="blk p">Pul</span></td></tr>
+    </table>
+    <p class="tiny">Av = avanzar · Der = girar a la derecha · Izq = girar a la izquierda · Pul = pulsar · Fn = la función.
+      <br><span class="got">Historia</span> <span class="got inv">Ovejoncia</span></p>
+  </div>
+</section>
+
+<section class="page" id="cap7c">
+  <div class="band"></div><h1 class="small">7. LA ISLA HELADA (Y 3)</h1><div class="foot"></div>
+  <div class="content">
+    <div class="step"><img data-spr="owinken_down_0" data-x="3" alt="">
+      <h2>TEDI: la máquina clonadora</h2>
+      Hay seis enchufes: tres arriba, en la máquina, y tres abajo, en el desagüe. Cuando se abre la tapa de uno, ve y arráncalo.
+      Los clones con casco van a repararlos: ponte a su lado y pulsa acción para espantarlos. Ganas al tener los seis arrancados
+      a la vez. Si te pillan los clones, solo te empujan a la entrada.
+      <br><span class="got">Historia</span> <span class="got inv">Owinken</span>
+    </div>
+    <div class="step"><img data-spr="heladoncio_down_0" data-x="2.5" alt="">
+      <h2>Heladoncio: la tarta</h2>
+      Con la máquina apagada y la calistenia hecha, habla con él en Sweet Famosa y lleva la tarta hasta Narwal. Son tres tramos.
+      Si un clon te toca, se lleva el piso de arriba y se queda relamiéndose: ponte a su lado y pulsa acción tres veces para
+      recuperarlo. Narwal solo acepta la tarta entera, con los cuatro pisos.
+      <br><span class="got">Historia: tarta</span> <span class="got inv">Heladoncio</span>
+    </div>
+    <div class="box">
+      <h3>Calcetines de la Isla Helada</h3>
+      Del 19 al 24, todos detrás de un pino. Mapa en la página <span data-ref="cap8c"></span>.
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ CAPÍTULO 8: CALCETINES -->
+<section class="page" id="cap8">
+  <div class="band"></div><h1 class="small">8. LOS 24 CALCETINES</h1><div class="foot"></div>
+  <div class="content">
+    <p class="tiny">Todos están escondidos detrás de algo: solo asoma un poquito. Se recogen al pisarlos.</p>
+    <table class="t socks"><tr><td class="n">1</td><td><img data-icon="sock_4" data-x="1.5" alt=""></td><td>Casa de Cait. Asoma por debajo de la cama.</td></tr><tr><td class="n">2</td><td><img data-icon="sock_5" data-x="1.5" alt=""></td><td>Isla de Cait. Oeste: detrás del árbol que hay junto al camino del muelle.</td></tr><tr><td class="n">3</td><td><img data-icon="sock_0" data-x="1.5" alt=""></td><td>Isla de Cait. Oeste: junto a la costa, encima de la Casa Fucsia.</td></tr><tr><td class="n">4</td><td><img data-icon="sock_1" data-x="1.5" alt=""></td><td>Isla de Cait. Norte: en la punta de arriba del bosque de los monos.</td></tr><tr><td class="n">5</td><td><img data-icon="sock_2" data-x="1.5" alt=""></td><td>Isla de Cait. Noreste: al final del bosque, junto a la costa y encima del castillo.</td></tr><tr><td class="n">6</td><td><img data-icon="sock_9" data-x="1.5" alt=""></td><td>Isla de Cait. Este: a la derecha de la puerta del castillo, pegado a la costa.</td></tr><tr><td class="n">7</td><td><img data-icon="sock_6" data-x="1.5" alt=""></td><td>Isla de Cait. Kapadokya: entre las chimeneas de hadas de la derecha.</td></tr><tr><td class="n">8</td><td><img data-icon="sock_3" data-x="1.5" alt=""></td><td>Isla de Cait. Detrás del árbol que hay entre el río y Kapadokya, al sureste del Combini.</td></tr><tr><td class="n">9</td><td><img data-icon="sock_6" data-x="1.5" alt=""></td><td>Isla de Cait. No está en el suelo: te lo da Siri al ganar a los awawas.</td></tr><tr><td class="n">10</td><td><img data-icon="sock_1" data-x="1.5" alt=""></td><td>Apartamento. Salón de la ratita blanca, justo encima del sofá rojo.</td></tr><tr><td class="n">11</td><td><img data-icon="sock_8" data-x="1.5" alt=""></td><td>Apartamento. Salón de la ratita blanca, en el rincón de la derecha.</td></tr><tr><td class="n">12</td><td><img data-icon="sock_5" data-x="1.5" alt=""></td><td>Apartamento. Dormitorio de la ratita parda, detrás de la mesa de arriba.</td></tr><tr><td class="n">13</td><td><img data-icon="sock_7" data-x="1.5" alt=""></td><td>Castillo. Oeste: detrás del árbol que hay debajo del Teatro Real.</td></tr><tr><td class="n">14</td><td><img data-icon="sock_4" data-x="1.5" alt=""></td><td>Castillo. Norte: detrás del árbol de arriba, entre el teatro y la plaza.</td></tr><tr><td class="n">15</td><td><img data-icon="sock_10" data-x="1.5" alt=""></td><td>Castillo. Oeste de la plaza: detrás del árbol al sur del camino de la alcantarilla.</td></tr><tr><td class="n">16</td><td><img data-icon="sock_9" data-x="1.5" alt=""></td><td>Castillo. Este: en la orilla derecha del estanque de los capybaras.</td></tr><tr><td class="n">17</td><td><img data-icon="sock_2" data-x="1.5" alt=""></td><td>Castillo. Sureste: detrás del árbol que hay encima del puesto de mochis.</td></tr><tr><td class="n">18</td><td><img data-icon="sock_11" data-x="1.5" alt=""></td><td>Castillo. Sur: detrás del árbol a la derecha del camino de la puerta principal.</td></tr><tr><td class="n">19</td><td><img data-icon="sock_0" data-x="1.5" alt=""></td><td>Isla Helada. Detrás del pino a la izquierda de la Casa de la Navidad.</td></tr><tr><td class="n">20</td><td><img data-icon="sock_11" data-x="1.5" alt=""></td><td>Isla Helada. Detrás del pino que hay debajo de la Casa de la Navidad.</td></tr><tr><td class="n">21</td><td><img data-icon="sock_8" data-x="1.5" alt=""></td><td>Isla Helada. Suroeste: detrás del pino junto al lago helado.</td></tr><tr><td class="n">22</td><td><img data-icon="sock_7" data-x="1.5" alt=""></td><td>Isla Helada. Detrás del pino a la derecha de Sweet Famosa.</td></tr><tr><td class="n">23</td><td><img data-icon="sock_3" data-x="1.5" alt=""></td><td>Isla Helada. Detrás del pino a la derecha de TEDI, junto a la costa.</td></tr><tr><td class="n">24</td><td><img data-icon="sock_10" data-x="1.5" alt=""></td><td>Isla Helada. Detrás del pino a la derecha del Fitness Bartory.</td></tr></table>
+  </div>
+</section>
+
+<section class="page" id="cap8b">
+  <div class="band"></div><h1 class="small">8. CALCETINES: LA ISLA</h1><div class="foot"></div>
+  <div class="content">
+    <img class="shot map" data-map="isla" data-rect="4,2,56,39" data-marks="s11=2;s1=3;s2=4;s3=5;s20=6;s18=7;s4=8;siri=9" alt="">
+    <p class="cap">Isla de Cait. El 9 es Siri: te lo da al ganar a los awawas.</p>
+    <img class="shot map" data-map="cait" data-rect="0,0,12,10" data-marks="s10=1" alt="" style="width:40%">
+    <p class="cap">Casa de Cait.</p>
+  </div>
+</section>
+
+<section class="page" id="cap8c">
+  <div class="band"></div><h1 class="small">8. CALCETINES: EL RESTO</h1><div class="foot"></div>
+  <div class="content">
+    <img data-map="castillo" data-rect="0,0,40,28" data-marks="s16=13;s7=14;s21=15;s17=16;s6=17;s23=18" alt="" class="shot map s">
+    <p class="cap">Castillo de Mazapán.</p>
+    <img data-map="helada" data-rect="2,2,36,19" data-marks="s8=19;s24=20;s19=21;s13=22;s9=23;s22=24" alt="" class="shot map s">
+    <p class="cap">Isla Helada.</p>
+    <img class="shot map" data-map="ratitas" data-rect="7,0,16,7" data-marks="s5=10;s15=11;s14=12" alt="" style="width:55%;margin:0 auto 1mm">
+    <p class="cap">Apartamento de las Ratitas: salón y dormitorio.</p>
+  </div>
+</section>
+
+<!-- ================================================================ CAPÍTULO 9 -->
+<section class="page" id="cap9">
+  <div class="band"></div><h1 class="small">9. SCOOBY Y EL GACHAPÓN</h1><div class="foot"></div>
+  <div class="content">
+    <p>Lleva los calcetines a <b>Scooby</b>: por cada pareja del mismo dibujo te da una <b>moneda</b>. Echa las monedas en el
+      gachapón que hay junto al Combini. Nunca sale un regalo repetido: con las 12 monedas, los 12 regalos.</p>
+    <table class="t">
+      <tr><th></th><th>Pareja</th><th>Calcetines</th><th></th></tr>
+      <tr><td><img data-icon="sock_0" data-x="2" alt=""></td><td>de rayas verdes</td><td class="nn">3 y 19</td><td class="ck"></td></tr><tr><td><img data-icon="sock_1" data-x="2" alt=""></td><td>de lunares rojos</td><td class="nn">4 y 10</td><td class="ck"></td></tr><tr><td><img data-icon="sock_2" data-x="2" alt=""></td><td>de zigzag azul</td><td class="nn">5 y 17</td><td class="ck"></td></tr><tr><td><img data-icon="sock_3" data-x="2" alt=""></td><td>de puntera amarilla</td><td class="nn">8 y 23</td><td class="ck"></td></tr><tr><td><img data-icon="sock_4" data-x="2" alt=""></td><td>de cruz morada</td><td class="nn">1 y 14</td><td class="ck"></td></tr><tr><td><img data-icon="sock_5" data-x="2" alt=""></td><td>naranja de rayas</td><td class="nn">2 y 12</td><td class="ck"></td></tr><tr><td><img data-icon="sock_6" data-x="2" alt=""></td><td>rosa de lunares</td><td class="nn">7 y 9</td><td class="ck"></td></tr><tr><td><img data-icon="sock_7" data-x="2" alt=""></td><td>turquesa de zigzag</td><td class="nn">13 y 22</td><td class="ck"></td></tr><tr><td><img data-icon="sock_8" data-x="2" alt=""></td><td>gris de puntera</td><td class="nn">11 y 21</td><td class="ck"></td></tr><tr><td><img data-icon="sock_9" data-x="2" alt=""></td><td>negro de cruz</td><td class="nn">6 y 16</td><td class="ck"></td></tr><tr><td><img data-icon="sock_10" data-x="2" alt=""></td><td>lila de lunares</td><td class="nn">15 y 24</td><td class="ck"></td></tr><tr><td><img data-icon="sock_11" data-x="2" alt=""></td><td>granate de rayas</td><td class="nn">18 y 20</td><td class="ck"></td></tr>
+    </table>
+    <h3>Los 12 regalos del gachapón</h3>
+    <div class="gacha"><figure><img data-gacha="pachirisu" data-x="2.6" alt=""><figcaption>Pachirisu</figcaption></figure><figure><img data-gacha="kirby" data-x="2.6" alt=""><figcaption>Kirby</figcaption></figure><figure><img data-gacha="yoshi" data-x="2.6" alt=""><figcaption>Yoshi</figcaption></figure><figure><img data-gacha="marill" data-x="2.6" alt=""><figcaption>Marill</figcaption></figure><figure><img data-gacha="poyopoyo" data-x="2.6" alt=""><figcaption>Poyopoyo</figcaption></figure><figure><img data-gacha="princesa-bultos" data-x="2.6" alt=""><figcaption>Princesa Bultos</figcaption></figure><figure><img data-gacha="socrates" data-x="2.6" alt=""><figcaption>Sócrates</figcaption></figure><figure><img data-gacha="crash" data-x="2.6" alt=""><figcaption>Crash Bandicoot</figcaption></figure><figure><img data-gacha="spyro" data-x="2.6" alt=""><figcaption>Spyro</figcaption></figure><figure><img data-gacha="grizzly" data-x="2.6" alt=""><figcaption>Grizzly</figcaption></figure><figure><img data-gacha="morsez" data-x="2.6" alt=""><figcaption>Morsez</figcaption></figure><figure><img data-gacha="owinken-mandarino" data-x="2.6" alt=""><figcaption>Owinken Mandarino</figcaption></figure></div>
+  </div>
+</section>
+
+<!-- ================================================================ CAPÍTULO 10 -->
+<section class="page" id="cap10">
+  <div class="band"></div><h1 class="small">10. LA FIESTA</h1><div class="foot"></div>
+  <div class="content">
+    <p>Con la <b>música</b>, las <b>luces</b>, los <b>globos</b> y la <b>tarta</b>, vuelve a casa de Cait y habla con la mesa.
+      Colgadín te dice si falta alguien por invitar. Si es así, contesta «Todavía no» y ve a por él: la fiesta es mucho mejor
+      con todos. <span class="got">Historia: fin</span></p>
+    <div class="row" style="margin:3mm 0"><img data-icon="cake" data-x="9" alt=""><img data-spr="colgadin_down_0" data-x="6" alt=""><img data-icon="gift" data-x="9" alt=""></div>
+    <div class="box">
+      <h3>Después de la fiesta</h3>
+      Puedes seguir jugando: lo que falte se puede conseguir igual, y cuenta para el 100 %. En casa de Cait quedan los restos de
+      la fiesta: acércate a ellos para celebrarla otra vez.
+    </div>
+    <div class="box">
+      <h3>Trucos de Aeroflot</h3>
+      Si escribes en la hoja de reclamaciones un código que empieza por «#», te dan una nota en ruso. Llévasela a Cuca, con Cuy
+      delante, y surte efecto:
+      <ul style="margin:1mm 0 0;padding-left:5mm">
+        <li><b>#wherearemysocks</b>: te dice dónde buscar un calcetín que te falte.</li>
+        <li><b>#gimmemoney</b>: una moneda de gachapón. Se puede repetir.</li>
+        <li><b>#frozen</b>: te lleva directo a la Isla Helada.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ LISTA -->
+<section class="page" id="lista">
+  <div class="band"></div><h1 class="small">LISTA: INVITADOS</h1><div class="foot"></div>
+  <div class="content">
+    <table class="t"><tr><td class="ck"></td><td><b>Lolete</b></td><td>Al sacarlo de entre las cajas.</td></tr><tr><td class="ck"></td><td><b>Scooby</b></td><td>Hablando con él en el templo.</td></tr><tr><td class="ck"></td><td><b>Cuca</b></td><td>En el templo, cuando llevas a Cuy.</td></tr><tr><td class="ck"></td><td><b>Fucsia</b></td><td>Al llegar a 100 puntos en su prueba.</td></tr><tr><td class="ck"></td><td><b>Perrunfli</b></td><td>Al acertar la paella.</td></tr><tr><td class="ck"></td><td><b>Bart</b></td><td>Al superar la calistenia.</td></tr><tr><td class="ck"></td><td><b>Tigrito</b></td><td>Al rescatarlo de los monos.</td></tr><tr><td class="ck"></td><td><b>Cuy y las ratitas</b></td><td>Cuando Cuy se une a ti.</td></tr><tr><td class="ck"></td><td><b>Kai</b></td><td>Al pasar por su lado, con Kai ya despierto.</td></tr><tr><td class="ck"></td><td><b>Patito</b></td><td>Al acabar la prueba del estanque.</td></tr><tr><td class="ck"></td><td><b>Los capybaras</b></td><td>A la vez que Patito.</td></tr><tr><td class="ck"></td><td><b>Owitos del Teatro</b></td><td>Al acabar el ensayo.</td></tr><tr><td class="ck"></td><td><b>Mantecas y Manteca2</b></td><td>Al servir los diez pedidos.</td></tr><tr><td class="ck"></td><td><b>Rey Peludito</b></td><td>Hablando con él con la puerta ya abierta.</td></tr><tr><td class="ck"></td><td><b>Narwal</b></td><td>Al llamarlo con el Otamatone.</td></tr><tr><td class="ck"></td><td><b>Owitos de Navidad</b></td><td>Al encender las luces.</td></tr><tr><td class="ck"></td><td><b>Owinken</b></td><td>Al apagar la máquina de TEDI.</td></tr><tr><td class="ck"></td><td><b>Heladoncio</b></td><td>Al entregar la tarta.</td></tr><tr><td class="ck"></td><td><b>Los Gemelos bipolares</b></td><td>Al tirar los ocho tablones.</td></tr><tr><td class="ck"></td><td><b>Siri y los awawas</b></td><td>Al ganar a los awawas.</td></tr><tr><td class="ck"></td><td><b>Ovejoncia</b></td><td>Al abrir la puerta de TEDI.</td></tr><tr><td class="ck"></td><td><b>Owitos de la Inquisición</b></td><td>En la mesa de guerra del castillo.</td></tr></table>
+  </div>
+</section>
+
+<section class="page" id="lista2">
+  <div class="band"></div><h1 class="small">LISTA: EL RESTO</h1><div class="foot"></div>
+  <div class="content">
+    <h3>Regalos especiales</h3>
+    <table class="t">
+      <tr><td class="ck"></td><td><img data-icon="candy" data-x="2" alt=""></td><td><b>Mocadorà</b>: la paella de Perrunfli</td></tr>
+      <tr><td class="ck"></td><td><img data-icon="book" data-x="2" alt=""></td><td><b>Libro de los Miausis</b>: la calistenia de Bart</td></tr>
+      <tr><td class="ck"></td><td><img data-icon="sushi" data-x="2" alt=""></td><td><b>Sushi Go!</b>: Coleowe, en la mesa de guerra</td></tr>
+      <tr><td class="ck"></td><td><img data-icon="flower" data-x="1.5" alt=""></td><td><b>Flores de loto</b>: Patito y los capybaras</td></tr>
+      <tr><td class="ck"></td><td><img data-icon="mochi" data-x="2" alt=""></td><td><b>Mochis</b>: el puesto del castillo</td></tr>
+      <tr><td class="ck"></td><td><img data-icon="taiyaki" data-x="2" alt=""></td><td><b>Taiyakis</b>: el puesto de la Isla Helada</td></tr>
+    </table>
+    <h3>Curiosidades</h3>
+    <table class="t">
+      <tr><td class="ck"></td><td>Un cuenco en el <b>Biang Biang</b></td></tr>
+      <tr><td class="ck"></td><td>Un <b>vale de Aeroflot</b> (reclamación normal, sin «#»)</td></tr>
+      <tr><td class="ck"></td><td>Devolverle el <b>sombrero</b> a Heladoncio</td></tr>
+    </table>
+    <h3>Para la fiesta</h3>
+    <table class="t">
+      <tr><td class="ck"></td><td>Música (Fucsia)</td><td class="ck"></td><td>Luces (Owitos de Navidad)</td></tr>
+      <tr><td class="ck"></td><td>Globos (Siri)</td><td class="ck"></td><td>Tarta (Heladoncio)</td></tr>
+    </table>
+    <p class="tiny">Y los 24 calcetines, las 12 parejas y los 12 regalos del gachapón (páginas <span data-ref="cap8"></span> y <span data-ref="cap9"></span>).</p>
+  </div>
+</section>
+
+<!-- ================================================================ CHULETA -->
+<section class="page" id="chuleta">
+  <div class="band"></div><h1 class="small">LA CHULETA DE FUCSIA</h1><div class="foot"></div>
+  <div class="content">
+    <p class="tiny">Todas las canciones de la prueba de Fucsia. Salen al azar y no se repiten hasta que se acaban.</p>
+    <table class="t">
+      <tr><th>Canción</th><th>Artista</th></tr>
+      <tr><td>Break Free</td><td>Ariana Grande</td></tr><tr><td>Alien superstar</td><td>Beyoncé</td></tr><tr><td>What was I made for</td><td>Billie Eilish</td></tr><tr><td>JUMP</td><td>BLACKPINK</td></tr><tr><td>Stronger</td><td>Britney Spears</td></tr><tr><td>Don't Go Yet</td><td>Camila Cabello</td></tr><tr><td>Ghost</td><td>Demi Lovato</td></tr><tr><td>Love Again</td><td>Dua Lipa</td></tr><tr><td>Bring me to life</td><td>Evanescence</td></tr><tr><td>The Promise</td><td>Girls Aloud</td></tr><tr><td>Angel of my dreams</td><td>Jade</td></tr><tr><td>MANTRA</td><td>JENNIE</td></tr><tr><td>earthquake</td><td>JISOO</td></tr><tr><td>Wow</td><td>Kylie Minogue</td></tr><tr><td>El Último Vals</td><td>La Oreja de Van Gogh</td></tr><tr><td>Vanish into you</td><td>Lady Gaga</td></tr><tr><td>LALISA</td><td>LISA</td></tr><tr><td>HIP</td><td>Mamamoo</td></tr><tr><td>FROOT</td><td>Marina</td></tr><tr><td>Rocket Scientist</td><td>Perrie</td></tr><tr><td>APT</td><td>ROSÉ</td></tr><tr><td>Chandelier</td><td>Sia</td></tr><tr><td>Fénix</td><td>Soraya</td></tr><tr><td>Wannabe</td><td>Spice girls</td></tr><tr><td>Jungle</td><td>Sugababes</td></tr><tr><td>Summer Sunshine</td><td>The Corrs</td></tr><tr><td>Midnight sun</td><td>Zara Larsson</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="page" id="notas1">
+  <div class="band"></div><h1>NOTAS</h1><div class="foot"></div>
+  <div class="content"><div class="lines"></div></div>
+</section>
+<section class="page" id="notas2">
+  <div class="band"></div><h1>NOTAS</h1><div class="foot"></div>
+  <div class="content"><div class="lines"></div></div>
+</section>
+
+<!-- ================================================================ CONTRAPORTADA -->
+<section class="page bare back" id="contra">
+  <div class="center">
+    <img data-spr="colgadin_down_0" data-x="10" alt=""><br><br>
+    ¿Ya tienes el 100 %?<br>
+    Entonces solo queda una cosa por hacer:<br>volver a casa de Cait y celebrarlo otra vez.
+  </div>
+</section>
+
+<script type="module" src="guia.js"></script>
+</body>
+</html>

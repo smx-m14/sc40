@@ -229,6 +229,7 @@ const CHARS = {
   owito_k(p, dir, o) { owito(p, o, '#f7a8c0', '#ffffff'); },
   owito_v(p, dir, o) { owito(p, o, '#b8a0d8', '#7a5fa8'); },
   owito_g(p, dir, o) { owito(p, o, '#8fd070', '#3f9f4f'); },
+  owito_m(p, dir, o) { owito(p, o, '#ffc49a', '#e5869f'); }, // melocotón: la vendedora de mochis
   owito_c(p, dir, o) { owito(p, o, '#f3e6c0', '#b08a50'); p.px('#e2574c', [3, 12 + o], [4, 13 + o]); },
   owito_t(p, dir, o) { owito(p, o, '#b07a44', '#f3e6c0'); p.rect(3, 4 + o, 12, 2, '#d9b040').rect(6, 2 + o, 6, 2, '#e8c860').px('#8a6a20', [5, 5 + o], [9, 5 + o], [13, 5 + o]); },
   // Heladoncio: gato helado napolitano (gris arriba, blanco en medio, rosa abajo)
@@ -298,6 +299,14 @@ const CHARS = {
   },
   // Owitos de Navidad
   owito_n(p, dir, o) { owito(p, o, '#f7b8c8', '#ffffff'); p.rect(7, 1 + o, 5, 4, '#3f9f4f').px('#fff', [7, 2 + o], [8, 3 + o], [11, 2 + o], [10, 3 + o]).rect(9, 1 + o, 1, 4, '#e2574c'); },
+  // El de verde con gorro de árbol de Navidad (estrella, bolitas) y un bastón de caramelo: el vendedor de taiyakis
+  owito_x(p, dir, o) {
+    owito(p, o, '#8fd070', '#3f9f4f');
+    const T = '#2f7f3f';
+    p.px(T, [9, 2 + o]).rect(8, 3 + o, 3, 1, T).rect(7, 4 + o, 5, 1, T).rect(6, 5 + o, 7, 1, T);
+    p.px('#ffe066', [9, 1 + o]).px('#e2574c', [8, 4 + o], [11, 5 + o]).px('#5ab0e8', [10, 3 + o], [7, 5 + o]);
+    p.px('#e2574c', [11, 13 + o], [12, 14 + o], [12, 16 + o]).px('#ffffff', [12, 13 + o], [12, 15 + o]);
+  },
   owito_r(p, dir, o) { owito(p, o, '#c98f4e', '#8a5a2a'); p.rect(6, 3 + o, 7, 2, '#e2574c').rect(5, 5 + o, 9, 1, '#fff').px('#fff', [13, 2 + o]).px('#e2574c', [9, 12 + o]); },
   // Ovejoncia (id «ovejoncio»): oveja enorme y redonda de lana blanca, con la cara beige
   ovejoncio(p, dir, o) { // Ovejoncia: oveja enorme de lana blanca, cara crema, orejas caídas y pestañas
@@ -833,6 +842,7 @@ const OBJ = {
   // ---- Calcetines: cinco diseños, dos calcetines de cada uno
   sock_0: () => sockArt('#3f8f6b', 0), sock_1: () => sockArt('#e2574c', 1), sock_2: () => sockArt('#3f6fd0', 2), sock_3: () => sockArt('#e8a820', 3), sock_4: () => sockArt('#b06ad8', 4),
   sock_5: () => sockArt('#f08a24', 0, true), sock_6: () => sockArt('#f06aa8', 1, true), sock_7: () => sockArt('#2fb8b0', 2, true), sock_8: () => sockArt('#8a8f9a', 3, true), sock_9: () => sockArt('#2b2b33', 4, true),
+  sock_10: () => sockArt('#b88ad8', 1, true), sock_11: () => sockArt('#8f2a3a', 0, true),
   // ---- Apartamento de las Ratitas
   gem_r: () => gemArt('#e2574c', '#f7a8a0'), gem_b: () => gemArt('#3f6fd0', '#9fc0f7'), gem_y: () => gemArt('#e8b820', '#fff0a0'), gem_g: () => gemArt('#3f9f4f', '#a8e8a0'),
   cup() { return new PX(8, 8).rect(1, 2, 5, 5, '#f4f4ee').rect(1, 2, 5, 1, '#6e4520').px('#f4f4ee', [6, 3], [7, 4], [6, 5]).px('#3f8fd8', [2, 4], [4, 5]).outline(INK); },
@@ -1227,7 +1237,7 @@ const OBJ = {
     p.ell(48, 9, 9, 7, '#f7a8c0').ell(48, 9, 3.5, 2.5, D).px('#fff', [43, 6], [52, 5], [54, 10]).px('#ffe066', [45, 4], [50, 12]);   // dónut del tejado
     p.rect(14, 19, 68, 11, '#0c0c10').rect(15, 20, 66, 9, D);
     for (let x = 18; x < 78; x += 5) p.px(N, [x, 22], [x + 1, 22], [x + 2, 23], [x, 24], [x + 1, 25], [x + 2, 26], [x, 26]);                 // rótulo de neón
-    // Cascadas: chocolate negro, chocolate blanco, speculoos y pistacho
+    // Cascadas: chocolate negro, chocolate blanco, Lotus y pistacho
     [['#4a2c1e', '#6b4030'], ['#fff3dc', '#ffffff'], ['#c98a4e', '#e0a868'], ['#9fc86a', '#c0e090']].forEach(([c, l], i) => {
       const x = 8 + i * 13;
       p.rect(x, 32, 9, 3, '#6a6f7a').rect(x + 1, 35, 7, 32, c).rect(x + 2, 35, 1, 32, l).ell(x + 4.5, 68, 6, 2.5, c);
@@ -1469,6 +1479,28 @@ const OBJ = {
 
 // ---------------------------------------------------------------- Regalos del gachapón (24x24)
 const GACHA_ART = {
+  grizzly(p) { // el oso pardo grande: de pie, hocico claro y nariz negra
+    const B = '#9a6a40', BD = '#7a4f2a', M = '#c8a070';
+    p.ell(7.5, 3.6, 1.8, 1.8, B).ell(16.5, 3.6, 1.8, 1.8, B).ell(12, 15, 6.6, 7.6, B).ell(12, 7.5, 5.4, 4.6, B);
+    p.ell(13, 9, 2.8, 1.8, M).px(BLACK, [13, 8], [14, 8], [10, 6], [15, 6]).px(BD, [12, 10], [13, 10], [14, 10]);
+    p.line(7, 13, 8, 18, BD).line(17, 13, 16, 18, BD).ell(9, 22, 2.4, 1.2, BD).ell(15, 22, 2.4, 1.2, BD);
+  },
+  morsez(p) { // la morsa con peto: cabeza blanca, gran hocico azul, cuerpo oscuro y pies azules
+    const W = '#ecebf4', WB = '#c9c6dc', K = '#2b2b33', A = '#3f5fd0';
+    p.ell(12, 16, 7.4, 6, K).ell(7, 21, 3, 1.7, A).ell(17, 21, 3, 1.7, A);
+    p.ell(11.5, 8.5, 7, 5.6, W).ell(11.5, 12, 6, 2, WB).ell(11.5, 10.5, 4.4, 2.4, A).ell(10.5, 9.8, 1.4, 0.8, '#7f9cf4');
+    p.px(BLACK, [11, 9], [12, 9], [9, 6], [14, 6]).px('#e58a8a', [11, 12]).ell(18.5, 13.5, 2.4, 1.8, W);
+  },
+  'owinken-mandarino'(p) { // Owinken hecho mandarina: cerdito naranja con hojitas en la cabeza y una rodaja de mandarina por hocico
+    const O = '#f59a2e', OL = '#ffb85a', G = '#4f8a3a';
+    p.px(O, [6, 6], [7, 5], [7, 6], [8, 6], [16, 6], [17, 5], [17, 6], [18, 6]).px('#ffe0b0', [7, 6], [17, 6]);
+    p.ell(12, 13.5, 9.4, 6.6, O).ell(10, 10.5, 5, 2.2, OL);
+    p.px(G, [11, 6], [12, 5], [13, 6], [12, 6], [10, 7], [14, 7]);
+    p.ell(19, 14, 3, 3, '#fff6e0').ell(19, 14, 2.3, 2.3, '#ffa94a').px('#fff6e0', [19, 12], [19, 16], [17, 14], [21, 14]);
+    p.px('#c06a10', [18, 14], [20, 14]);                                                         // la rodaja es el hocico
+    p.px('#5a3418', [12, 11], [13, 11], [16, 10], [17, 10]);                                     // los dos ojos (marrones), delante, junto al hocico
+    p.ell(5, 19, 1.8, 1.2, G).ell(10, 20, 1.8, 1.2, G).ell(15, 20, 1.8, 1.2, G);
+  },
   kirby(p) {
     const P = '#f7a8c0', PD = '#e87a9c', R = '#d8263a';
     p.ell(3.5, 13, 2.6, 2.6, P).ell(20.5, 11, 2.6, 2.6, P).ell(7, 21, 4, 2.2, R).ell(17, 21, 4, 2.2, R);
@@ -1494,7 +1526,7 @@ const GACHA_ART = {
   },
   marill(p) { // ratoncito azul redondo, orejas redondas y cola en zigzag acabada en una bola azul
     const B = '#4f8fe8', BL = '#7fb2f4', BD = '#2f63b8', W = '#eaf4ff';
-    p.ell(6.5, 5.5, 3.4, 3.4, B).ell(17.5, 5.5, 3.4, 3.4, B).ell(6.5, 5.8, 2, 2, BD).ell(17.5, 5.8, 2, 2, BD);            // orejas
+    p.ell(6.5, 5.5, 3.4, 3.4, B).ell(17.5, 5.5, 3.4, 3.4, B).ell(6.5, 5.8, 2, 2, '#c0584a').ell(17.5, 5.8, 2, 2, '#c0584a');            // orejas
     p.ell(12, 14, 8, 7.6, B).ell(12, 17.6, 5.4, 3.6, W).ell(9, 9.5, 2.6, 1.3, BL);                                     // cuerpo y barriga
     p.ell(7, 21, 2.4, 1.4, BD).ell(17, 21, 2.4, 1.4, BD).ell(5, 16, 1.6, 1.4, B).ell(19, 16, 1.6, 1.4, B);             // patas
     for (const x of [9, 14]) p.rect(x, 11, 2, 3, BLACK).px('#ffffff', [x, 11]);                                        // ojos
@@ -1644,8 +1676,8 @@ export function gachaIcon(id) {
 }
 
 export const WALKERS = ['colgadin', 'lolete', 'tigrito', 'cuy', 'patito', 'heladoncio', 'heladoncioh'];
-export const NPCS = ['owi_jos', 'owi_lel', 'owi_cas', 'owi_dor', 'owi_mor', 'owi_col', 'owi_cul', 'heladoncioh', 'fuxia', 'scooby', 'cuca', 'lolete', 'perrunfli', 'bart', 'mono', 'tigrito', 'ratita_p', 'ratita_o', 'ratita_b', 'kai', 'cuy',
-  'peludito', 'mantecas', 'manteca2', 'patito', 'capybara', 'owito_w', 'owito_k', 'owito_v', 'owito_g', 'owito_c', 'owito_t', 'heladoncio', 'owinken', 'clon', 'owito_n', 'owito_r', 'awawa', 'siri', 'ovejoncio', 'gato', 'gatot'];
+export const NPCS = ['owito_m', 'owi_jos', 'owi_lel', 'owi_cas', 'owi_dor', 'owi_mor', 'owi_col', 'owi_cul', 'heladoncioh', 'fuxia', 'scooby', 'cuca', 'lolete', 'perrunfli', 'bart', 'mono', 'tigrito', 'ratita_p', 'ratita_o', 'ratita_b', 'kai', 'cuy',
+  'peludito', 'mantecas', 'manteca2', 'patito', 'capybara', 'owito_w', 'owito_k', 'owito_v', 'owito_g', 'owito_c', 'owito_t', 'heladoncio', 'owinken', 'clon', 'owito_n', 'owito_r', 'owito_x', 'awawa', 'siri', 'ovejoncio', 'gato', 'gatot'];
 
 export function makeTextures(scene) {
   const add = (key, cv) => { if (scene.textures.exists(key)) scene.textures.remove(key); scene.textures.addCanvas(key, cv); };

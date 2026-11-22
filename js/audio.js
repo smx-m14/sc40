@@ -14,13 +14,7 @@ const COMPOSED = {
       { wave: 'triangle', vol: 0.17, notes: 'C3:8 G2:4 G2:8 C3:4 C3:8 F3:6 C3:4 G2:4 C3:6' },
     ],
   },
-  casa: {
-    bpm: 92,
-    tracks: [
-      { wave: 'triangle', vol: 0.16, notes: 'G4:2 C5:2 E5:4 D5:2 C5:2 A4:4 F4:2 A4:2 C5:4 B4:2 D5:2 G4:4' },
-      { wave: 'sine', vol: 0.14, notes: 'C3:8 A2:8 F2:8 G2:8' },
-    ],
-  },
+  // (la música de la casa de Cait, «casa», sale ahora de music/casa.mid: ver tools/make_music.py)
   puzle: {
     bpm: 118,
     tracks: [
@@ -152,6 +146,8 @@ export const Sound = {
     this.jingle('logro');
   },
   // Efectos grabados (monos, patito…): assets/audio/sfx_<nombre>.mp3
+  // Carga por adelantado efectos grabados, para que el primero no llegue tarde
+  preload(...names) { for (const n of names) this.el('sfx_' + n, false).load(); },
   clip(name, vol = 0.8) {
     if (!this.ctx) return;
     const a = this.el('sfx_' + name, false);

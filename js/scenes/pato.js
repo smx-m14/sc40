@@ -67,6 +67,7 @@ export class PatoScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#6fbf5a').fadeIn(250);
     UI.hud(false);
     Sound.music('capybaras');
+    Sound.preload('cuac', 'cuac1', 'cuac2', 'cuac3');
 
     const g = this.add.graphics();
     g.fillStyle(0x3f8fd8).fillRect(0, 0, 320, 64);
@@ -143,7 +144,7 @@ export class PatoScene extends Phaser.Scene {
 
   async scare() {
     this.lock = true;
-    Sound.clip('patito', 0.6);
+    Sound.clip('cuac', 0.8); // te ha visto: la ristra de graznidos entera
     UI.toast('¡¡CUAC!! ¡Un ratón gigante!');
     this.cameras.main.shake(250, 0.006);
     this.tweens.add({ targets: this.duck, y: DUCK.y - 14, duration: 120, yoyo: true, repeat: 1 });
@@ -250,7 +251,12 @@ export class PatoScene extends Phaser.Scene {
         // Avisa poco antes de girarse; a veces amaga y no se gira, y a veces se gira dos veces seguidas
         if (this.phase === 'green') { this.phase = 'warn'; this.t = 0.42 + Math.random() * 0.13; this.fake = Math.random() < 0.25; }
         else if (this.phase === 'warn' && this.fake) { this.phase = 'green'; this.t = 0.7 + Math.random() * 1.0; }
-        else if (this.phase === 'warn') { this.phase = 'red'; this.t = 1.2 + Math.random() * 1.6; Sound.sfx('bump'); }
+        else if (this.phase === 'warn') {
+          this.phase = 'red'; this.t = 1.2 + Math.random() * 1.6;
+          // Al girarse, Patito suelta un «cuac» (uno de tres graznidos grabados); si va a mirar un buen rato, dos
+          Sound.clip('cuac' + (1 + Math.floor(Math.random() * 3)), 0.75);
+          if (this.t > 2.2) this.time.delayedCall(330, () => { if (this.phase === 'red') Sound.clip('cuac' + (1 + Math.floor(Math.random() * 3)), 0.7); });
+        }
         else if (Math.random() < 0.3) { this.phase = 'warn'; this.t = 0.4; this.fake = false; }
         else { this.phase = 'green'; this.t = 1.2 + Math.random() * 1.4; }
       }

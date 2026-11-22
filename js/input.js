@@ -31,6 +31,7 @@ export const Input = {
   },
   nudge: null,      // dirección de un toque corto pendiente de convertir en un paso
   touchDir: false,  // la última pulsación de dirección vino de la cruceta táctil
+  touchA: false,    // el botón de acción se está pulsando en la pantalla táctil (los juegos de ritmo dan más margen)
   take(btn) { const v = !!this.just[btn]; this.just[btn] = false; return v; },
   clear() { this.just = {}; },
   dir() {
@@ -64,7 +65,7 @@ export const Input = {
       let touchT = -1e9;
       const press = () => { el.classList.add('on'); this.press(btn); };
       const isDir = ['up', 'down', 'left', 'right'].includes(btn);
-      el.addEventListener('touchstart', (e) => { e.preventDefault(); touchT = performance.now(); if (isDir) this.touchDir = true; press(); }, { passive: false });
+      el.addEventListener('touchstart', (e) => { e.preventDefault(); touchT = performance.now(); if (isDir) this.touchDir = true; else this.touchA = true; press(); }, { passive: false });
       const lift = (e) => { e.preventDefault(); el.classList.remove('on'); this.release(btn); };
       el.addEventListener('touchend', lift, { passive: false });
       el.addEventListener('touchcancel', lift, { passive: false }); // gesto del sistema: que no se quede «pulsado»
@@ -80,7 +81,7 @@ export const Input = {
     // Red de seguridad: si se levantan todos los dedos, no queda ninguna dirección pulsada (antes, si se perdía el
     // «soltar», Colgadín seguía andando un buen trecho)
     window.addEventListener('touchend', (e) => { if (!e.touches.length) for (const b of ['up', 'down', 'left', 'right']) if (this.held[b]) this.release(b); }, { passive: true });
-    window.addEventListener('keydown', () => { this.touchDir = false; }, { capture: true });
+    window.addEventListener('keydown', () => { this.touchDir = false; this.touchA = false; }, { capture: true });
     bind(document.getElementById('tb-a'), 'a');
     // (En táctil no hay botón B: el menú, cerrar y «Salir» ya tienen su botón en pantalla. En teclado: Esc o X.)
   },
