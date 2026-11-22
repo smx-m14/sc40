@@ -556,7 +556,11 @@ export const SCRIPTS = {
       'Qué susto. Creía que eras uno de esos ratones gigantes que rondan el estanque. Llevo días sin salir de los juncos.',
     ]);
     await UI.say(C, 'No son ratones: son capybaras. Y están aterrados… de ti.');
-    await UI.say('Patito', ['¿De mí? Si yo ni siquiera soy un pato. Me llaman Patito porque soy amarillo.', 'De pequeño me tragué el altavoz de un pato de juguete. Desde entonces, cuando me pongo nervioso, me sale el «cuac».']);
+    await UI.say('Patito', [
+      '¿De mí? Si yo ni siquiera soy un pato. Me llaman Patito porque soy amarillo.',
+      'Bueno… dicen que en mi vida anterior fui un pato. Yo no me acuerdo de nada. Aunque a veces me entran unas ganas tremendas de migas de pan.',
+      'Y de pequeño me tragué el altavoz de un pato de juguete. Entre una cosa y otra, cuando me pongo nervioso, me sale el «cuac».',
+    ]);
     await UI.say('Capybara', '¿Ese era el monstruo? Pero si es blandito. Anda, ven a pegarte un chapu, que hay sitio para todos.');
     Sound.logro();
     S.set('pato');
