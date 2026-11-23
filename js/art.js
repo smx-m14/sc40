@@ -1658,13 +1658,37 @@ const ICONS = {
   cup: (p) => p.rect(4, 4, 8, 10, '#e8c898').rect(4, 4, 8, 2, '#fff').rect(3, 3, 10, 1, '#d7eefb').rect(9, 0, 1, 6, '#e2574c').px('#3b2a20', [5, 11], [7, 12], [9, 11], [6, 9], [10, 12]),
   arch: (p) => { p.rect(2, 2, 12, 12, '#e9c98f').ell(8, 9, 3.5, 4.5, '#3b2a20').rect(5, 9, 6, 5, '#3b2a20'); for (let x = 2; x < 14; x += 2) p.rect(x, 2, 1, 3, '#c8402c'); },
 };
+// Huella del botón de acción táctil: dibujada a mano, sin contorno y con un píxel de aire entre los deditos y la
+// almohadilla (con el contorno y el filtro a blanco del botón, la huella de 12x12 quedaba hecha un borrón)
+const PAW_BTN = [
+  '....##....##....',
+  '...####..####...',
+  '...####..####...',
+  '...####..####...',
+  '....##....##....',
+  '.##..........##.',
+  '####........####',
+  '####..####..####',
+  '.##..######..##.',
+  '....########....',
+  '...##########...',
+  '...##########...',
+  '...##########...',
+  '....###..###....',
+];
+function pawBtn() {
+  const p = new PX(16, 14);
+  PAW_BTN.forEach((row, y) => [...row].forEach((c, x) => { if (c === '#') p.px('#fff', [x, y]); }));
+  return p;
+}
 const iconCache = {};
 // Icono pixel (data URL) para el interfaz HTML: iconos propios o, si no, un objeto del juego (calcetín, sobre…)
 export function icon(name) {
   if (!iconCache['i_' + name]) {
     const big = ['sun', 'wave', 'mountain', 'palm', 'icecream', 'stupa', 'flower', 'column', 'tower', 'leaf', 'fish', 'pyramid', 'lantern', 'pagoda', 'cup', 'arch'].includes(name);
     let p;
-    if (ICONS[name]) { p = new PX(big ? 16 : 12, big ? 16 : 12); ICONS[name](p); p.outline(INK); } else p = OBJ[name]();
+    if (name === 'pawbtn') p = pawBtn();
+    else if (ICONS[name]) { p = new PX(big ? 16 : 12, big ? 16 : 12); ICONS[name](p); p.outline(INK); } else p = OBJ[name]();
     iconCache['i_' + name] = p.canvas().toDataURL();
   }
   return iconCache['i_' + name];

@@ -1,4 +1,4 @@
-"""Prepara los efectos grabados con el móvil (monos y Patito) para el juego.
+"""Prepara los efectos grabados con el móvil (monos, Patito y awawas) para el juego.
 
 Uso (desde la raíz del proyecto):  python tools/make_sfx.py      (necesita ffmpeg)
 
@@ -8,7 +8,7 @@ Lee "Material Insipiración/Sonidos/*.mp3" y escribe assets/audio/sfx_*.mp3:
     poco de reducción de bits (mezclada con el original, para que se sigan reconociendo);
   - los deja todos al mismo volumen medio, con un limitador para que no saturen.
 El «cuac» son ocho graznidos seguidos: se guarda entero (para el susto) y tres graznidos sueltos (para cuando
-Patito se gira, que así no se pisan con el siguiente giro).
+Patito se gira, que así no se pisan con el siguiente giro). Los awawas son cuatro «awawa» seguidos: se cortan sueltos.
 """
 import os
 import re
@@ -29,6 +29,10 @@ JOBS = [
     ('sfx_cuac1', 'cuac', (0.24, 0.47)),    # graznidos sueltos: Patito se gira
     ('sfx_cuac2', 'cuac', (0.85, 1.10)),
     ('sfx_cuac3', 'cuac', (1.49, 1.73)),
+    ('sfx_awawa1', 'awawa_01', (0.00, 0.77)),   # cuatro «awawa» sueltos (Kapadokya): cosquillas y protestas
+    ('sfx_awawa2', 'awawa_01', (0.87, 1.67)),
+    ('sfx_awawa3', 'awawa_01', (1.74, 2.58)),
+    ('sfx_awawa4', 'awawa_01', (2.68, 3.12)),
 ]
 
 

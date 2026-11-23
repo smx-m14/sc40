@@ -17,7 +17,7 @@ export class WorldScene extends Phaser.Scene {
 
   create() {
     const pos = State.d.pos;
-    this.beamG = null; this.darkR = null; this.nudgeTo = null; this.gone = false; // la escena se reutiliza: nada de referencias de la visita anterior
+    this.beamG = null; this.darkR = null; this.nudgeTo = null; this.pressFrom = null; this.gone = false; // la escena se reutiliza: nada de referencias de la visita anterior
     const m = this.map = buildMap(pos.map);
     this.cameras.main.setBackgroundColor(m.id === 'isla' ? '#3f8fd8' : '#1a1412');
     this.drawGround();
@@ -116,6 +116,22 @@ export class WorldScene extends Phaser.Scene {
     }
     UI.updateHud();
     this.drawBeam();
+    this.unstick();
+  }
+
+  // Si aparece algo sólido justo encima de Colgadín (p. ej., Cuy al quedarse en el templo, en la baldosa desde la
+  // que se le hablaba a Cuca), se le aparta a la baldosa libre más cercana para que no se quede atrapado
+  unstick() {
+    const p = this.p;
+    if (!p || !this.blocked(p.x, p.y)) return;
+    const t = this.tileOf();
+    const near = [];
+    for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) if (dx || dy) near.push([dx, dy]);
+    near.sort((a, b) => Math.hypot(...a) - Math.hypot(...b)); // primero las de al lado (arriba/abajo/lados), luego las diagonales
+    for (const [dx, dy] of near) {
+      const x = (t.x + dx) * TILE + 8, y = (t.y + dy) * TILE + 12;
+      if (!this.blocked(x, y)) { p.x = x; p.y = y; this.lastTile = this.tileOf(); this.trail.push({ x, y, dir: p.dir }); this.place(); return; }
+    }
   }
 
   // Rayo de luz que rebota en los espejos (Apartamento de las Ratitas)
@@ -212,18 +228,24 @@ export class WorldScene extends Phaser.Scene {
     if (free) {
       State.d.time += dt;
       let d = Input.dir();
+      // Dónde estaba Colgadín al empezar a pulsar: el toque corto se mide desde ahí
+      if ((d.x || d.y) && !this.pressFrom) this.pressFrom = { x: p.x, y: p.y };
       // Toque corto en la cruceta táctil: un paso de una baldosa justa, hasta el centro de la siguiente
       if (Input.nudge) {
-        // Solo en el eje del toque (nada de diagonales): hasta el centro de la siguiente baldosa en esa dirección
-        const v = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[Input.nudge];
+        // Solo en el eje del toque (nada de diagonales): hasta el centro de la siguiente baldosa en esa dirección,
+        // contada desde donde empezó el toque. Antes se contaba desde donde había llegado mientras se pulsaba, y un
+        // toque podía acabar en dos baldosas: más de lo que se había pulsado (y costaba salir de los sitios estrechos).
+        const v = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[Input.nudge], from = this.pressFrom || p;
         const ahead = (pos, off, dir) => { const c = Math.floor((pos - off) / TILE) * TILE + off; let t = dir > 0 ? (c > pos ? c : c + TILE) : (c < pos ? c : c - TILE); if (Math.abs(t - pos) < 4) t += dir * TILE; return t; };
-        this.nudgeTo = v[0] ? { axis: 'x', to: ahead(p.x, 8, v[0]), v } : { axis: 'y', to: ahead(p.y, 12, v[1]), v };
+        this.nudgeTo = v[0] ? { axis: 'x', to: ahead(from.x, 8, v[0]), v } : { axis: 'y', to: ahead(from.y, 12, v[1]), v };
         Input.nudge = null;
       }
+      if (!d.x && !d.y) this.pressFrom = null;
       if (d.x || d.y) this.nudgeTo = null;
       else if (this.nudgeTo) {
         const g = this.nudgeTo, r = g.to - p[g.axis];
-        if (Math.abs(r) < 1 || this.blocked(p.x + g.v[0] * 2, p.y + g.v[1] * 2)) this.nudgeTo = null;
+        // ya ha llegado (o se ha pasado mientras se pulsaba): se queda donde está
+        if (Math.abs(r) < 1 || r * (g.v[0] || g.v[1]) < 0 || this.blocked(p.x + g.v[0] * 2, p.y + g.v[1] * 2)) this.nudgeTo = null;
         else if (Math.abs(r) <= SPEED * dt) { p[g.axis] = g.to; this.nudgeTo = null; p.moving = true; }
         else d = { x: g.v[0], y: g.v[1] };
       }
@@ -234,6 +256,19 @@ export class WorldScene extends Phaser.Scene {
         const ox = p.x, oy = p.y;
         if (vx && !this.blocked(p.x + vx, p.y)) p.x += vx;
         if (vy && !this.blocked(p.x, p.y + vy)) p.y += vy;
+        // Esquinas: si choca andando en línea recta pero está casi alineado con un hueco (pasillo, puerta), se le
+        // recoloca de lado hacia el centro de ese carril en vez de dejarlo atascado contra el canto
+        if (ox === p.x && oy === p.y) {
+          const slide = (axis, off, step) => {
+            const c = Math.round((p[axis] - off) / TILE) * TILE + off, r = c - p[axis];
+            if (!r || Math.abs(r) > 7) return;
+            const ax = axis === 'y' ? p.x + step : c, ay = axis === 'y' ? c : p.y + step; // ¿está libre el carril, un paso más allá?
+            const s = Math.sign(r) * Math.min(Math.abs(r), SPEED * dt);
+            if (!this.blocked(ax, ay) && !this.blocked(axis === 'x' ? p.x + s : p.x, axis === 'y' ? p.y + s : p.y)) p[axis] += s;
+          };
+          if (vx && !vy) slide('y', 12, Math.sign(vx) * 2);
+          else if (vy && !vx) slide('x', 8, Math.sign(vy) * 2);
+        }
         p.moving = ox !== p.x || oy !== p.y;
         if (p.moving) { this.trail.push({ x: p.x, y: p.y, dir: p.dir }); if (this.trail.length > 240) this.trail.shift(); }
       }

@@ -58,7 +58,7 @@ export class TediScene extends Phaser.Scene {
     this.bar();
     Input.clear();
     UI.say('Colgadín', [
-      '¡La máquina clonadora! Cada cerdito que escupe es una copia de Owinken hecha con IA.',
+      '¡La máquina clonadora! Cada cerdito que escupe es una copia hecha con IA. ¿Copia de quién?',
       'Hay seis enchufes: tres arriba en la máquina y tres abajo en el desagüe. Cuando se abra la tapa de uno, llego y lo arranco. Si un clon me toca, vuelta a la entrada.',
       'Y ojo con los clones del casco amarillo: van a volver a enchufar lo que arranque. Hay que espantarlos antes de que lleguen.',
     ]).then(() => { this.lock = false; });

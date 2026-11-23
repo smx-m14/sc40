@@ -234,7 +234,8 @@ body { display: flex; flex-direction: column; align-items: center; justify-conte
 .ico { height: 1em; width: auto; image-rendering: pixelated; vertical-align: -0.16em; }
 .ico.r90 { transform: rotate(90deg); } .ico.r180 { transform: rotate(180deg); } .ico.r270 { transform: rotate(270deg); }
 #touch .ico { filter: invert(1); height: 22px; }
-#abtns .ico { height: 38px; filter: brightness(0) invert(1); } /* la huellita del botón de acción, en blanco */
+#abtns .ico { height: 38px; filter: none; } /* la huellita del botón de acción: ya viene dibujada en blanco */
+#abtns .ab.on .ico { filter: brightness(0.25); } /* pulsado: el botón se aclara y la huella se oscurece */
 #album-deco .ico { height: 1.3em; margin-left: calc(0.3 * var(--u)); }
 .btn.primary .ico, .tabs .tab.active .ico { filter: invert(1); }
 

@@ -241,7 +241,7 @@ export const SCRIPTS = {
     Sound.sfx('get');
     await UI.say('Lolete', [
       '¡Listo! Túnel abierto. Y ni me he despeinado.',
-      'Mi trabajo aquí ha terminado. Me voy a casa de Cait a ir preparando la fiesta: alguien tiene que inflar los globos.',
+      'Mi trabajo aquí ha terminado. Me voy a casa de Cait a ir preparando la fiesta: alguien tiene que ir moviendo los muebles para hacer sitio.',
     ]);
     S.goHome('lolete');
     scene.sync();
@@ -440,9 +440,12 @@ export const SCRIPTS = {
     ], { ruso: true });
   },
   async note() {
+    const seen = S.flag('nota');
     S.set('nota');
     await UI.say('', ['Una nota clavada en la pared, con la letra de Cuca:', '«Д Ш Д Ю Ж»'], { ruso: true });
-    await UI.say(S.flag('cuy') ? C : 'Cuy', S.flag('cuy') ? 'El cuarto número, en ruso… y Cuy dijo que Cuca lo escribía todo al revés.' : 'Es el cuarto número. Cuca me lo apuntó en ruso para que nadie lo entendiera. Y encima ella lo escribía todo al revés, de derecha a izquierda. Funcionó: tampoco lo entiendo yo.');
+    // Lo explica Cuy si está delante (en su cuarto o en el grupo); si ya se ha quedado en el templo, Colgadín lo recuerda
+    if (!S.flag('cuy') || S.d.party.includes('cuy')) return UI.say('Cuy', 'Es el cuarto número. Cuca me lo apuntó en ruso para que nadie lo entendiera. Y encima ella lo escribía todo al revés, de derecha a izquierda. Funcionó: tampoco lo entiendo yo.');
+    await UI.say(C, seen ? 'El cuarto número, en ruso… y Cuy dijo que Cuca lo escribía todo al revés.' : 'El cuarto número, en ruso. Cuy me contó que Cuca lo escribía todo al revés, de derecha a izquierda.');
   },
   async cuy() {
     const Y = 'Cuy';
@@ -497,7 +500,7 @@ export const SCRIPTS = {
 
   // ---------------------------------------------------------- Castillo de Mazapán
   async sewerDown() {
-    await UI.say(C, ['Uf… Me he hartado a mazapanes. Por esa alcantarilla ya no quepo ni de lado.', 'Tendré que salir por la puerta principal… cuando quiten los andamios.']);
+    await UI.say(C, ['Uf… Me he hartado a mazapanes. Por esa alcantarilla ya no quepo ni de lado.', 'Tendré que salir por la puerta principal.']);
     return false;
   },
   async exitCastle(scene) { scene.warp('isla', 50, 28, 'down'); return true; },
@@ -716,7 +719,7 @@ export const SCRIPTS = {
   async hornoDone() {
     Sound.logro();
     await UI.say('Manteca2', '¡Shantay, te quedas!');
-    await UI.say('Mantecas', ['¡DIEZ PEDIDOS! ¡Manteca2, owitos, a tapar agujeros!', 'Tú avisa al Rey Peludito: la muralla está lista y ya puede abrir la puerta.']);
+    await UI.say('Mantecas', ['¡DIEZ PEDIDOS! ¡Manteca2, owitos, a tapar agujeros!', 'Tú avisa al Rey Peludito: la muralla está lista. Ya solo le estorban los andamios de la puerta.']);
     S.set('horno');
     invite('mantecas', 'Mantecas y Manteca2');
     await UI.say('', 'Los albañiles reales colocan los mazapanes en la muralla. Ha quedado como nueva (y ligeramente mordisqueable).');
@@ -732,6 +735,7 @@ export const SCRIPTS = {
   },
   async heladoncio(scene) {
     const H = 'Heladoncio';
+    let justMet = false; // recién conocido: ya ha dado las gracias por apagar la máquina
     // Curiosidad (no es obligatoria ni da regalo): devolverle el sombrero que se le voló
     if (S.flag('hatGot') && !S.flag('hat')) {
       await UI.say(H, [
@@ -756,7 +760,8 @@ export const SCRIPTS = {
       // Si la máquina de TEDI ya está apagada cuando se le conoce, no tiene sentido que diga que sigue encendida:
       // sigue la conversación y ofrece la tarta en el momento
       if (!S.flag('tedi')) return UI.say(H, 'Vienen de TEDI, la fábrica de ahí al lado. Tienen una máquina que no para de escupirlos. Mientras siga encendida, no hay tarta que dure.');
-      await UI.say(H, 'Venían de TEDI, la fábrica de al lado… pero me han dicho que alguien ha apagado su máquina. ¿Has sido tú? ¡Gracias!');
+      await UI.say(H, 'Venían de TEDI, la fábrica de al lado… pero me han dicho que alguien ha apagado su máquina y ha sacado de ahí al pobre Owinken. ¿Has sido tú? ¡Gracias!');
+      justMet = true;
     }
     if (S.flag('tedi') && !S.flag('cali')) {
       return UI.say(H, [
@@ -766,7 +771,7 @@ export const SCRIPTS = {
       ]);
     }
     if (!S.flag('tedi')) return UI.say(H, 'Mientras esa máquina de TEDI siga escupiendo clones, aquí no llega un pastel entero ni a la puerta. Está al este, la del logo azul y amarillo.');
-    await UI.say(H, ['¡La máquina se ha parado! ¡Por fin puedo hornear en paz!', 'Tengo lista una tarta de cuatro pisos para Cait. Solo falta llevarla hasta Narwal… y aún quedan clones despistados por el camino.']);
+    await UI.say(H, [...(justMet ? [] : ['¡La máquina se ha parado! ¡Por fin puedo hornear en paz!']), 'Tengo lista una tarta de cuatro pisos para Cait. Solo falta llevarla hasta Narwal… y aún quedan clones despistados por el camino.']);
     if (await UI.choose(H, '¿La llevamos entre los dos?', ['¡Vamos!', 'Ahora no']) !== 0) return;
     scene.startScene('tarta', 22, 9); // si se sale a medias, vuelve a la puerta; al ganar, la escena lo deja en el muelle
   },
@@ -807,8 +812,9 @@ export const SCRIPTS = {
     Sound.logro();
     await UI.say('', ['La máquina clonadora da un último resoplido y se apaga. Los clones se quedan quietos.', 'De una compuerta sale un cerdito igual que los demás, pero con cara de llevar mucho sin dormir.']);
     await UI.say('Owinken', [
-      '¡Oink! ¡Libre! Soy Owinken. El original. Me tenían enchufado ahí dentro para copiarme con IA.',
-      'No se lo tengas en cuenta a mis clones: no son malos, solo tienen hambre. Mucha. Como yo, pero por mil.',
+      '¡Oink! ¡Libre! Soy Owinken. El original. Me trajeron a la fuerza y me tenían enchufado ahí dentro para copiarme con IA.',
+      'Yo no quería nada de esto… pero después de tanto tiempo encerrado con ellos, les he cogido cariño a mis clones.',
+      'No se lo tengas en cuenta: no son malos, solo tienen hambre. Mucha. Como yo, pero por mil.',
       '¿Una fiesta? ¿Con tarta? Dime dónde y cuándo.',
     ]);
     S.set('tedi');
@@ -854,7 +860,7 @@ export const SCRIPTS = {
     await UI.say(O, ['¡CLIC! ¡La puerta de TEDI está abierta!', 'Cait lo habría programado con los ojos cerrados, pero tú no lo has hecho nada mal.', 'Yo me quedo aquí vigilando. Ah, y a la fiesta voy. Llevo el portátil.']);
   },
   async owinken() { invite('owinken', 'Owinken'); await UI.say('Owinken', 'Estoy enseñando a mis clones a pedir las cosas por favor. Vamos por «oink, por favor». Es un comienzo.'); },
-  async clon() { await UI.say('Clon', ['Oink. Soy Owinken. Oink. Soy Owinken. Oink. Soy Owinken.', '(Lleva un pastel debajo de cada pata y te mira sin parpadear. Tiene seis dedos en una pezuña.)']); },
+  async clon() { await UI.say('Clon', ['Oink. Soy el original. Oink. Soy el original. Oink. Soy el original.', '(Lleva un pastel debajo de cada pata y te mira sin parpadear. Tiene seis dedos en una pezuña.)']); },
   async navidad(scene) {
     const N = 'Owito de Navidad';
     if (S.flag('luces')) { invite('owitos_navidad', 'los Owitos de Navidad'); return UI.say(N, 'Las luces ya están de camino a casa de Cait. Y si sobra espumillón, también.'); }
@@ -900,7 +906,7 @@ export const SCRIPTS = {
   // ---------------------------------------------------------- Invitados en casa de Cait
   async homeGuest(scene, ent) {
     const lines = {
-      lolete: ['Estoy inflando globos. Bueno, mordiéndolos. Es un proceso.', 'He escondido las cajas de la mudanza debajo de la cama de Cait. Ni se nota.'],
+      lolete: ['Estoy moviendo los muebles para hacer sitio. Bueno, empujándolos con el hocico. Es un proceso.', 'He escondido las cajas de la mudanza debajo de la cama de Cait. Ni se nota.'],
       tigrito: ['Estoy ensayando el «Cumpleaños feliz» en cuatro tonalidades, por si acaso.'],
     }[ent.who] || ['¡Preparando la fiesta!'];
     const n = S.d.flags['home_' + ent.who] = ((S.d.flags['home_' + ent.who] || 0) + 1);
@@ -1269,7 +1275,9 @@ export const SCRIPTS = {
     if (S.flag('gateOpen')) { scene.warp('castillo', 19, 25, 'up'); return; }
     await UI.say('', ['OBRAS DE RECONSTRUCCIÓN DEL CASTILLO DE MAZAPÁN.', 'Los andamios bloquean la puerta principal. Habrá que encontrar otra entrada…']);
   },
-  async signCastle() { await UI.say('', 'CASTILLO DE MAZAPÁN. Cerrado por reconstrucción: alguien se ha comido un trozo de muralla.'); },
+  async signCastle() {
+    await UI.say('', S.flag('gateOpen') ? 'CASTILLO DE MAZAPÁN. Abierto de nuevo, con la muralla recién horneada. Se ruega no morderla.' : 'CASTILLO DE MAZAPÁN. Cerrado por reconstrucción: alguien se ha comido un trozo de muralla.');
+  },
 
   // ---------------------------------------------------------- Varios
   async signCait() { await UI.say('', 'Un cartel de madera pintado a mano: «CAIT». Alguien le ha dibujado un corazoncito en la esquina.'); },

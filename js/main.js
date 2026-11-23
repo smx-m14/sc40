@@ -35,6 +35,9 @@ class BootScene extends Phaser.Scene {
     UI.init();
     // Los textos dibujados dentro del lienzo necesitan la fuente ya cargada (si no, salen con una de sistema)
     try { await document.fonts.load('16px Pixelify'); await document.fonts.ready; } catch {}
+    // Fuera la pantalla de carga de index.html (con un fundido corto)
+    const ld = document.getElementById('loader');
+    if (ld) { ld.classList.add('out'); setTimeout(() => ld.remove(), 350); }
 
     Sound.wanted = 'isla';
 

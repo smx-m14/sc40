@@ -14,6 +14,8 @@ const LEVELS = [
   { up: 1.1, every: 0.65, sock: 0.4 },
   { up: 0.8, every: 0.5, sock: 0.33 },
 ];
+// Uno de los cuatro «awawa» grabados, al azar
+const awawa = (vol) => Sound.clip('awawa' + (1 + Math.floor(Math.random() * 4)), vol);
 const SOCK = 'sock_6'; // su calcetín de jugar: el rosa de lunares (s12), el que luego le regalan a Colgadín
 
 export class AwawasScene extends Phaser.Scene {
@@ -23,6 +25,7 @@ export class AwawasScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#ecd9b0').fadeIn(250);
     UI.hud(false);
     Sound.music('kapadokya');
+    Sound.preload('awawa1', 'awawa2', 'awawa3', 'awawa4');
     const g = this.add.graphics();
     g.fillStyle(0xbfe3f7).fillRect(-80, 0, 480, 46);
     g.fillStyle(0xf7c8b0).fillRect(-80, 40, 480, 8);
@@ -66,12 +69,13 @@ export class AwawasScene extends Phaser.Scene {
     if (!h.has) {
       this.hits = Math.max(0, this.hits - 1);
       Sound.sfx('bad');
+      awawa(0.9); // protesta: «¡AWAWA!»
       this.cameras.main.shake(160, 0.005);
       UI.toast('¡AWAWA! Ese no llevaba nada. Pierdes una cosquilla.');
       return this.bar();
     }
     this.hits++;
-    Sound.sfx('rep');
+    awawa(0.7); // se ríe con las cosquillas
     if (this.hits < NEED) return this.bar();
     // Calcetín recuperado
     Sound.sfx('get');

@@ -17,9 +17,9 @@ const GUESTS = {
 const LAYER = [0xf7a8c0, 0xfff3dc, 0x9fc86a, 0x4a2c1e];
 const BULBS = [0xffe066, 0xe2574c, 0x3f8fd8, 0x82cc6a, 0xf7a8c0];
 const LINES = {
-  lolete: 'He inflado todos los globos. Bueno, los que no me he comido.', fuxia: '¡Dale a la gramola! Hoy pincho yo.', peludito: 'Declaro este cumpleaños fiesta nacional del Castillo de Mazapán.',
+  lolete: 'He movido todos los muebles para hacer sitio. Bueno, menos la cama de Cait: esa pesa más que yo.', fuxia: '¡Dale a la gramola! Hoy pincho yo.', peludito: 'Declaro este cumpleaños fiesta nacional del Castillo de Mazapán.',
   heladoncio: 'La tarta ha llegado entera. Y yo, que casi no llego a casa de Cait. ¡Menudo disgusto!', bart: 'Cuarenta años son solo cuarenta repeticiones. ¡Técnica estricta!',
-  owinken: 'Oink. Prometo que soy el original.', siri: '¡Awawa! Los globos los hemos inflado nosotros. Con los dientecitos no, tranquilos.', ovejoncio: 'He traído el portátil por si hay que hackear algo. Es típico.',
+  owinken: 'Oink. Prometo que soy el original. A mis clones les he guardado un trozo de tarta. Bueno, mil.', siri: '¡Awawa! Los globos los hemos inflado nosotros. Con los dientecitos no, tranquilos.', ovejoncio: 'He traído el portátil por si hay que hackear algo. Es típico.',
 };
 
 export class FiestaScene extends Phaser.Scene {

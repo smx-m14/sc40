@@ -10,8 +10,30 @@
   <link rel="manifest" href="manifest.webmanifest">
   <title>Super Cait's 40</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="preload" href="vendor/phaser.min.js" as="script">
+  <link rel="preload" href="fonts/vt323.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Pantalla de carga: se pinta al instante (estilo en línea, sin esperar a nada) mientras se descarga el motor del
+       juego; main.js la quita al aparecer el título. Huellitas que van andando, dibujadas en píxeles con box-shadow. -->
+  <style>
+    #loader { position: fixed; inset: 0; z-index: 100; background: #1b2a3a; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 28px; transition: opacity .3s; }
+    #loader.out { opacity: 0; pointer-events: none; }
+    #loader .steps { display: flex; gap: 22px; align-items: flex-end; height: 120px; }
+    #loader .paw { width: 64px; height: 56px; position: relative; opacity: 0; animation: lpaw 1.6s steps(1) infinite; }
+    #loader .paw:nth-child(odd) { margin-bottom: 36px; }
+    #loader .paw:nth-child(2) { animation-delay: .25s; } #loader .paw:nth-child(3) { animation-delay: .5s; }
+    #loader .paw:nth-child(4) { animation-delay: .75s; }
+    #loader .paw::before { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 4px; background: transparent;
+      box-shadow: 16px 0px #fff6dc,20px 0px #fff6dc,40px 0px #fff6dc,44px 0px #fff6dc,12px 4px #fff6dc,16px 4px #fff6dc,20px 4px #fff6dc,24px 4px #fff6dc,36px 4px #fff6dc,40px 4px #fff6dc,44px 4px #fff6dc,48px 4px #fff6dc,12px 8px #fff6dc,16px 8px #fff6dc,20px 8px #fff6dc,24px 8px #fff6dc,36px 8px #fff6dc,40px 8px #fff6dc,44px 8px #fff6dc,48px 8px #fff6dc,12px 12px #fff6dc,16px 12px #fff6dc,20px 12px #fff6dc,24px 12px #fff6dc,36px 12px #fff6dc,40px 12px #fff6dc,44px 12px #fff6dc,48px 12px #fff6dc,16px 16px #fff6dc,20px 16px #fff6dc,40px 16px #fff6dc,44px 16px #fff6dc,4px 20px #fff6dc,8px 20px #fff6dc,52px 20px #fff6dc,56px 20px #fff6dc,0px 24px #fff6dc,4px 24px #fff6dc,8px 24px #fff6dc,12px 24px #fff6dc,48px 24px #fff6dc,52px 24px #fff6dc,56px 24px #fff6dc,60px 24px #fff6dc,0px 28px #fff6dc,4px 28px #fff6dc,8px 28px #fff6dc,12px 28px #fff6dc,24px 28px #fff6dc,28px 28px #fff6dc,32px 28px #fff6dc,36px 28px #fff6dc,48px 28px #fff6dc,52px 28px #fff6dc,56px 28px #fff6dc,60px 28px #fff6dc,4px 32px #fff6dc,8px 32px #fff6dc,20px 32px #fff6dc,24px 32px #fff6dc,28px 32px #fff6dc,32px 32px #fff6dc,36px 32px #fff6dc,40px 32px #fff6dc,52px 32px #fff6dc,56px 32px #fff6dc,16px 36px #fff6dc,20px 36px #fff6dc,24px 36px #fff6dc,28px 36px #fff6dc,32px 36px #fff6dc,36px 36px #fff6dc,40px 36px #fff6dc,44px 36px #fff6dc,12px 40px #fff6dc,16px 40px #fff6dc,20px 40px #fff6dc,24px 40px #fff6dc,28px 40px #fff6dc,32px 40px #fff6dc,36px 40px #fff6dc,40px 40px #fff6dc,44px 40px #fff6dc,48px 40px #fff6dc,12px 44px #fff6dc,16px 44px #fff6dc,20px 44px #fff6dc,24px 44px #fff6dc,28px 44px #fff6dc,32px 44px #fff6dc,36px 44px #fff6dc,40px 44px #fff6dc,44px 44px #fff6dc,48px 44px #fff6dc,12px 48px #fff6dc,16px 48px #fff6dc,20px 48px #fff6dc,24px 48px #fff6dc,28px 48px #fff6dc,32px 48px #fff6dc,36px 48px #fff6dc,40px 48px #fff6dc,44px 48px #fff6dc,48px 48px #fff6dc,16px 52px #fff6dc,20px 52px #fff6dc,24px 52px #fff6dc,36px 52px #fff6dc,40px 52px #fff6dc,44px 52px #fff6dc; }
+    #loader .bar { width: 148px; height: 12px; border: 3px solid #fff6dc; padding: 2px; }
+    #loader .bar i { display: block; height: 100%; width: 30%; background: #e2574c; animation: lbar 1.1s steps(8) infinite alternate; }
+    @media (max-width: 400px) { #loader .steps { transform: scale(.75); } }
+    @keyframes lpaw { 0% { opacity: 0; } 10% { opacity: 1; } 70% { opacity: .35; } 85% { opacity: 0; } }
+    @keyframes lbar { from { margin-left: 0; } to { margin-left: 70%; } }
+  </style>
 </head>
 <body>
+  <div id="loader" aria-label="Cargando"><div class="steps"><div class="paw"></div><div class="paw"></div><div class="paw"></div><div class="paw"></div></div><div class="bar"><i></i></div></div>
   <div id="stage">
     <div id="game"></div>
 
@@ -154,7 +176,7 @@
       <button data-dir="down" class="d down">▼</button>
     </div>
     <div id="abtns">
-      <button id="tb-a" class="ab a" aria-label="Acción">🐾</button>
+      <button id="tb-a" class="ab a" aria-label="Acción">{pawbtn}</button>
     </div>
   </div>
 

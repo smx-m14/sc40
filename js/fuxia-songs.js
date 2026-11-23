@@ -2,136 +2,146 @@
 export const FUXIA_SONGS = [
  {
   "id": "01",
+  "artist": "Amaral",
+  "title": "El universo sobre mí"
+ },
+ {
+  "id": "02",
   "artist": "Ariana Grande",
   "title": "Break Free"
  },
  {
-  "id": "02",
+  "id": "03",
   "artist": "Beyoncé",
   "title": "Alien superstar"
  },
  {
-  "id": "03",
+  "id": "04",
   "artist": "Billie Eilish",
   "title": "What was I made for"
  },
  {
-  "id": "04",
+  "id": "05",
   "artist": "BLACKPINK",
   "title": "JUMP"
  },
  {
-  "id": "05",
+  "id": "06",
   "artist": "Britney Spears",
   "title": "Stronger"
  },
  {
-  "id": "06",
+  "id": "07",
   "artist": "Camila Cabello",
   "title": "Don't Go Yet"
  },
  {
-  "id": "07",
+  "id": "08",
   "artist": "Demi Lovato",
   "title": "Ghost"
  },
  {
-  "id": "08",
+  "id": "09",
   "artist": "Dua Lipa",
   "title": "Love Again"
  },
  {
-  "id": "09",
+  "id": "10",
   "artist": "Evanescence",
   "title": "Bring me to life"
  },
  {
-  "id": "10",
+  "id": "11",
   "artist": "Girls Aloud",
   "title": "The Promise"
  },
  {
-  "id": "11",
+  "id": "12",
   "artist": "Jade",
   "title": "Angel of my dreams"
  },
  {
-  "id": "12",
+  "id": "13",
   "artist": "JENNIE",
   "title": "MANTRA"
  },
  {
-  "id": "13",
+  "id": "14",
   "artist": "JISOO",
   "title": "earthquake"
  },
  {
-  "id": "14",
+  "id": "15",
   "artist": "Kylie Minogue",
   "title": "Wow"
  },
  {
-  "id": "15",
+  "id": "16",
   "artist": "La Oreja de Van Gogh",
   "title": "El Último Vals"
  },
  {
-  "id": "16",
+  "id": "17",
   "artist": "Lady Gaga",
   "title": "Vanish into you"
  },
  {
-  "id": "17",
+  "id": "18",
+  "artist": "Lana del Rey",
+  "title": "Say yes to heaven"
+ },
+ {
+  "id": "19",
   "artist": "LISA",
   "title": "LALISA"
  },
  {
-  "id": "18",
+  "id": "20",
   "artist": "Mamamoo",
   "title": "HIP"
  },
  {
-  "id": "19",
+  "id": "21",
   "artist": "Marina",
   "title": "FROOT"
  },
  {
-  "id": "20",
+  "id": "22",
   "artist": "Perrie",
   "title": "Rocket Scientist"
  },
  {
-  "id": "21",
+  "id": "23",
   "artist": "ROSÉ",
   "title": "APT"
  },
  {
-  "id": "22",
+  "id": "24",
   "artist": "Sia",
   "title": "Chandelier"
  },
  {
-  "id": "23",
+  "id": "25",
   "artist": "Soraya",
   "title": "Fénix"
  },
  {
-  "id": "24",
+  "id": "26",
   "artist": "Spice girls",
   "title": "Wannabe"
  },
  {
-  "id": "25",
+  "id": "27",
   "artist": "Sugababes",
   "title": "Jungle"
  },
  {
-  "id": "26",
+  "id": "28",
   "artist": "The Corrs",
   "title": "Summer Sunshine"
  },
  {
-  "id": "27",
+  "id": "29",
   "artist": "Zara Larsson",
   "title": "Midnight sun"
  }

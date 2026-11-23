@@ -16,7 +16,10 @@ const BPM = GENERATED[SONG].bpm, BEAT = 60000 / BPM, EIGHTH = BEAT / 2, BAR = BE
 const WIN = Math.min(135, EIGHTH * 0.48); // margen para acertar un golpe (ms), sin llegar a pisar la corchea de al lado
 // En pantalla táctil cuesta mucho más clavarlo: el toque llega tarde (unos 80 ms) y el dedo es menos preciso que una
 // tecla. Se compensa ese retraso y se da más margen.
-const TOUCH_LAG = 80, WIN_TOUCH = Math.min(165, EIGHTH * 0.66);
+// Además, en táctil: el margen es más ancho (los golpes se emparejan en orden, así que aunque los márgenes de dos
+// corcheas seguidas se toquen, un golpe no puede «robar» el del vecino), el juego aprende el adelanto o retraso
+// habitual de cada jugador (BIAS) y perdona un toque de más (un dedo que rebota en la pantalla).
+const TOUCH_LAG = 80, WIN_TOUCH = Math.min(190, EIGHTH * 0.76), BIAS_MAX = 110;
 const win = () => (Input.touchA ? WIN_TOUCH : WIN);
 const CYCLE = ['count', 'call', 'count2', 'resp', 'rest'];
 
@@ -61,6 +64,7 @@ export class RitmoScene extends Phaser.Scene {
     this.removed = 0; this.pat = 0; this.fails = 0; this.happy = true;
     this.lock = true; this.done = false; this.t0 = 0; this.bar = -1; this.presses = []; this.sched = new Set();
     this.catHit = 0; this.colHit = 0; this.planksShake = 0;
+    this.bias = 0; // adelanto (−) o retraso (+) medio de los toques en pantalla táctil, aprendido sobre la marcha
     this.bar_();
     Input.clear();
     this.intro();
@@ -137,13 +141,20 @@ export class RitmoScene extends Phaser.Scene {
 
   judge(start) {
     const targets = PATTERNS[this.pat % PATTERNS.length].map((e) => start + e * EIGHTH);
-    const used = new Set();
-    let ok = true;
+    const presses = [...this.presses].sort((a, b) => a - b), w = win(), offs = [];
+    // Emparejamiento en orden: cada golpe del patrón se queda con el primer toque libre que cae en su margen
+    let ok = true, j = 0, used = 0;
     for (const t of targets) {
-      const i = this.presses.findIndex((p, j) => !used.has(j) && Math.abs(p - t) <= win());
-      if (i < 0) ok = false; else used.add(i);
+      while (j < presses.length && presses[j] < t - w) j++;           // toques demasiado pronto: sobran
+      if (j < presses.length && Math.abs(presses[j] - t) <= w) { offs.push(presses[j] - t); used++; j++; } else ok = false;
     }
-    if (used.size !== this.presses.length) ok = false; // golpes de más
+    const extra = presses.length - used;
+    if (extra > (Input.touchA ? 1 : 0)) ok = false; // golpes de más (en táctil se perdona uno)
+    // Táctil: se aprende el desfase habitual del jugador a partir de los golpes que han caído cerca
+    if (Input.touchA && offs.length) {
+      const m = offs.reduce((a, b) => a + b, 0) / offs.length;
+      this.bias = Phaser.Math.Clamp(this.bias + m * 0.6, -BIAS_MAX, BIAS_MAX);
+    }
     this.presses = [];
     this.result = ok ? '¡Bien!' : '¡Uy!';
     if (ok) {
@@ -184,7 +195,7 @@ export class RitmoScene extends Phaser.Scene {
       }
       if (ph.kind === 'call') this.result = '';
       if (Input.take('a')) {
-        const t = (Input.t.a || now) - this.latency() - (Input.touchA ? TOUCH_LAG : 0);
+        const t = (Input.t.a || now) - this.latency() - (Input.touchA ? TOUCH_LAG + this.bias : 0);
         // se admite el primer golpe un pelín adelantado (al final de la cuenta) y el último algo tarde
         const early = ph.kind === 'count2' && ph.start + BAR - t <= win() + 60; // el primer golpe, con algo más de margen
         if (ph.kind === 'resp' || early || (ph.kind === 'rest' && now - ph.start < win())) {
