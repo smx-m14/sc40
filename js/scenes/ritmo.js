@@ -10,7 +10,6 @@ import { GENERATED } from '../songs-data.js';
 
 // Suena la canción de los Andamios (js/songs-data.js, generada por tools/make_music.py) cuadrada con el reloj del
 // minijuego: el tempo sale de la propia canción y empieza justo en el primer compás de la cuenta.
-// Hay dos versiones para elegir: 'andamios' (la primera) y 'andamios2' (estribillo de Andamios2).
 const SONG = 'andamios2';
 const BPM = GENERATED[SONG].bpm, BEAT = 60000 / BPM, EIGHTH = BEAT / 2, BAR = BEAT * 4;
 const WIN = Math.min(135, EIGHTH * 0.48); // margen para acertar un golpe (ms), sin llegar a pisar la corchea de al lado

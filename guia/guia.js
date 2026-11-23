@@ -140,3 +140,18 @@ if (range) {
   document.body.classList.add('solo');
   document.querySelectorAll('.page').forEach((pg) => { if (pg.dataset.n < a || pg.dataset.n > b) pg.style.display = 'none'; });
 }
+
+// Aviso para quien edita: si el texto de una página no cabe, se marca en rojo (solo en pantalla) y sale en la consola
+document.fonts.ready.then(() => setTimeout(() => {
+  document.querySelectorAll('.page .content').forEach((c) => {
+    // ?espacio en la dirección: apunta en la consola cuánto sitio libre queda en cada página
+    if (new URLSearchParams(location.search).has('espacio')) {
+      const used = Math.max(0, ...[...c.children].map((k) => k.offsetTop + k.offsetHeight));
+      console.info(`Guía: página ${c.closest('.page').dataset.n} (${c.closest('.page').id}) libre ${Math.round((c.clientHeight - used) / 3.78)} mm`);
+    }
+    if (c.scrollHeight > c.clientHeight + 2) {
+      c.classList.add('overflow');
+      console.warn(`Guía: la página ${c.closest('.page').dataset.n} (${c.closest('.page').id}) se desborda ${Math.round((c.scrollHeight - c.clientHeight) / 3.78)} mm`);
+    }
+  });
+}, 300));

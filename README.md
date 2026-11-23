@@ -16,28 +16,39 @@ y abrir <http://127.0.0.1:8040>.
 
 | Ruta | Qué hay |
 | --- | --- |
-| `index.html`, `css/style.css` | Página e interfaz (diálogos, HUD, menú, título, mandos táctiles) |
-| `js/main.js` | Arranque de Phaser y atajos de prueba |
+| `index.html`, `css/style.css` | Página e interfaz (pantalla de carga, título, diálogos, HUD, menú, mandos táctiles) |
+| `js/main.js` | Arranque de Phaser, pantalla de título y atajos de prueba |
 | `js/state.js` | Partida, lista de invitados y guardado en `localStorage` |
 | `js/art.js` | Todo el pixel art, generado por código |
-| `js/audio.js` | Motor de sonido: sintetizador chiptune (WebAudio) y reproducción de mp3 |
-| `js/songs-data.js` | Canciones chiptune generadas a partir de los mp3 (no editar a mano) |
-| `js/maps.js` | Mapas: baldosas, edificios y entidades |
+| `js/audio.js` | Motor de sonido: sintetizador chiptune (WebAudio) y efectos grabados en mp3 |
+| `js/songs-data.js` | Canciones chiptune generadas por `tools/make_music.py` (no editar a mano) |
+| `js/maps.js` | Mapas: baldosas, edificios, entidades y zonas (con su música) |
 | `js/story.js` | Guion: qué ocurre al interactuar con cada cosa |
-| `js/scenes/world.js` | Exploración |
-| `js/scenes/sokoban.js`, `js/sokoban-levels.js` | Minijuego de Lolete |
-| `js/scenes/cali.js` | Minijuego de calistenia de Bart |
+| `js/ui.js`, `js/input.js` | Interfaz HTML (título, diálogos, menú) y teclado + mandos táctiles |
+| `js/progress.js`, `js/debug.js` | Porcentaje de juego completado y modo debug |
+| `js/fuxia.js`, `js/fuxia-songs.js` | Prueba de oído de Fucsia (la lista la genera `tools/make_fuxia.py`) |
 | `js/beam.js` | Rayo de luz y espejos del Apartamento de las Ratitas |
-| `js/scenes/pato.js`, `simon.js`, `horno.js` | Pruebas del Castillo: Patito, Teatro Real y Pastelería Real |
-| `js/scenes/luces.js`, `robot.js`, `tedi.js`, `tarta.js` | Pruebas de la Isla Helada: luces de Navidad, robot del conducto (hackeo de TEDI), jefe de TEDI y escolta de la tarta |
+| `js/scenes/world.js` | Exploración |
+| `js/scenes/titlebg.js` | Fondo de la pantalla de título (la isla, quieta, con la casa de Cait en el centro) |
+| `js/scenes/sokoban.js`, `js/sokoban-levels.js` | Lolete entre cajas |
+| `js/scenes/monos.js`, `js/monos-levels.js` | Bosque de los monos |
+| `js/scenes/pato.js`, `simon.js`, `horno.js`, `ritmo.js` | Castillo: Patito, Teatro Real, Pastelería Real y andamios (ritmo) |
+| `js/scenes/cali.js`, `combate.js` | Fitness Bartory: calistenia y el «combate» con Bart |
+| `js/scenes/otama.js` | El Otamatone en el muelle (llamar a Narwal) |
+| `js/scenes/awawas.js` | Los awawas de Kapadokya |
+| `js/scenes/luces.js`, `robot.js`, `tedi.js`, `tarta.js` | Isla Helada: luces de Navidad, robot del conducto, máquina clonadora de TEDI y la tarta |
 | `js/scenes/fiesta.js` | Escena final: la fiesta sorpresa |
-| `js/debug.js` | Modo debug: saltar pruebas y teletransporte |
-| `js/scenes/monos.js`, `js/monos-levels.js` | Minijuego del bosque de los monos |
-| `assets/audio/` | Música de las zonas (mp3) y efectos grabados |
-| `assets/album/` | Fotos del Libro de los Miausis, pixeladas |
+| `music/` | MIDI de cada canción (`<id>.mid`), copiados de `Material Insipiración/Base Musical` |
+| `assets/audio/` | Efectos grabados (monos, Patito, awawas), los prepara `tools/make_sfx.py` |
+| `assets/fuxia/` | Fragmentos de la prueba de Fucsia (numerados para no delatar la respuesta) |
+| `assets/album/`, `assets/cuadros/` | Fotos pixeladas del Libro de los Miausis y cuadros de Ratencio |
+| `tools/make_music.py`, `tools/midi_score.py` | Genera `js/songs-data.js` a partir de los MIDI (bucles y reparto de voces) |
+| `tools/make_fuxia.py` | Prepara las canciones de la prueba de Fucsia |
+| `tools/make_sfx.py` | Prepara los efectos grabados (necesita ffmpeg) |
 | `tools/make_assets.py` | Regenera `assets/album` a partir de las fotos originales |
-| `tools/make_music.py` | Transcribe los mp3 originales a `js/songs-data.js` (necesita ffmpeg y numpy) |
-| `vendor/`, `fonts/` | Phaser 3.80.1 y la fuente VT323 |
+| `tools/serve.py` | Servidor local sin caché |
+| `guia/` | Manual (`index.html`) y guía completa (`completa.html`) en A5, para imprimir |
+| `vendor/`, `fonts/` | Phaser 3.80.1 y las fuentes pixel (VT323 y cirílico) |
 
 ## Modo debug
 
@@ -58,4 +69,4 @@ Pulsa **Mayús+D** durante el juego (o abre la página con `?dev`) para activarl
 
 ## Publicar
 
-Es una web estática: sirve tal cual en GitHub Pages. `Material Insipiración/` y `Roadmap/` están en `.gitignore` para no subir las fotos ni el guion. Ojo: `assets/` sí se publica, con las fotos pixeladas del álbum y la música.
+Es una web estática: sirve tal cual en GitHub Pages. `Material Insipiración/` y `Roadmap/` están en `.gitignore` para no subir las fotos ni el guion. Ojo: `assets/` sí se publica, con las fotos pixeladas del álbum, los efectos y los fragmentos de la prueba de Fucsia. `music/` también (son los MIDI de las canciones).

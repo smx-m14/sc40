@@ -1,11 +1,12 @@
-"""Transcribe los mp3 de "Material Insipiración/Base Musical" a pistas chiptune para js/songs-data.js.
+"""Genera las canciones chiptune del juego (js/songs-data.js).
 
-Uso (desde la raíz del proyecto):  python tools/make_music.py
+Uso (desde la raíz del proyecto):  python tools/make_music.py          (todas)
+                                    python tools/make_music.py lolete   (solo las que se nombren; el resto se conserva)
 
-Para cada canción: detecta el tempo, sigue la melodía (tono dominante en el registro agudo) y el bajo
-(tono dominante en el grave), los cuantiza a corcheas y escribe las notas en el formato del sintetizador
-("NOTA:pasos"). Es una transcripción automática: recoge la melodía principal, no el arreglo completo.
-Al final imprime, por canción, el parecido armónico (croma) entre el original y la versión generada.
+Cada canción sale de su MIDI, music/<id>.mid (copia del de "Material Insipiración/Base Musical"), con el reparto de
+pistas y el bucle que se indican en MIDI_OPTS (conversión exacta: tools/midi_score.py). Hoy todas tienen MIDI.
+Si alguna no lo tuviera, se transcribiría de su mp3 de "Base Musical" (transcripción automática: detecta el tempo,
+sigue la melodía y el bajo y los cuantiza; recoge la melodía principal, no el arreglo completo).
 """
 import json
 import os
@@ -29,20 +30,21 @@ SONGS = {
     'capybaras': ('Estanque de los Capybaras', 192),
     'pasteleria': ('Pastelería Real', 192),       # en realidad suena la del Castillo de Mazapán (music/pasteleria.mid)
     'horno': ('Pastelería real', 0),             # solo MIDI: la Pastelería Real por dentro y la prueba de Manteca
-    'andamios': ('Andamios', 0),                 # solo MIDI: minijuego de ritmo de los Gemelos bipolares (js/scenes/ritmo.js)
-    'andamios2': ('Andamios2', 0),
+    'andamios2': ('Andamios2', 0),               # solo MIDI: minijuego de ritmo de los Gemelos bipolares (js/scenes/ritmo.js)
     'kapadokya': ('Kapadokya', 0),
     'helada': ('Isla Helada', 0),
     'tedi': ('Tedi', 0),
     'aeroflot': ('Aeroflot', 0),                 # solo MIDI: el aeropuerto de la Isla de Cait (quiosco de Aeroflot)                         # solo MIDI: tienda TEDI y su prueba (jefe)                # solo MIDI: la Isla Helada (menos la Casa de la Navidad y sus edificios)               # solo MIDI: zona de Kapadokya y prueba de los awawas               # solo MIDI: alternativa para el mismo minijuego (ritmo.js elige cuál)
     'teatro': ('Teatro de los Owitos', 192),
     'navidad': ('Casa de la Navidad', 192),     # sale de music/navidad.mid (solo suena en la Casa de la Navidad)
-    'sweetfamosa': ('Sweet Famosa', 192),       # sale de music/sweetfamosa.mid («Girl like me», el mismo MIDI que «andamios»)
+    'sweetfamosa': ('Sweet Famosa', 192),       # sale de music/sweetfamosa.mid («Girl like me»)
     'logro': ('Música Logro 2', 128, dict(whole=True, search=True)),
     'gym': ('Fitness Fattory', 0),     # solo MIDI (music/gym.mid); el gimnasio ahora se llama Fitness Bartory
     'fuxia': ('Fuxia', 0),             # solo MIDI
     'casa': ('Casa de Cait', 0),        # solo MIDI (music/casa.mid): la casa de Cait
-    'inquisicion': ('Dragon Age', 0),  # solo MIDI (music/inquisicion.mid): la mesa de guerra de los Owitos del castillo
+    'inquisicion': ('Dragon Age', 0),
+    'titulo': ('Pantalla título', 0),
+    'perrunfli': ('Perrunfli', 0),     # solo MIDI (music/perrunfli.mid): el campo de nabos de Perrunfli  # solo MIDI (music/titulo.mid): la pantalla de título  # solo MIDI (music/inquisicion.mid): la mesa de guerra de los Owitos del castillo
 }
 # Reparto de pistas para los MIDI con arreglo completo (music/<id>.mid). Sin entrada aquí se trata como piano.
 MIDI_OPTS = {
@@ -80,12 +82,6 @@ MIDI_OPTS = {
     # acordes. Se salta el primer tema (compases 1-8) y repite del compás 9 al 44: termina en do7, que lleva de vuelta
     # al fa del compás 9 igual que en el original (8→9), así que el bucle no tiene costura.
     'horno': dict(roles=dict(melody=[0], chords=[1]), start_beat=32, max_beats=144, bass_from_chords=True),
-    # Andamios (music/andamios.mid): 1 = coro (melodía), 3 = bajo, 0 = sintetizador de acordes; la batería (canal 10)
-    # se descarta. Parte principal: compases 6-21 (2 de groove + 14 con el coro); el 21 acaba en si menor y vuelve
-    # al fa# menor del 6 sin costura. Es para el juego de ritmo: ritmo.js toma el tempo de aquí (bpm), así que la
-    # canción y el reloj del minijuego van siempre a la par; algo más lenta que el original (137) y muy bajita (vol) para
-    # que se oigan bien los martillazos.
-    'andamios': dict(roles=dict(melody=[1], bass=[3], chords=[0]), melody_shift=12, start_beat=20, max_beats=64, bpm=120, vol=0.35, chord_shift=12),
     # Andamios2 (music/andamios2.mid, formato 0: todo en una pista, se reparte por canales). Está escrito a doble
     # tempo (328 = 164 reales), así que beat=2. Compases 25-56 del MIDI: segunda estrofa (25-36), parón con la
     # anacrusa (37-40) y estribillo (41-56: mi, sol#m, do#m, la, si, mi). El 56 acaba en mi con la anacrusa
@@ -115,9 +111,9 @@ MIDI_OPTS = {
     # guitarra sola (compases 1-4) y el acorde final: compases 5-18, con la entrada del piano y la melodía entera;
     # el 18 (re) vuelve al mi del 5 sin costura (unos 28 s).
     'tedi': dict(roles=dict(melody=[1], bass=[2], chords=[0]), start_beat=16, max_beats=56),
-    # Sweet Famosa: «Girl like me» (music/sweetfamosa.mid es el mismo fichero que andamios.mid). El mismo bucle que
-    # «andamios» (compases 6-21: groove y coro), pero a su tempo original (137) y con volumen normal: la de los
-    # Andamios va más lenta y bajita porque acompaña al juego de ritmo (unos 28 s).
+    # Sweet Famosa: «Girl like me» (music/sweetfamosa.mid; antes también sonaba en el juego de ritmo, que ahora usa
+    # andamios2). 1 = coro (melodía), 3 = bajo, 0 = sintetizador de acordes; la batería se descarta. Compases 6-21
+    # (2 de groove + 14 con el coro): el 21 acaba en si menor y vuelve al fa# menor del 6 sin costura (unos 28 s).
     'sweetfamosa': dict(roles=dict(melody=[1], bass=[3], chords=[0]), melody_shift=12, start_beat=20, max_beats=64, chord_shift=12),
     # Aeroflot (music/aeroflot.mid): una versión de «Rasputin». Solo el gancho del violín (compases 23-26: si-si-si…)
     # y el estribillo «Ra-ra-Rasputin, lover of the Russian queen…» (43-50), sin las estrofas: dos trozos seguidos
@@ -135,6 +131,22 @@ MIDI_OPTS = {
     # solo hace adornos, fuera. A 120. Solo el estribillo: los compases 1-8 (la melodía principal); el 9 la repite
     # con otra cola, así que volver del 8 al 1 suena igual que en el original (unos 16 s).
     'casa': dict(roles=dict(melody=[1], bass=[2], chords=[3]), max_beats=32),
+    # Pantalla de título (music/titulo.mid = «Pantalla título.mid»), mi mayor a 110: 0 = melodía, 2 = segunda melodía
+    # (entra en el tema B, compases 14-19, cuando la primera calla), 1 = bajo y acordes; la batería se descarta.
+    # Bucle de los compases 4 a 20: se salta la fanfarria (2-3) y el final (21-22). El 20 baja en si7 y resuelve en el
+    # mi del compás 4, así que la vuelta suena como una cadencia más.
+    'titulo': dict(roles=dict(melody=[0, 2], bass=[1], chords=[1]), start_beat=12, max_beats=68),
+    # Perrunfli (music/perrunfli.mid), do mayor a 70: 1 = melodía, 2 = acordes (quinta al aire; de ahí sale el bajo).
+    # Cada compás empieza con un tresillo de anacrusa («sol-la-si → do»): rejilla de 12 pasos por negra (sub=12) para
+    # que no salgan cojos. Bucle de los 8 compases enteros: el 8 cierra en do y vuelve al tresillo del principio.
+    'perrunfli': dict(roles=dict(melody=[1], bass=[2], chords=[2]), max_beats=32, sub=12),
+    # Lolete (music/lolete.mid = «Lolete (piano).mid», sacado del vídeo de piano de «El show del perro salchicha»):
+    # 0 = mano derecha (melodía), 1 = mano izquierda (acordes, de ahí sale también el bajo). 4/4 a 140, mi mayor.
+    # El bucle empieza en el segundo 5 del vídeo, en la anacrusa «si-do#-mi» de la segunda mitad del compás 2 (negra
+    # 6,5), y dura 26 compases: llega al mismo punto del compás 28, que repite el 2, así que la vuelta es la del
+    # original. carry: el acorde que ya suena en ese medio compás no se pierde al volver.
+    # Se toca a 112 (el vídeo va a 140): más tranquila, más cerca de la de la Isla de Cait (100).
+    'lolete': dict(roles=dict(melody=[0], chords=[1]), bass_from_chords=True, start_beat=6.5, max_beats=104, carry=True, bpm=112),
     # Teatro de los Owitos: 2 = melodía en octavas, 0 = bajo, 1 = piano
     # Sin la intro de piano (compases 1-5): bucle de los compases 6-30, el tema del violín entero (A y B). El 30 acaba
     # resolviendo en re♭, que es justo donde arranca el tema en el 6, así que vuelve sin costura (unos 46 s).
@@ -346,17 +358,15 @@ def main():
         txt = open('js/songs-data.js', encoding='utf-8').read()
         prev = json.loads(txt[txt.index('{'):txt.rindex('}') + 1])
     sys.path.insert(0, os.path.dirname(__file__))
-    from abc_score import abc_to_song  # tools/abc_score.py
+    only = set(sys.argv[1:])  # p. ej. «python tools/make_music.py lolete»: solo esas; el resto se conserva tal cual
     for sid, (file, steps, *opts) in SONGS.items():
+        if only and sid not in only and sid in prev:
+            out[sid] = prev[sid]
+            continue
         if os.path.exists(f'music/{sid}.mid'):  # hay MIDI: conversión exacta
             song, info = midi_song(f'music/{sid}.mid', MIDI_OPTS.get(sid, {}))
             out[sid] = song
             print(f'{sid:12s}', 'MIDI', info)
-            continue
-        if os.path.exists(f'music/{sid}.abc'):  # hay partitura: conversión exacta, sin transcribir el audio
-            song, info = abc_to_song(open(f'music/{sid}.abc', encoding='utf-8').read())
-            out[sid] = song
-            print(f'{sid:12s}', 'PARTITURA', info)
             continue
         if not os.path.exists(BASE + file + '.mp3'):
             if sid in prev:

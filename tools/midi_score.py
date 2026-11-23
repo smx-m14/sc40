@@ -110,7 +110,7 @@ def bass_from(chord_sounding, total):
     return out
 
 
-def midi_to_song(path, max_beats=None, drums_channel=9, roles=None, melody_shift=0, start_beat=None, bass_from_chords=False, bpm=None, vol=1.0, chord_shift=0, by_channel=False, beat=1, shift_all=False):
+def midi_to_song(path, max_beats=None, drums_channel=9, roles=None, melody_shift=0, start_beat=None, bass_from_chords=False, bpm=None, vol=1.0, chord_shift=0, by_channel=False, beat=1, shift_all=False, carry=False, sub=4):
     """roles (opcional, para arreglos con varias pistas): dict con listas de nº de pista
          melody: pistas de melodía por orden de prioridad (si la primera calla, suena la siguiente)
          bass:   pistas del bajo
@@ -123,19 +123,26 @@ def midi_to_song(path, max_beats=None, drums_channel=9, roles=None, melody_shift
        chord_shift: semitonos que se suben o bajan los acordes (p. ej. 12 si van tan graves que se pisan con el bajo).
        by_channel: los números de roles son canales MIDI, no pistas (para MIDI de formato 0, todo en una pista).
        beat: negras del MIDI que forman un pulso real (2 si el MIDI está escrito a doble tempo). bpm y la salida
-             se dan en pulsos reales, que es lo que usa un minijuego de ritmo."""
+             se dan en pulsos reales, que es lo que usa un minijuego de ritmo.
+       carry: si el bucle empieza a mitad de compás, las notas que ya estaban sonando (p. ej. un acorde largo de la mano
+             izquierda) se conservan desde el inicio del bucle en vez de descartarse; así la vuelta no deja un hueco.
+       sub: pasos por negra (4 = semicorcheas). 12 para canciones con tresillos, que en semicorcheas salen cojos; los
+             arpegios de los acordes siguen yendo a semicorcheas."""
     div, midi_bpm, notes = read_midi(path)
     bpm = bpm or midi_bpm / beat
     if by_channel: notes = [(a, b, n, ch, ch) for a, b, n, _, ch in notes]
     notes = [n for n in notes if n[4] != drums_channel]
-    if start_beat:  # se salta la introducción: empieza en esa negra del fichero
+    if start_beat and carry:  # las notas que suenan al empezar se recortan al inicio del bucle
+        s0 = start_beat * div
+        notes = [(max(a, s0), b, *r) for a, b, *r in notes if b > s0 + div / 8]
+    elif start_beat:  # se salta la introducción: empieza en esa negra del fichero
         notes = [n for n in notes if n[0] >= start_beat * div - 1]
-    step = div / 4                                   # semicorcheas
+    step = div / sub                                 # semicorcheas (o la rejilla que se pida)
     t0 = start_beat * div if start_beat else min(n[0] for n in notes)
     q = lambda t: int(round((t - t0) / step))
     total = max(q(n[1]) for n in notes)
-    if max_beats: total = min(total, max_beats * 4)
-    total += (-total) % 16                           # cierra el último compás
+    if max_beats: total = min(total, max_beats * sub)
+    total += (-total) % (4 * sub)                    # cierra el último compás
     ids = sorted({n[3] for n in notes}, key=lambda t: -sum(n[2] for n in notes if n[3] == t) / sum(1 for n in notes if n[3] == t))
     hi, lo, mid = [], [], []
 
@@ -152,7 +159,8 @@ def midi_to_song(path, max_beats=None, drums_channel=9, roles=None, melody_shift
             b = bas[0][s][0] if bas[0][s] else None
             lo.append((b + 12 if b is not None and b < 40 else b, b in bas[1][s]))
             c = cho[0][s]
-            mid.append((c[s % len(c)] + chord_shift if c else None, True))   # arpegio: cada paso, la siguiente nota del acorde
+            k = max(1, sub // 4)                                              # arpegio a semicorcheas, sea cual sea la rejilla
+            mid.append((c[(s // k) % len(c)] + chord_shift if c else None, s % k == 0))   # arpegio: cada semicorchea, la siguiente nota del acorde
         if bass_from_chords: lo = bass_from(cho[0], total)
     else:
         # Dos o más pistas: la más aguda lleva la melodía y el resto el bajo (mano derecha / mano izquierda)
@@ -178,6 +186,6 @@ def midi_to_song(path, max_beats=None, drums_channel=9, roles=None, melody_shift
     tracks = [{'wave': 'square', 'vol': v(0.08), 'notes': encode(hi)}]
     if any(m is not None for m, _ in lo): tracks.append({'wave': 'triangle', 'vol': v(0.17), 'notes': encode(lo)})
     if any(m is not None for m, _ in mid): tracks.append({'wave': 'square', 'vol': v(0.03 if roles else 0.04), 'notes': encode(mid)})
-    info = dict(bpm=round(bpm, 1), pasos=total, compases=total / 16, segundos=round(total * 60 / bpm / 4 / beat, 1), voces=len(tracks), notas=len(notes),
+    info = dict(bpm=round(bpm, 1), pasos=total, compases=total / (4 * sub), segundos=round(total * 60 / bpm / sub / beat, 1), voces=len(tracks), notas=len(notes),
                 registro=f'{name(min(n[2] for n in notes))}-{name(max(n[2] for n in notes))}', pistas=len(ids))
-    return {'bpm': round(bpm, 1), 'div': 4 * beat, 'tracks': tracks}, info
+    return {'bpm': round(bpm, 1), 'div': sub * beat, 'tracks': tracks}, info

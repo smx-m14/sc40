@@ -217,7 +217,7 @@ function isla() {
     { name: 'Aeropuerto', x0: 6, y0: 33, x1: 22, y1: 38, music: 'aeroflot' },
     { name: 'Templo de los Sabios', x0: 27, y0: 9, x1: 35, y1: 18, music: 'templo' },
     { name: 'Biang Biang Mian', x0: 23, y0: 14, x1: 26, y1: 18 },
-    { name: 'Campo de nabos', x0: 18, y0: 23, x1: 25, y1: 27 },
+    { name: 'Campo de nabos', x0: 18, y0: 23, x1: 25, y1: 27, music: 'perrunfli' },
     { name: 'Combini', x0: 32, y0: 28, x1: 38, y1: 31, jingle: 'combini' },
     { name: 'Castillo de Mazapán', x0: 43, y0: 16, x1: 58, y1: 31 },
     { name: 'Kapadokya', x0: 42, y0: 33, x1: 58, y1: 39, music: 'kapadokya' },
@@ -239,7 +239,8 @@ function cait() {
   m.obj('bed2', 1, 2, 2, 2);
   // Rincón de la tele, según las fotos: ventanal a la terraza, mueble blanco con la tele, estantería de cubos con
   // peluches y lámpara de pie
-  m.objects.push({ tex: 'window_cait', x: 11 * TILE, y: 2 * TILE - 2, flat: true, top: true });
+  // (36 px de ancho, centrado en 12 * TILE - 19: acaba 1 px antes del borde derecho de la casa, que mide 12 baldosas)
+  m.objects.push({ tex: 'window_cait', x: 12 * TILE - 19, y: 2 * TILE - 2, flat: true, top: true });
   m.obj('kallax_cait', 7, 2);
   m.obj('tvunit_cait', 8, 2, 2, 1);
   // La lámpara de pie se puede apagar y encender (al apagarla, la casa se oscurece)

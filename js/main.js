@@ -20,6 +20,7 @@ import { OtamaScene } from './scenes/otama.js';
 import { RitmoScene } from './scenes/ritmo.js';
 import { RobotScene } from './scenes/robot.js';
 import { CombateScene } from './scenes/combate.js';
+import { TitleBgScene } from './scenes/titlebg.js';
 import './story.js';
 
 class BootScene extends Phaser.Scene {
@@ -39,7 +40,7 @@ class BootScene extends Phaser.Scene {
     const ld = document.getElementById('loader');
     if (ld) { ld.classList.add('out'); setTimeout(() => ld.remove(), 350); }
 
-    Sound.wanted = 'isla';
+    Sound.wanted = 'titulo'; // música propia de la pantalla de título (en bucle); en el juego, la de cada zona
 
     // Atajos de prueba: ?debug&flags=intro,invites&at=isla,22,12&scene=sokoban&level=2
     const q = new URLSearchParams(location.search);
@@ -60,7 +61,9 @@ class BootScene extends Phaser.Scene {
       return;
     }
 
+    this.scene.launch('titlebg'); // de fondo, la isla con Colgadín paseando (js/scenes/titlebg.js)
     const mode = await UI.title();
+    this.scene.stop('titlebg');
     if (mode === 'new') { State.reset(); State.save(); }
     this.scene.start('world');
   }
@@ -74,7 +77,7 @@ function gameWidth() {
   const st = document.getElementById('stage'), r = st.clientWidth / Math.max(1, st.clientHeight);
   return Math.max(BASE_W, Math.min(MAX_W, Math.round((180 * r) / 2) * 2));
 }
-const FREE_CAMERA = ['boot', 'world', 'sokoban', 'tarta']; // escenas que ya colocan su cámara según el ancho
+const FREE_CAMERA = ['boot', 'world', 'sokoban', 'tarta', 'titlebg']; // escenas que ya colocan su cámara según el ancho
 function center(scene) { if (!FREE_CAMERA.includes(scene.scene.key)) scene.cameras.main.setScroll(-(scene.scale.width - BASE_W) / 2, 0); }
 
 const game = new Phaser.Game({
@@ -88,7 +91,7 @@ const game = new Phaser.Game({
   audio: { noAudio: true },
   input: { keyboard: false },
   scale: { mode: Phaser.Scale.NONE },
-  scene: [BootScene, WorldScene, SokobanScene, CaliScene, MonosScene, PatoScene, SimonScene, HornoScene, LucesScene, TediScene, TartaScene, FiestaScene, AwawasScene, OtamaScene, RitmoScene, RobotScene, CombateScene],
+  scene: [BootScene, WorldScene, SokobanScene, CaliScene, MonosScene, PatoScene, SimonScene, HornoScene, LucesScene, TediScene, TartaScene, FiestaScene, AwawasScene, OtamaScene, RitmoScene, RobotScene, CombateScene, TitleBgScene],
 });
 
 game.events.once('ready', () => {

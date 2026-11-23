@@ -58,12 +58,12 @@ const RUSO = [
 // Preguntas de la paella. Solo valen: arroz, pollo, conejo, bachoqueta, garrofón, tomate, aceite, azafrán, sal y agua.
 // Perrunfli parla en valencià; les respostes (el que tria Colgadín) van en castellà.
 const PAELLA = [
-  { q: 'Comencem fàcil. Què és el primer que tirem a la paella?', ok: 'Aceite de oliva',
+  { q: 'Escomencem fàcil. Què és el primer que tirem a la paella?', ok: 'Aceite de oliva',
     bad: { Mantequilla: 'Mantega? Açò és una paella, no un croissant.', Mayonesa: 'Maionesa… Faré com si no haguera sentit res.' } },
   { q: 'Ara la carn. Quina tirem?', ok: 'Pollo y conejo',
-    bad: { Chorizo: 'XORIÇO?! Això és «arròs amb coses». A València s\'acaba d\'esvanir algú.', 'Salchichas': 'Salsitxes. A la paella. Lolete, tapa\'t les orelles.' } },
+    bad: { Chorizo: 'XORIÇO?! Xe, això és «arròs amb coses». A València s\'acaba d\'esvanir algú.', 'Salchichas': 'Salsitxes. A la paella. Lolete, tapa\'t les orelles.' } },
   { q: 'La verdura. Pensa-ho bé.', ok: 'Bachoqueta y garrofón',
-    bad: { Guisantes: 'Els pésols, a la menestra. Següent intent.', Nabos: 'Que els naps NO ES TOQUEN! Ni els dimarts ni mai.' } },
+    bad: { Guisantes: 'Els pésols, a la menestra. Següent intent.', Nabos: 'Que els naps NO ES TOQUEN! Ni hui ni mai.' } },
   { q: 'I què es sofregix amb la carn i la verdura?', ok: 'Tomate rallado',
     bad: { Cebolla: 'La ceba estova l\'arròs. I la meua paciència.', 'Pimiento rojo': 'El pebrot és per a les paelles de postal.' } },
   { q: 'El color i l\'aroma. D\'on ixen?', ok: 'Azafrán',
@@ -1044,15 +1044,16 @@ export const SCRIPTS = {
     const P = 'Perrunfli';
     if (S.flag('paella')) {
       invite('perrunfli', P);
-      return UI.say(P, ['La paella eixirà de categoria. I sense ni un pésol.', 'Els naps continuen sense tocar-se, per cert.']);
+      return UI.say(P, ['La paella eixirà boníssima. I sense ni un pésol.', 'Els naps continuen sense tocar-se, per cert.']);
     }
     if (!S.flag('metPerrunfli')) {
       await UI.say(P, [
-        'Home, Colgadín! Sí, sí, és un camp de naps. Ja sé el que estàs pensant.',
-        'No et pensaràs que et farem collir naps els dimarts a les 23:37 h, veritat?',
+        'Xe, Colgadín! Sí, sí, és un camp de naps. Ja sé el que estàs pensant.',
+        'No et pensaràs que et farem collir naps hui a les 23:37, veritat?',
         'Ací els naps ni es compren ni es venen ni es podreixen. Són de decoració.',
         'El que sí que estem preparant al poble és una paella valenciana per a la festa de Cait.',
-        'El problema és que cada veí diu que porta una cosa diferent, i ja hem tingut dues baralles i mitja. Aixina no hi ha manera.',
+        'El problema és que cada veí diu que porta una cosa diferent, i la setmana passada ja tinguérem dues baralles i mitja. Aixina no hi ha manera.',
+        "L'any passat ho organitzí jo a soles, i al final acabàrem menjant entrepans. No pot tornar a passar.",
       ]);
       S.set('metPerrunfli');
     }
@@ -1061,24 +1062,27 @@ export const SCRIPTS = {
       S.set('perrunfliVa');
       await UI.say(P, 'Ei, ei… Que no parles valencià?');
       await UI.say(C, 'No, pero lo entiendo perfectamente.');
-      await UI.say(P, 'Doncs meleta de romer! Seguim.');
+      await UI.say(P, 'Doncs de categoria! Seguim.');
     }
     if (c !== 0) return UI.say(P, 'Doncs torna quan ho tingues clar. A la marxeta, que els naps i jo no ens movem.');
 
     let fails = 0;
     for (const p of PAELLA) {
+      let miss = 0;
       for (;;) {
         const opts = shuffle([p.ok, ...Object.keys(p.bad)]);
         const pick = opts[await UI.choose(P, p.q, opts)];
         if (pick === p.ok) { Sound.sfx('get'); break; }
-        fails++;
+        fails++; miss++;
         Sound.sfx('bad');
-        await UI.say(P, p.bad[pick]);
+        // «No tens trellat!» la primera vez que falla en todo el cuestionario, y si repite fallo en la misma pregunta
+        const pre = fails === 1 ? ['No tens trellat!'] : miss === 2 ? ['Xe, xe, xe… Ara sí que no tens trellat.'] : [];
+        await UI.say(P, [...pre, p.bad[pick]]);
       }
     }
     S.set('paella');
     await UI.say(P, [
-      fails === 0 ? 'Ni una errada! Tu has nascut amb una paella davall del braç.' : `Això és! Amb ${fails === 1 ? 'un esglai' : fails + ' esglais'} pel camí, però ja la tenim.`,
+      fails === 0 ? 'Ni una errada! Tu nasqueres amb una paella davall del braç.' : `Això és! Amb ${fails === 1 ? 'un esglai' : fails + ' esglais'} pel camí, però ja la tenim.`,
       'Arròs, pollastre, conill, bajoqueta, garrofó, tomaca, oli, safrà, sal i aigua. I RES MÉS. Aixina, i només aixina.',
       'T\'has guanyat açò. És per a Cait: una Mocadorà, amb els últims massapans d\'abans de les obres.',
     ]);

@@ -122,26 +122,31 @@ export const FUXIA_SONGS = [
  },
  {
   "id": "25",
+  "artist": "Sophie Ellis-Bextor",
+  "title": "Murder on the Dancefloor"
+ },
+ {
+  "id": "26",
   "artist": "Soraya",
   "title": "Fénix"
  },
  {
-  "id": "26",
+  "id": "27",
   "artist": "Spice girls",
   "title": "Wannabe"
  },
  {
-  "id": "27",
+  "id": "28",
   "artist": "Sugababes",
   "title": "Jungle"
  },
  {
-  "id": "28",
+  "id": "29",
   "artist": "The Corrs",
   "title": "Summer Sunshine"
  },
  {
-  "id": "29",
+  "id": "30",
   "artist": "Zara Larsson",
   "title": "Midnight sun"
  }

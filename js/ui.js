@@ -298,7 +298,34 @@ export const UI = {
       this.open = 'title';
       show($('title'));
       show($('t-continue'), State.has());
+      // Los navegadores no dejan sonar nada hasta que la persona toca la pantalla o pulsa una tecla. Se intenta arrancar
+      // la música ya (con el juego instalado como app, o en un sitio que el navegador ya conoce, suele dejar); si no,
+      // «Pulsa para empezar»: ese primer toque arranca la música y descubre los botones.
+      Sound.init();
+      // Al descubrir los botones, el mismo toque (o clic) que ha arrancado la música caería encima de uno de ellos al
+      // soltar el dedo: durante un momento los botones no hacen caso
+      let armed = 0;
+      const ready = () => { show($('t-press'), false); show($('t-btns')); armed = performance.now(); };
+      if (Sound.ctx && Sound.ctx.state === 'running') ready();
+      else {
+        $('t-press').textContent = matchMedia('(pointer: coarse)').matches ? 'Toca la pantalla para empezar' : 'Pulsa una tecla para empezar';
+        show($('t-press')); show($('t-btns'), false);
+        const start = (e) => {
+          if (this.open !== 'title') return;
+          e.preventDefault();
+          for (const ev of ['pointerdown', 'keydown']) window.removeEventListener(ev, start, true);
+          // el clic que llega al soltar ese mismo toque no debe pulsar el botón que acaba de aparecer debajo
+          const eat = (c) => { c.stopPropagation(); c.preventDefault(); window.removeEventListener('click', eat, true); };
+          if (e.type === 'pointerdown') { window.addEventListener('click', eat, true); setTimeout(() => window.removeEventListener('click', eat, true), 1500); }
+          Sound.init(); ready();
+          if (Sound.ctx && Sound.ctx.state !== 'running') Sound.ctx.resume();
+        };
+        for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, start, true);
+        // si el navegador sí deja sonar (p. ej. se arranca solo al cabo de un momento), fuera el aviso
+        if (Sound.ctx) Sound.ctx.onstatechange = () => { if (Sound.ctx.state === 'running' && this.open === 'title') { ready(); for (const ev of ['pointerdown', 'keydown']) window.removeEventListener(ev, start, true); } };
+      }
       const go = (mode) => {
+        if (performance.now() - armed < 600) return;
         if (mode === 'new' && State.has() && !this._sure) {
           this._sure = true;
           $('t-new').textContent = '¿Borrar la partida guardada?';

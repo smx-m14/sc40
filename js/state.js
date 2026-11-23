@@ -99,7 +99,7 @@ export const SOCK_DESIGN = {
 };
 export const HATCH_CODE = '1987'; // el año en que nació Cait
 
-function fresh() {
+export function fresh() {
   return {
     v: 1,
     pos: { map: 'cait', x: 96, y: 104, dir: 'down' },
@@ -122,7 +122,7 @@ function fresh() {
 
 export const State = {
   d: fresh(),
-  settings: { mute: false, music: 'chip' }, // music: 'chip' (generada) | 'mp3' (grabaciones originales)
+  settings: { mute: false },
 
   has() { try { return !!localStorage.getItem(KEY); } catch { return false; } },
   load() {

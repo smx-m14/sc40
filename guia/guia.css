@@ -111,3 +111,4 @@ p.lead { font-style: italic; }
 body.solo { padding: 0; } body.solo .noprint { display: none; } body.solo .page { margin: 0; box-shadow: none; }
 .noprint { width: 148mm; margin: 0 auto 6mm; color: #fff; font: 11pt/1.4 var(--body); }
 .noprint b { color: var(--yellow); }
+@media screen { .content.overflow { outline: 1mm dashed red; } }

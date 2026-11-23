@@ -1,11 +1,9 @@
 // Sonido. Toda la música es chiptune sintetizado con WebAudio (las canciones de zona salen de js/songs-data.js);
-// solo los efectos grabados (monos, patito) y la prueba de Fucsia usan mp3. Pistas sintetizadas: "NOTA:pasos ..." (paso = corchea, "-" = silencio).
+// solo los efectos grabados (monos, Patito, awawas) y la prueba de Fucsia usan mp3. Pistas sintetizadas: "NOTA:pasos ..." (paso = corchea, "-" = silencio).
 import { State } from './state.js';
 import { GENERATED } from './songs-data.js';
 
-const MUSIC_VOL = 0.45;
-
-// Composiciones propias para lo que no tiene mp3 de referencia (y el Combini, cuyo mp3 está en silencio)
+// Composiciones propias (lo que no sale de un MIDI ni de un mp3 de referencia)
 const COMPOSED = {
   fiesta: { // «Cumpleaños feliz» (dominio público)
     bpm: 132,
@@ -15,16 +13,9 @@ const COMPOSED = {
     ],
   },
   // (la música de la casa de Cait, «casa», sale ahora de music/casa.mid: ver tools/make_music.py)
-  puzle: {
-    bpm: 118,
-    tracks: [
-      { wave: 'square', vol: 0.07, notes: 'A4:1 C5:1 E5:2 A4:1 C5:1 E5:2 G4:1 B4:1 D5:2 G4:1 B4:1 D5:2 F4:1 A4:1 C5:2 F4:1 A4:1 C5:2 E4:1 G#4:1 B4:2 E5:4' },
-      { wave: 'triangle', vol: 0.16, notes: 'A2:4 E3:4 G2:4 D3:4 F2:4 C3:4 E2:4 E3:4' },
-    ],
-  },
 };
 
-// Las canciones de zona se transcriben de los mp3 con tools/make_music.py
+// Las canciones de zona salen de tools/make_music.py (de los MIDI de music/ o, si no hay, de los mp3 originales)
 const SONGS = { ...GENERATED, ...COMPOSED };
 
 const SEMI = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
@@ -50,8 +41,7 @@ function compile(song) {
 
 export const Sound = {
   ctx: null, master: null, cur: null, curId: null, wanted: null, timer: null,
-  els: {},      // <audio> por canción
-  playing: null, // <audio> que suena ahora
+  els: {},      // <audio> de los efectos grabados
 
   init() {
     if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
@@ -69,10 +59,10 @@ export const Sound = {
     if (this.master) this.master.gain.value = m ? 0 : 1;
     for (const el of Object.values(this.els)) el.muted = m;
   },
-  el(file, loop) {
+  el(file) {
     if (!this.els[file]) {
       const a = this.els[file] = new Audio(`assets/audio/${file}.mp3`);
-      a.loop = loop; a.preload = 'auto'; a.muted = State.settings.mute;
+      a.preload = 'auto'; a.muted = State.settings.mute;
     }
     return this.els[file];
   },
@@ -87,13 +77,12 @@ export const Sound = {
     o.connect(g).connect(this.master);
     o.start(t); o.stop(t + dur + 0.02);
   },
-  // Cambia la música de fondo. Los mp3 se reanudan donde se quedaron al volver a su zona.
+  // Cambia la música de fondo (en bucle).
   // at (opcional): instante del reloj de audio en que empieza, para cuadrarla con un minijuego de ritmo.
   music(id, force, at) {
     this.wanted = id;
     if (!this.ctx || (!force && id === this.curId)) return;
     this.curId = id;
-    if (this.playing) { this.playing.pause(); this.playing = null; }
     this.cur = null;
     if (SONGS[id]) {
       this.cur = { ...compile(SONGS[id]), i: 0, next: at ?? this.ctx.currentTime + 0.08 };
@@ -112,22 +101,6 @@ export const Sound = {
       c.next += c.step;
     }
   },
-  // Música de logro: suena al conseguir cualquier cosa y baja la música de fondo mientras dura.
-  // Adivinanza musical de Fucsia: toca el arranque de una canción deformado. Devuelve cuánto dura (s).
-  // mode: 'fast' acelerada · 'rev' al revés · 'low' muy grave · 'short' solo un segundo
-  riddle(id, mode) {
-    if (!this.ctx || !SONGS[id]) return 0;
-    const c = compile(SONGS[id]), N = 28;
-    let evs = [];
-    c.tracks[0].steps.forEach((ev, i) => { if (ev && i < N) evs.push({ i, f: ev.f, len: Math.min(ev.len, N - i) }); });
-    let step = c.step;
-    if (mode === 'fast') step *= 0.42;
-    if (mode === 'rev') evs = evs.map((e) => ({ ...e, i: N - e.i - e.len }));
-    if (mode === 'short') evs = evs.filter((e) => e.i * step < 1.1);
-    const k = mode === 'low' ? 0.25 : 1, t0 = this.ctx.currentTime + 0.08;
-    for (const e of evs) this.note(e.f * k, t0 + e.i * step, e.len * step * 0.95, mode === 'low' ? 'sawtooth' : 'square', 0.1);
-    return (mode === 'short' ? 1.2 : N * step) + 0.2;
-  },
   // Sintonía corta: suena UNA vez (no en bucle) y la música de fondo espera o baja mientras dura.
   // La usa el Combini al acercarse a la puerta, y la Música de Logro en versión chiptune.
   jingle(id, gain = 1.4) {
@@ -137,20 +110,18 @@ export const Sound = {
     const c = compile(SONGS[id]), t0 = now + 0.03, dur = c.len * c.step;
     for (const t of c.tracks) t.steps.forEach((ev, i) => { if (ev) this.note(ev.f, t0 + i * c.step, ev.len * c.step * 0.95, t.wave, t.vol * gain); });
     this.jingleEnd = t0 + dur;
-    if (this.cur) this.cur.next = Math.max(this.cur.next, t0) + dur;        // música sintetizada: se detiene y sigue después
-    const bg = this.playing;                                                // música en mp3: baja el volumen
-    if (bg) { bg.volume = 0.08; setTimeout(() => { bg.volume = MUSIC_VOL; }, dur * 1000); }
+    if (this.cur) this.cur.next = Math.max(this.cur.next, t0) + dur;        // la música de fondo se detiene y sigue después
   },
   logro() {
     if (!this.ctx) return;
     this.jingle('logro');
   },
-  // Efectos grabados (monos, patito…): assets/audio/sfx_<nombre>.mp3
+  // Efectos grabados (monos, Patito, awawas): assets/audio/sfx_<nombre>.mp3
   // Carga por adelantado efectos grabados, para que el primero no llegue tarde
-  preload(...names) { for (const n of names) this.el('sfx_' + n, false).load(); },
+  preload(...names) { for (const n of names) this.el('sfx_' + n).load(); },
   clip(name, vol = 0.8) {
     if (!this.ctx) return;
-    const a = this.el('sfx_' + name, false);
+    const a = this.el('sfx_' + name);
     a.currentTime = 0; a.volume = vol;
     a.play().catch(() => {});
   },
