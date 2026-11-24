@@ -110,11 +110,10 @@ export class FiestaScene extends Phaser.Scene {
       UI.minibar('¡Que siga la fiesta!', { exit: done, labels: { exit: 'Terminar' } });
     });
     State.set('fin');
-    await UI.ending({ guests: n, total: CHARACTERS.length, layers: this.layers, gifts: this.gifts, gachaTotal: GACHA.length });
-    State.d.pos = { map: 'cait', x: 6 * 16 + 8, y: 7 * 16 + 12, dir: 'down' };
-    State.save();
-    this.cameras.main.fadeOut(400);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('world'));
+    // Después: el móvil de Cait, los créditos y la pantalla final (js/scenes/movil.js)
+    const stats = { guests: n, total: CHARACTERS.length, layers: this.layers, gifts: this.gifts, gachaTotal: GACHA.length };
+    this.cameras.main.fadeOut(900, 13, 10, 20);
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('movil', stats));
   }
 
   update(time, delta) {

@@ -68,11 +68,13 @@ export const GIFTS = {
 
 // Libro de los Miausis, en orden cronológico
 export const ALBUM = [
+  { img: '00-nuria', place: 'Vall de Núria', date: 'Julio de 2020', deco: ['mountain', 'leaf'] },
   { img: '01-ibiza', place: 'Ibiza', date: 'Agosto de 2020', deco: ['sun', 'wave'] },
   { img: '02-gran-canaria', place: 'Gran Canaria', date: 'Julio de 2021', deco: ['mountain', 'sun'] },
   { img: '03-seychelles', place: 'Seychelles', date: 'Agosto de 2021', deco: ['palm', 'wave'] },
   { img: '04-malaga', place: 'Málaga', date: 'Octubre de 2021', deco: ['icecream', 'sun'] },
   { img: '05-tailandia', place: 'Tailandia', date: 'Julio de 2022', deco: ['stupa', 'flower'] },
+  { img: '05b-camboya', place: 'Camboya', date: 'Agosto de 2022', deco: ['stupa', 'palm'] },
   { img: '06-turquia', place: 'Turquía', date: 'Diciembre de 2022', deco: ['column', 'sun'] },
   { img: '07-kuala-lumpur', place: 'Kuala Lumpur', date: 'Julio de 2023', deco: ['tower', 'leaf'] },
   { img: '08-bako', place: 'Bako National Park', date: 'Julio de 2023', deco: ['leaf', 'wave'] },
@@ -83,6 +85,7 @@ export const ALBUM = [
   { img: '13-taiwan', place: 'Taiwán', date: 'Agosto de 2024', deco: ['cup', 'lantern'] },
   { img: '14-cordoba', place: 'Córdoba', date: 'Diciembre de 2024', deco: ['arch', 'sun'] },
   { img: '15-corea', place: 'Corea', date: 'Agosto de 2025', deco: ['pagoda', 'flower'] },
+  { img: '16-milan', place: 'Milán', date: 'Marzo de 2026', deco: ['arch', 'column'] },
 ];
 
 export const TOTAL_SOCKS = 24;

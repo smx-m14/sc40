@@ -21,6 +21,7 @@ import { RitmoScene } from './scenes/ritmo.js';
 import { RobotScene } from './scenes/robot.js';
 import { CombateScene } from './scenes/combate.js';
 import { TitleBgScene } from './scenes/titlebg.js';
+import { MovilScene } from './scenes/movil.js';
 import './story.js';
 
 class BootScene extends Phaser.Scene {
@@ -91,7 +92,7 @@ const game = new Phaser.Game({
   audio: { noAudio: true },
   input: { keyboard: false },
   scale: { mode: Phaser.Scale.NONE },
-  scene: [BootScene, WorldScene, SokobanScene, CaliScene, MonosScene, PatoScene, SimonScene, HornoScene, LucesScene, TediScene, TartaScene, FiestaScene, AwawasScene, OtamaScene, RitmoScene, RobotScene, CombateScene, TitleBgScene],
+  scene: [BootScene, WorldScene, SokobanScene, CaliScene, MonosScene, PatoScene, SimonScene, HornoScene, LucesScene, TediScene, TartaScene, FiestaScene, AwawasScene, OtamaScene, RitmoScene, RobotScene, CombateScene, TitleBgScene, MovilScene],
 });
 
 game.events.once('ready', () => {

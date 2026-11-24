@@ -9,11 +9,13 @@ M = 'Material Insipiración/'
 
 # (fichero, id, recorte opcional como fracciones l,t,r,b)
 ALBUM = [
+    ('Núria', '00-nuria', None),
     ('Ibiza', '01-ibiza', None),
     ('Gran Canaria', '02-gran-canaria', None),
     ('Seychelles', '03-seychelles', (0.0, 0.0, 0.8, 1.0)),
-    ('Malaga', '04-malaga', (0.0, 0.1, 1.0, 0.85)),
+    ('Málaga', '04-malaga', (0.0, 0.1, 1.0, 0.85)),
     ('Tailandia', '05-tailandia', (0.0, 0.3, 1.0, 1.0)),
+    ('Camboya', '05b-camboya', (0.12, 0.0, 0.88, 1.0)),
     ('Turquía', '06-turquia', None),
     ('Kuala Lumpur', '07-kuala-lumpur', (0.0, 0.1, 1.0, 0.85)),
     ('Bako National Park', '08-bako', (0.1, 0.0, 0.9, 1.0)),
@@ -24,6 +26,7 @@ ALBUM = [
     ('Taiwan', '13-taiwan', (0.0, 0.25, 1.0, 1.0)),
     ('Córdoba', '14-cordoba', (0.0, 0.25, 1.0, 1.0)),
     ('Corea', '15-corea', (0.0, 0.25, 1.0, 1.0)),
+    ('Milan', '16-milan', (0.0, 0.12, 1.0, 0.68)),
 ]
 
 

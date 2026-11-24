@@ -44,6 +44,7 @@ SONGS = {
     'casa': ('Casa de Cait', 0),        # solo MIDI (music/casa.mid): la casa de Cait
     'inquisicion': ('Dragon Age', 0),
     'titulo': ('Pantalla título', 0),
+    'creditos': ('Créditos', 0),       # solo MIDI (music/creditos.mid = «Créditos.mid», «Texas Hold 'Em»): móvil de Cait y créditos
     'perrunfli': ('Perrunfli', 0),     # solo MIDI (music/perrunfli.mid): el campo de nabos de Perrunfli  # solo MIDI (music/titulo.mid): la pantalla de título  # solo MIDI (music/inquisicion.mid): la mesa de guerra de los Owitos del castillo
 }
 # Reparto de pistas para los MIDI con arreglo completo (music/<id>.mid). Sin entrada aquí se trata como piano.
@@ -147,6 +148,10 @@ MIDI_OPTS = {
     # original. carry: el acorde que ya suena en ese medio compás no se pierde al volver.
     # Se toca a 112 (el vídeo va a 140): más tranquila, más cerca de la de la Isla de Cait (100).
     'lolete': dict(roles=dict(melody=[0], chords=[1]), bass_from_chords=True, start_beat=6.5, max_beats=104, carry=True, bpm=112),
+    # Créditos (music/creditos.mid = «Créditos.mid», «Texas Hold 'Em»), 4/4 a 110: 5 = «Melody Guide» (melodía),
+    # una octava arriba, 3 = bajo, 6 = «Harmony Guide» (segunda voz) y 4 = guitarra apagada (acordes); la batería (11) y las guitarras/banjos que doblan
+    # fuera. Se salta el compás de entrada (negras 0-4): bucle de las negras 4-100, la canción entera (unos 52 s).
+    'creditos': dict(roles=dict(melody=[5], bass=[3], chords=[6, 4]), melody_shift=12, start_beat=4, max_beats=96),
     # Teatro de los Owitos: 2 = melodía en octavas, 0 = bajo, 1 = piano
     # Sin la intro de piano (compases 1-5): bucle de los compases 6-30, el tema del violín entero (A y B). El 30 acaba
     # resolviendo en re♭, que es justo donde arranca el tema en el 6, así que vuelve sin costura (unos 46 s).
